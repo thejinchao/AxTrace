@@ -78,7 +78,7 @@ LPAXTRACE_GLOBAL_DATA _AxTrace_GetGlobalData(void)
 void AxTrace(const char *psz_fmt, ...)
 {
 	LPAXTRACE_GLOBAL_DATA pGlobalData = 0;
-	va_list ptr;
+	va_list ptr=0;
 	HRESULT hr;
 	char szContents[AXTRACE_CONTENTS_LENGTH];
 	size_t contentsSizeInBytes;
@@ -107,7 +107,7 @@ void AxTrace(const char *psz_fmt, ...)
 void AxTraceExA(int win_id, int style_id, int is_utf8, const char *psz_fmt, ...)
 {
 	LPAXTRACE_GLOBAL_DATA pGlobalData = 0;
-	va_list ptr;
+	va_list ptr=0;
 	HRESULT hr;
 	char szContents[AXTRACE_CONTENTS_LENGTH];
 	size_t contentsSizeInBytes;
@@ -136,7 +136,7 @@ void AxTraceExA(int win_id, int style_id, int is_utf8, const char *psz_fmt, ...)
 void AxTraceExW(int win_id, int style_id, const wchar_t *wsz_fmt, ...)
 {
 	LPAXTRACE_GLOBAL_DATA pGlobalData = 0;
-	va_list ptr;
+	va_list ptr=0;
 	HRESULT hr;
 	wchar_t wszContents[AXTRACE_CONTENTS_LENGTH];
 	size_t contentsSizeInBytes;
