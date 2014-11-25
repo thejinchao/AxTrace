@@ -1,0 +1,406 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (Simplified, PRC) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Exit",                       ID_APP_EXIT
+    END
+    POPUP "&Options"
+    BEGIN
+        MENUITEM "&Receive\tCtrl+R",            ID_SYSTEM_RECEIVE
+        MENUITEM "&Hide Toolbar",               40032
+        MENUITEM SEPARATOR
+        MENUITEM "&Style Setting...",           ID_OPTION_SETTING
+        MENUITEM "&Font...",                    ID_OPTION_FONT
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "Help...\tF1",                 ID_HELP, INACTIVE
+        MENUITEM "&About",                      ID_APP_ABOUT
+    END
+END
+
+IDR_TRACEFRAME MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Save as...\tCtrl+S",         ID_FILE_SAVEAS
+        MENUITEM SEPARATOR
+        MENUITEM "&Exit",                       ID_APP_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
+        MENUITEM "Select &All\tCtrl+A",         ID_EDIT_SELECTALL
+        MENUITEM SEPARATOR
+        MENUITEM "C&lear\tCtrl+X",              ID_EDIT_CLEAR
+        MENUITEM "Cl&ear All\tCtrl+Shift+X",    ID_EDIT_CLEARALL
+    END
+    POPUP "&Options"
+    BEGIN
+        MENUITEM "&Receive\tCtrl+R",            ID_SYSTEM_RECEIVE
+        MENUITEM "A&uto Scroll\tCtrl+U",        ID_SYSTEM_AUTOSCROLL
+        MENUITEM "&Hide Toolbar",               ID_OPTION_HIDE_TOOLBAR
+        MENUITEM SEPARATOR
+        MENUITEM "&Style Setting...",           ID_OPTION_SETTING
+        MENUITEM "&Font...",                    ID_OPTION_FONT
+    END
+    POPUP "&Window"
+    BEGIN
+        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
+        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "Help...\tF1",                 ID_HELP, INACTIVE
+        MENUITEM "&About",                      ID_APP_ABOUT
+    END
+END
+
+IDR_TICKFRAME MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Save as...\tCtrl+S",         ID_FILE_SAVEAS
+        MENUITEM SEPARATOR
+        MENUITEM "&Exit",                       ID_APP_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
+        MENUITEM "Select &All\tCtrl+A",         ID_EDIT_SELECTALL
+        MENUITEM SEPARATOR
+        MENUITEM "C&lear\tCtrl+X",              ID_EDIT_CLEAR
+        MENUITEM "Cl&ear All\tCtrl+Shift+X",    ID_EDIT_CLEARALL
+    END
+    POPUP "&Options"
+    BEGIN
+        MENUITEM "&Receive\tCtrl+R",            ID_SYSTEM_RECEIVE
+        MENUITEM "A&uto Scroll\tCtrl+U",        ID_SYSTEM_AUTOSCROLL, INACTIVE
+        MENUITEM "&Hide Toolbar",               ID_OPTION_HIDE_TOOLBAR
+        MENUITEM SEPARATOR
+        MENUITEM "&Style Setting...",           ID_OPTION_SETTING
+        MENUITEM "&Font...",                    ID_OPTION_FONT
+    END
+    POPUP "&Window"
+    BEGIN
+        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
+        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "Help...\tF1",                 ID_HELP, INACTIVE
+        MENUITEM "&About",                      ID_APP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_ABOUT DIALOGEX 0, 0, 232, 63
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About AxTrace 3"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,175,42,50,14
+    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20
+    LTEXT           "Axia|Trace\nVersion 3.0\n(C)Copyright 2013 TheCodeway.com",IDC_STATIC,63,7,162,27
+    LTEXT           "www.thecodeway.com",IDC_STATIC_LINK,65,35,77,10
+END
+
+IDD_DIALOG_SETTING DIALOGEX 0, 0, 253, 169
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Options"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Text Color",IDC_STATIC,7,7,239,132
+    CONTROL         "",IDC_LIST_STYLE,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | WS_TABSTOP,19,30,86,89,WS_EX_CLIENTEDGE
+    LTEXT           "Style List:",IDC_STATIC,21,19,49,8
+    RTEXT           "Foreground:",IDC_STATIC,117,37,49,13
+    RTEXT           "Background:",IDC_STATIC,117,57,49,13
+    LTEXT           "Sample:",IDC_STATIC,113,79,58,9
+    RTEXT           "",IDC_PREVIEW,113,93,126,25,SS_NOTIFY,WS_EX_STATICEDGE
+    DEFPUSHBUTTON   "&OK",IDOK,133,146,53,16
+    PUSHBUTTON      "&Cancel",IDCANCEL,193,146,53,16
+    PUSHBUTTON      "+",IDC_BUTTON_ADD,65,122,17,12,BS_FLAT
+    PUSHBUTTON      "-",IDC_BUTTON_REMOVE,88,122,17,12,BS_FLAT
+    PUSHBUTTON      "",IDC_BUTTON_FOREGROUND,173,34,64,15
+    PUSHBUTTON      "",IDC_BUTTON_BACKGROUND,173,55,64,15
+END
+
+IDD_DIALOG_ADDSTYLE DIALOGEX 0, 0, 249, 50
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Add Style"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,132,29,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,192,29,50,14
+    RTEXT           "Input Style ID(1~255):",IDC_STATIC,7,11,83,14
+    EDITTEXT        IDC_EDIT_STYLEID,97,7,145,16,ES_AUTOHSCROLL | ES_NUMBER
+END
+
+IDD_WND_TICK_FRAME DIALOGEX 0, 0, 392, 239
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_VISIBLE | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_TREE_NODE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | TVS_CHECKBOXES | TVS_NOHSCROLL | WS_TABSTOP,7,7,110,225
+    CONTROL         "",IDC_CANVAS,"Static",SS_BLACKRECT,125,7,260,225
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 3,0,0,1
+ PRODUCTVERSION 3,0,0,1
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080404b0"
+        BEGIN
+            VALUE "CompanyName", "TheCodeway.com"
+            VALUE "FileDescription", "Axia Trace 3 Application"
+            VALUE "FileVersion", "3.0.0.1"
+            VALUE "InternalName", "AxTrace3"
+            VALUE "LegalCopyright", "Copyright TheCodeway.com(C) 2013"
+            VALUE "OriginalFilename", "AxTrace3.exe"
+            VALUE "ProductName", " AxTrace3 Application"
+            VALUE "ProductVersion", "3.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR 16, 15
+BEGIN
+    BUTTON      ID_FILE_SAVEAS
+    SEPARATOR
+    BUTTON      ID_SYSTEM_RECEIVE
+    BUTTON      ID_SYSTEM_AUTOSCROLL
+    SEPARATOR
+    BUTTON      ID_EDIT_CLEAR
+    BUTTON      ID_EDIT_CLEARALL
+    SEPARATOR
+    BUTTON      ID_APP_ABOUT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\MainToolBar.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_ABOUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 225
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 56
+    END
+
+    IDD_DIALOG_SETTING, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 246
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 162
+    END
+
+    IDD_DIALOG_ADDSTYLE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 242
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 43
+    END
+
+    IDD_WND_TICK_FRAME, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 385
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 232
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\AxTrace.ico"
+IDR_TRACE_FRAME_TYPE    ICON                    "D:\\App\\AxTrace3\\AxTrace3\\res\\AxTrace_TraceFrame.ico"
+IDR_TICK_FRAME_TYPE     ICON                    "res\\AxTrace_TickFrame.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    "A",            ID_EDIT_SELECTALL,      VIRTKEY, CONTROL, NOINVERT
+    "X",            ID_EDIT_CLEAR,          VIRTKEY, CONTROL, NOINVERT
+    "X",            ID_EDIT_CLEARALL,       VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVEAS,         VIRTKEY, CONTROL, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    ID_SYSTEM_RECEIVE       "Receive Message or Shut it down\nReceive Message or Shut it down"
+    ID_OPTION_SETTING       "Open style setting dialog...\nSetting"
+    ID_WINDOW_TILE          "Arrange windows so they overlap\nCascade Windows"
+END
+
+STRINGTABLE
+BEGIN
+    ID_WINDOW_CASCADE       "Arrange windows so they overlap\nCascade Windows"
+    ID_WINDOW_TILE_HORZ     "Arrange windows as non-overlapping tiles\nTile Windows"
+END
+
+STRINGTABLE
+BEGIN
+    ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
+    ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
+END
+
+STRINGTABLE
+BEGIN
+    ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
+    ID_APP_EXIT             "Quit the application;\nExit"
+END
+
+STRINGTABLE
+BEGIN
+    ID_EDIT_CLEAR           "Clear current active view\nClear"
+    ID_EDIT_COPY            "Copy the selection and put it on the Clipboard\nCopy"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_SAVEAS          "Save the active document with a new name\nSave As"
+    ID_EDIT_CLEARALL        "Clear all view\nClear all"
+    ID_OPTION_FONT          "Open font setting dialog\rFont"
+END
+
+#endif    // Chinese (Simplified, PRC) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
