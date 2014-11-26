@@ -292,7 +292,7 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\AxTrace.ico"
-IDR_TRACE_FRAME_TYPE    ICON                    "D:\\App\\AxTrace3\\AxTrace3\\res\\AxTrace_TraceFrame.ico"
+IDR_TRACE_FRAME_TYPE    ICON                    "res\\AxTrace_TraceFrame.ico"
 IDR_TICK_FRAME_TYPE     ICON                    "res\\AxTrace_TickFrame.ico"
 
 /////////////////////////////////////////////////////////////////////////////
