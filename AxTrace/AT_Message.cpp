@@ -203,7 +203,7 @@ void ValueMessage::build(const AXIATRACE_TIME& traceTime, const AXIATRACE_DATAHE
 //--------------------------------------------------------------------------------------------
 void ValueMessage::getValueAsString(std::wstring& value) const
 {
-	const int TEMP_STR_SIZE = 64;
+	const int TEMP_STR_SIZE = 512;
 	wchar_t temp[TEMP_STR_SIZE]={0};
 
 	switch(m_valuetype)
