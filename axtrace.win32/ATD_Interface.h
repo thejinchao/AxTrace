@@ -11,11 +11,15 @@
 /** Init axtrace */
 int __stdcall AxTrace_Init(void);
 
+#define AXTRACE_MAGIC_HEAD		(0x5841)	/* 'AX' */
+
 /* AxTrace Communication Data Struct*/
 typedef __declspec(align(1)) struct
 {
-	unsigned int	dwContentLen;	/* Content Length */
+	unsigned short	MAGIC_HEAD;		/* AXTRACE_MAGIC_HEAD ('AX') */
+	unsigned short	wContentLen;	/* Content Length */
 	unsigned int	dwProcessID;	/* Process ID*/
+	unsigned int	dwThreadID;		/* Thread ID*/
 	unsigned short	wTraceType;		/* Trace Type <TODO> */
 	unsigned char	cWinID;			/* Trace Window ID */
 	unsigned char	cStyleID;		/* Trace Style ID*/

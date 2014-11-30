@@ -45,11 +45,13 @@ int _InsertLog(int idWindow, int idStyle, int codePage, const void* stringBuf, i
 
 	//build message 
 	AXIATRACE_DATAHEAD head;
+	head.MAGIC_HEAD = AXTRACE_MAGIC_HEAD;
 	head.dwProcessID = ::GetCurrentProcessId();
+	head.dwThreadID = ::GetCurrentThreadId();
 	head.wTraceType = ATT_LOG;
 	head.cWinID = (unsigned char)(idWindow);
 	head.cStyleID = (unsigned char)(idStyle);
-	head.dwContentLen = (unsigned int)final_length;
+	head.wContentLen = (unsigned short)final_length;
 
 	zmq_msg_t msg;
     int rc = zmq_msg_init_size(&msg, sizeof(head)+final_length);
@@ -127,11 +129,13 @@ int __stdcall AxTrace_WatchValue(int idWindow, int idStyle, int valueType, const
 
 	//build message 
 	AXIATRACE_DATAHEAD head;
+	head.MAGIC_HEAD = AXTRACE_MAGIC_HEAD;
 	head.dwProcessID = ::GetCurrentProcessId();
+	head.dwThreadID = ::GetCurrentThreadId();
 	head.wTraceType = ATT_VALUE;
 	head.cWinID = (unsigned char)(idWindow);
 	head.cStyleID = (unsigned char)(idStyle);
-	head.dwContentLen = (unsigned int)final_length;
+	head.wContentLen = (unsigned short)final_length;
 
 	zmq_msg_t msg;
     int rc = zmq_msg_init_size(&msg, sizeof(head)+final_length);

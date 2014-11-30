@@ -43,7 +43,7 @@ bool MessageQueue::_checkMessageValid(const void* pMessage, size_t size)
 	memcpy(&head, pMessage, sizeof(head));
 
 	//assert(head.dwContentLen == size-sizeof(head));
-	if(head.dwContentLen != size-sizeof(head)) return false;
+	if(head.wContentLen != size-sizeof(head)) return false;
 
 	//TODO: more check for special message valid
 
@@ -154,7 +154,7 @@ bool MessageQueue::_skipMessage(void)
 	assert(rc!=0);
 
 	ringbuf_memcpy_from(0, m_ringBuf, sizeof(AXIATRACE_TIME));
-	ringbuf_memcpy_from(0, m_ringBuf, sizeof(head.dwContentLen));
+	ringbuf_memcpy_from(0, m_ringBuf, sizeof(head.wContentLen));
 
 	return true;
 }
