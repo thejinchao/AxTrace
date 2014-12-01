@@ -107,13 +107,13 @@ void Config::loadSetting(void)
 
 	// Trace style fold
 	TCHAR szTraceStyle[MAX_PATH];
-	_sntprintf(szTraceStyle, MAX_PATH, _T("%s\\TraceStyle"), g_szAxTrace3Key);
+	StringCchPrintfW(szTraceStyle, MAX_PATH, _T("%s\\TraceStyle"), g_szAxTrace3Key);
 
 	// Load trace style
 	for(int i=0; i<MAX_TRACE_STYLE_COUNTS; i++)
 	{
 		TCHAR szName[MAX_PATH];
-		_sntprintf(szName, MAX_PATH, _T("Style%d"), i);
+		StringCchPrintfW(szName, MAX_PATH, _T("Style%d"), i);
 
 		type = REG_SZ;
 		TCHAR wszTemp[MAX_PATH]={0};
@@ -122,7 +122,7 @@ void Config::loadSetting(void)
 		if(ERROR_SUCCESS == SHGetValue(HKEY_CURRENT_USER, szTraceStyle, szName, &type, wszTemp, &size))
 		{
 			COLORREF colFront, colBack;
-			swscanf(wszTemp, _T("%08X|%08X"), &colFront, &colBack);
+			swscanf_s(wszTemp, _T("%08X|%08X"), &colFront, &colBack);
 
 			m_allTraceStyle[i].useDefault = false;
 			m_allTraceStyle[i].colBak = colBack;
@@ -152,7 +152,7 @@ void Config::saveSetting(void) const
 
 	// Trace style fold
 	TCHAR szTraceStyle[MAX_PATH];
-	_sntprintf(szTraceStyle, MAX_PATH, _T("%s\\TraceStyle"), g_szAxTrace3Key);
+	StringCchPrintfW(szTraceStyle, MAX_PATH, _T("%s\\TraceStyle"), g_szAxTrace3Key);
 
 	// Delete old style
 	SHDeleteKey(HKEY_CURRENT_USER, szTraceStyle);
@@ -164,10 +164,10 @@ void Config::saveSetting(void) const
 		if(theStyle.useDefault) continue;
 
 		TCHAR szName[MAX_PATH];
-		_sntprintf(szName, MAX_PATH, _T("Style%d"), i);
+		StringCchPrintfW(szName, MAX_PATH, _T("Style%d"), i);
 
 		TCHAR szTemp[MAX_PATH];
-		_sntprintf(szTemp, MAX_PATH, _T("%08X|%08X"), 
+		StringCchPrintfW(szTemp, MAX_PATH, _T("%08X|%08X"),
 			theStyle.colFront, theStyle.colBak);
 
 		SHSetValue(HKEY_CURRENT_USER, szTraceStyle, szName, 

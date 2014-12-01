@@ -125,13 +125,14 @@ void CListCtrlEx::saveToFile(void)
 	if(IDOK!=dlg.DoModal()) return;
 
 	TCHAR wszFileName[MAX_PATH]={0};
-	wcsncpy(wszFileName, dlg.m_szFileName, MAX_PATH);
+	StringCchCopyW(wszFileName, MAX_PATH, dlg.m_szFileName);
 	if(PathFindExtension(wszFileName)==0)
 	{
 		PathRenameExtension(wszFileName, _T(".log"));
 	}
 
-	FILE* fp = _wfopen(wszFileName, _T("wb"));
+	FILE* fp = 0;
+	_wfopen_s(&fp, wszFileName, _T("wb"));
 	if(fp==0) 
 	{
 		//Error!

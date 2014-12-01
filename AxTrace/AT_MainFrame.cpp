@@ -265,7 +265,7 @@ TraceFrameWnd* MainFrame::getTraceWnd(unsigned int winID)
 	if(it!=m_traceWndMap.end()) return it->second;
 
 	wchar_t temp[64]={0};
-	_snwprintf(temp, 64, _T("Log %d"), winID);
+	StringCchPrintfW(temp, 64, _T("Log %d"), winID);
 
 	TraceFrameWnd* pChild = new TraceFrameWnd((CUpdateUIBase*)this, winID);
 	pChild->CreateEx(m_hWndClient, NULL, temp);
@@ -281,7 +281,7 @@ ValueFrameWnd* MainFrame::getValueWnd(unsigned int winID)
 	if(it!=m_valueWndMap.end()) return it->second;
 
 	wchar_t temp[64]={0};
-	_snwprintf(temp, 64, _T("Value %d"), winID);
+	StringCchPrintfW(temp, 64, _T("Value %d"), winID);
 
 	ValueFrameWnd* pChild = new ValueFrameWnd((CUpdateUIBase*)this, winID);
 	pChild->CreateEx(m_hWndClient, NULL, temp);
@@ -297,7 +297,7 @@ TickFrameWnd* MainFrame::getTickWnd(unsigned int winID)
 	if(it!=m_tickWndMap.end()) return it->second;
 
 	wchar_t temp[64]={0};
-	_snwprintf(temp, 64, _T("Tick %d"), winID);
+	StringCchPrintfW(temp, 64, _T("Tick %d"), winID);
 
 	TickFrameWnd* pChild = new TickFrameWnd((CUpdateUIBase*)this, winID);
 	pChild->CreateEx(m_hWndClient, NULL, temp);

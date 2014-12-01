@@ -104,7 +104,7 @@ LRESULT OptionsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		if(style.useDefault) continue;
 
 		TCHAR szTemp[MAX_PATH]={0};
-		_sntprintf(szTemp, MAX_PATH, _T("Style%d"), i);
+		StringCchPrintfW(szTemp, MAX_PATH, _T("Style%d"), i);
 		int index = m_styleList.InsertItem(m_styleList.GetItemCount(), szTemp);
 		m_styleList.SetItemData(index, (DWORD_PTR)i);
 	}
@@ -147,7 +147,7 @@ LRESULT OptionsDlg::OnButtonAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& 
 
 		//m_tempConfig.add
 		TCHAR szTemp[MAX_PATH]={0};
-		_sntprintf(szTemp, MAX_PATH, _T("Style%d"), styleID);
+		StringCchPrintfW(szTemp, MAX_PATH, _T("Style%d"), styleID);
 
 		index = m_styleList.InsertItem(m_styleList.GetItemCount(), szTemp);
 		m_styleList.SetItemData(index, (DWORD_PTR)styleID);

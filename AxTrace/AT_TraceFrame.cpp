@@ -118,11 +118,11 @@ void TraceFrameWnd::insertLog(unsigned int styleID, const AXIATRACE_TIME* tTime,
 	int nCount = m_wndListView.GetItemCount();
 	
 	wchar_t strIndex[32];
-	_snwprintf(strIndex, 32, _T("%d"), m_nLogIndex++);
+	StringCchPrintfW(strIndex, 32, _T("%d"), m_nLogIndex++);
 	m_wndListView.InsertItem(nCount, strIndex);
 
 	wchar_t szTime[64];
-	_snwprintf(szTime, 64, _T("%02d:%02d %02d.%03d"), tTime->wHour, tTime->wMinute, tTime->wSecond, tTime->wMilliseconds);
+	StringCchPrintfW(szTime, 64, _T("%02d:%02d %02d.%03d"), tTime->wHour, tTime->wMinute, tTime->wSecond, tTime->wMilliseconds);
 
 	m_wndListView.SetItemText(nCount, 1, szTime);
 

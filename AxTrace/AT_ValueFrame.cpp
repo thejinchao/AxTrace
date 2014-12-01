@@ -115,7 +115,7 @@ void ValueFrameWnd::watchValue(unsigned int styleID, const AXIATRACE_TIME* tTime
 	int nIndex = 0;
 
 	wchar_t szTime[64];
-	_snwprintf(szTime, 64, _T("%02d:%02d %02d.%03d"), tTime->wHour, tTime->wMinute, tTime->wSecond, tTime->wMilliseconds);
+	StringCchPrintfW(szTime, 64, _T("%02d:%02d %02d.%03d"), tTime->wHour, tTime->wMinute, tTime->wSecond, tTime->wMilliseconds);
 
 	//find in hash map
 	ValueHashMap::iterator it = m_valueHashMap.find(valueName);

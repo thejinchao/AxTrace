@@ -17,14 +17,14 @@ void PrintMemoryToString(const char* pMemory, int sizeOfBytes, std::wstring& str
 {
 	// address
 	wchar_t szTemp[MAX_PATH];
-	_snwprintf(szTemp, MAX_PATH, L"%08X\t", (unsigned int)(UINT_PTR)pMemory);
+	StringCchPrintfW(szTemp, MAX_PATH, L"%08X\t", (unsigned int)(UINT_PTR)pMemory);
 
 	strOutput = szTemp;
 
 	//contents(as bytes data)
 	for(int i=0; i<sizeOfBytes; i++)
 	{
-		_snwprintf(szTemp, MAX_PATH, L"%02X ", (unsigned char)(pMemory[i]));
+		StringCchPrintfW(szTemp, MAX_PATH, L"%02X ", (unsigned char)(pMemory[i]));
 		strOutput += szTemp;
 	}
 

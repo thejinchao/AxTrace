@@ -209,25 +209,25 @@ void ValueMessage::getValueAsString(std::wstring& value) const
 	switch(m_valuetype)
 	{
 	case AX_INT8:
-		_snwprintf(temp, TEMP_STR_SIZE, L"%d", *((__int8*)m_valueBuf)); break;
+		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%d", *((__int8*)m_valueBuf)); break;
 	case AX_UINT8:
-		_snwprintf(temp, TEMP_STR_SIZE, L"%u", *((unsigned __int8*)m_valueBuf)); break;
+		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%u", *((unsigned __int8*)m_valueBuf)); break;
 	case AX_INT16:
-		_snwprintf(temp, TEMP_STR_SIZE, L"%d", *((__int16*)m_valueBuf)); break;
+		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%d", *((__int16*)m_valueBuf)); break;
 	case AX_UINT16:
-		_snwprintf(temp, TEMP_STR_SIZE, L"%u", *((unsigned __int16*)m_valueBuf));	break;
+		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%u", *((unsigned __int16*)m_valueBuf));	break;
 	case AX_INT32:
-		_snwprintf(temp, TEMP_STR_SIZE, L"%d", *((__int32*)m_valueBuf));	break;
+		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%d", *((__int32*)m_valueBuf));	break;
 	case AX_UINT32:
-		_snwprintf(temp, TEMP_STR_SIZE, L"%u", *((unsigned __int32*)m_valueBuf));	break;
+		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%u", *((unsigned __int32*)m_valueBuf));	break;
 	case AX_FLOAT32:
-		_snwprintf(temp, TEMP_STR_SIZE, L"%.8f", *((float*)m_valueBuf)); break;
+		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%.8f", *((float*)m_valueBuf)); break;
 	case AX_INT64:
-		_snwprintf(temp, TEMP_STR_SIZE, L"%I64d", *((__int64*)m_valueBuf));	break;
+		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%I64d", *((__int64*)m_valueBuf));	break;
 	case AX_UINT64:
-		_snwprintf(temp, TEMP_STR_SIZE, L"%I64u", *((unsigned __int64*)m_valueBuf));	break;
+		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%I64u", *((unsigned __int64*)m_valueBuf));	break;
 	case AX_FLOAT64:
-		_snwprintf(temp, TEMP_STR_SIZE, L"%.16f", *((double*)m_valueBuf)); break;
+		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%.16f", *((double*)m_valueBuf)); break;
 	case AX_STR_ACP:
 		{
 			wchar_t* wszBuf = new wchar_t[m_valueSize];

@@ -27,4 +27,5 @@
 #include <zmq.h>
 
 #include <Windows.h>
+#include <strsafe.h>
 

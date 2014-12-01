@@ -71,7 +71,7 @@ bool Incoming::_createPullPort(void)
 		void* port = zmq_socket(System::getSingleton()->getZeroMQ(), ZMQ_PULL);
 
 		char temp[MAX_PATH]={0};
-		_snprintf(temp, MAX_PATH, "tcp://*:%d", m_nListenPort);
+		StringCchPrintfA(temp, MAX_PATH, "tcp://*:%d", m_nListenPort);
 		if(0==zmq_bind(port, temp))
 		{
 			m_opPull = port;
@@ -122,7 +122,7 @@ void Incoming::closeListen(void)
 
 	//push a dummy msg to let incoming loop quit
 	char temp[MAX_PATH] = { 0 };
-	_snprintf(temp, MAX_PATH, "tcp://127.0.0.1:%d", m_nListenPort);
+	StringCchPrintfA(temp, MAX_PATH, "tcp://127.0.0.1:%d", m_nListenPort);
 	void* s = zmq_socket(System::getSingleton()->getZeroMQ(), ZMQ_PUSH);
 	zmq_connect(s, temp);
 	zmq_send(s, " ", 1, 0);

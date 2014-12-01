@@ -112,9 +112,9 @@ bool _InitThreadValue(GlobalValue& global)
 		tls->zmqSocket = zmq_socket(global.zmqContex, ZMQ_PUSH);
 		if(tls->zmqSocket==0) return 1;	// init zeromq failed
 
-		//connect to listen port
+		//connect to listen port 
 		char temp[64]={0};
-		_snprintf(temp, 64, "tcp://localhost:%d", global.nListenPort);
+		StringCchPrintfA(temp, 64, "tcp://localhost:%d", global.nListenPort);
 		if(0!=zmq_connect(tls->zmqSocket, temp)) return 1;
 
 		tls->isInitSucc = true;

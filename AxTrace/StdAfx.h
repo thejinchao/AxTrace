@@ -33,6 +33,8 @@
 #include <atltypes.h>
 #include <atldlgs.h>
 
+#include <strsafe.h>
+
 #include <string>
 #include <vector>
 #include <map>
