@@ -33,10 +33,14 @@ bool Incoming::init(void)
 {
 	assert(m_hReceiveThread==0);
 
+#if 0
 	//create pull port
 	if(!_createPullPort()) return false;
 	//write port number to global memory file
 	System::getSingleton()->getCommonCookie()->nListenPort = m_nListenPort;
+#else
+	if (!_connectToBridge("10.12.201.245", 1982)) return false;
+#endif
 
 	//create quit signal
 	m_hQuitSignal = CreateEventW(0, TRUE, FALSE, 0);
@@ -83,6 +87,25 @@ bool Incoming::_createPullPort(void)
 	}while(m_nListenPort-DEFAULT_PORT<MAX_TRY_COUNTS);
 	if(m_opPull==0) return false;
 
+	return true;
+}
+
+//--------------------------------------------------------------------------------------------
+bool Incoming::_connectToBridge(const std::string bridgeServer, int bridgePort)
+{
+	void* ctx = System::getSingleton()->getZeroMQ();
+
+	char temp[MAX_PATH] = { 0 };
+	StringCchPrintfA(temp, MAX_PATH, "tcp://%s:%d", bridgeServer.c_str(), bridgePort);
+
+	void* port = zmq_socket(System::getSingleton()->getZeroMQ(), ZMQ_PULL);
+	if (0 != zmq_connect(port, temp))
+	{
+		zmq_close(port);
+		return false;
+	}
+
+	m_opPull = port;
 	return true;
 }
 

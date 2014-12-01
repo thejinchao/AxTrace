@@ -38,6 +38,8 @@ private:
 	unsigned int _threadEntry(void);
 	/** create zmp port*/
 	bool _createPullPort(void);
+	/** connect to bridge */
+	bool _connectToBridge(const std::string bridgeServer, int bridgePort);
 
 public:
 	Incoming();
