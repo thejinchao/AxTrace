@@ -33,14 +33,10 @@ bool Incoming::init(void)
 {
 	assert(m_hReceiveThread==0);
 
-#if 0
 	//create pull port
 	if(!_createPullPort()) return false;
 	//write port number to global memory file
 	System::getSingleton()->getCommonCookie()->nListenPort = m_nListenPort;
-#else
-	if (!_connectToBridge("10.12.201.245", 1982)) return false;
-#endif
 
 	//create quit signal
 	m_hQuitSignal = CreateEventW(0, TRUE, FALSE, 0);
