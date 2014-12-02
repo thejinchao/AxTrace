@@ -6,6 +6,8 @@
 ***************************************************/
 #include "StdAfx.h"
 #include "AT_Config.h"
+#include "AT_Util.h"
+#include "utf/ConvertUTF.h"
 
 namespace AT3
 {
@@ -45,6 +47,10 @@ void Config::_resetDefaultSetting(void)
 	m_bAlwaysOnTop = false;
 	m_bShowMilliseconds = true;
 
+	m_bBridgeMode = false;
+	m_strBridgeAddr = "";
+	m_nBridgePort = DEFAULT_BRIDGE_SERVER_PORT;
+
 	for(int i=0; i<MAX_TRACE_STYLE_COUNTS; i++)
 	{
 		m_allTraceStyle[i].useDefault=true;
@@ -69,6 +75,9 @@ void Config::copyFrom(const Config& other)
 	m_bAutoscroll = other.m_bAutoscroll;
 	m_bAlwaysOnTop = other.m_bAlwaysOnTop;
 	m_bShowMilliseconds = other.m_bShowMilliseconds;
+	m_bBridgeMode = other.m_bBridgeMode;
+	m_strBridgeAddr = other.m_strBridgeAddr;
+	m_nBridgePort = other.m_nBridgePort;
 
 	if(m_hFont) ::DeleteObject(m_hFont);
 	LOGFONT lf={0};
@@ -86,6 +95,7 @@ void Config::loadSetting(void)
 	DWORD type = REG_DWORD;
 	DWORD size = sizeof(DWORD);
 	DWORD dwTemp;
+	TCHAR wszTemp[MAX_PATH] = { 0 };
 
 	#define LOAD_BOOL_FROM_REG(param, name) \
 		if(ERROR_SUCCESS == SHGetValue(HKEY_CURRENT_USER, g_szAxTrace3Key, name, &type, &dwTemp, &size)) \
@@ -95,6 +105,28 @@ void Config::loadSetting(void)
 
 	LOAD_BOOL_FROM_REG(m_bAlwaysOnTop,		_T("AlwaysOnTop"));
 	LOAD_BOOL_FROM_REG(m_bShowMilliseconds,	_T("ShowMillisenconds"));
+
+	//load bridge data
+	LOAD_BOOL_FROM_REG(m_bBridgeMode, _T("BridgeMode"));
+	if (m_bBridgeMode)
+	{
+		size = MAX_PATH;
+		if (ERROR_SUCCESS == SHGetValue(HKEY_CURRENT_USER, g_szAxTrace3Key, _T("BridgeServer"), &type, wszTemp, &size))
+		{
+			char szTemp[MAX_PATH];
+			UTF16*	pSourceStart = (UTF16*)wszTemp;
+			UTF8*	pTargetStart = (UTF8*)szTemp;
+
+			ConvertUTF16toUTF8((const UTF16 **)&pSourceStart, pSourceStart + wcsnlen_s(wszTemp, MAX_PATH-1)+1, &pTargetStart, pTargetStart + MAX_PATH, strictConversion);
+			m_strBridgeAddr = szTemp;
+		}
+
+		size = sizeof(DWORD);
+		if (ERROR_SUCCESS == SHGetValue(HKEY_CURRENT_USER, g_szAxTrace3Key, _T("BridgePort"), &type, &dwTemp, &size))
+		{
+			m_nBridgePort = dwTemp;
+		}
+	}
 
 	//get font 
 	LOGFONT lf;
@@ -116,7 +148,6 @@ void Config::loadSetting(void)
 		StringCchPrintfW(szName, MAX_PATH, _T("Style%d"), i);
 
 		type = REG_SZ;
-		TCHAR wszTemp[MAX_PATH]={0};
 		size = MAX_PATH;
 
 		if(ERROR_SUCCESS == SHGetValue(HKEY_CURRENT_USER, szTraceStyle, szName, &type, wszTemp, &size))
@@ -144,6 +175,15 @@ void Config::saveSetting(void) const
 
 	SAVE_BOOL_TO_REG(m_bAlwaysOnTop,		_T("AlwaysOnTop"));
 	SAVE_BOOL_TO_REG(m_bShowMilliseconds,	_T("ShowMillisenconds"));
+
+	//save bridge data
+	SAVE_BOOL_TO_REG(m_bBridgeMode, _T("BridgeMode"));
+	if (m_bBridgeMode)
+	{
+		std::wstring wstrTemp = convertUTF8ToUTF16(m_strBridgeAddr.c_str(), m_strBridgeAddr.length()+1);
+		SHSetValue(HKEY_CURRENT_USER, g_szAxTrace3Key, _T("BridgeServer"), REG_SZ, wstrTemp.c_str(), wstrTemp.length()*2);
+		SHSetValue(HKEY_CURRENT_USER, g_szAxTrace3Key, _T("BridgePort"), REG_DWORD, &m_nBridgePort, sizeof(m_nBridgePort));
+	}
 
 	//save font data
 	LOGFONT lf;

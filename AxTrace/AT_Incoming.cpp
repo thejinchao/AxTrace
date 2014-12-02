@@ -17,9 +17,11 @@ namespace AT3
 //--------------------------------------------------------------------------------------------
 Incoming::Incoming()
 	: m_nListenPort(DEFAULT_PORT)	
+	, m_bridgeMode(false)
 	, m_hReceiveThread(0)
 	, m_opPull(0)
-	, m_hQuitSignal(0)
+	, m_opQuit(0)
+	, QUIT_SIGNAL_PORT("inproc://quit-signal")
 {
 }
 
@@ -32,14 +34,27 @@ Incoming::~Incoming()
 bool Incoming::init(void)
 {
 	assert(m_hReceiveThread==0);
+	const Config* config = System::getSingleton()->getConfig();
+	if (config->isBridgeMode())
+	{
+		//connect to bridge server
+		if (!_connectToBridge(config->getBridgeServer(), config->getBridgePort())) return false;
 
-	//create pull port
-	if(!_createPullPort()) return false;
-	//write port number to global memory file
-	System::getSingleton()->getCommonCookie()->nListenPort = m_nListenPort;
+		m_bridgeMode = true;
+	}
+	else
+	{
+		//create pull port
+		if (!_createPullPort()) return false;
+		//write port number to global memory file
+		System::getSingleton()->getCommonCookie()->nListenPort = m_nListenPort;
 
-	//create quit signal
-	m_hQuitSignal = CreateEventW(0, TRUE, FALSE, 0);
+		m_bridgeMode = false;
+	}
+
+	//create quit op port
+	m_opQuit = zmq_socket(System::getSingleton()->getZeroMQ(), ZMQ_PULL);
+	if (0 != zmq_bind(m_opQuit, QUIT_SIGNAL_PORT.c_str())) return false;
 
 	//begin listen thread
 	unsigned int threadID;
@@ -87,7 +102,7 @@ bool Incoming::_createPullPort(void)
 }
 
 //--------------------------------------------------------------------------------------------
-bool Incoming::_connectToBridge(const std::string bridgeServer, int bridgePort)
+bool Incoming::_connectToBridge(const std::string& bridgeServer, int bridgePort)
 {
 	void* ctx = System::getSingleton()->getZeroMQ();
 
@@ -101,6 +116,7 @@ bool Incoming::_connectToBridge(const std::string bridgeServer, int bridgePort)
 		return false;
 	}
 
+	m_strListenPort = temp;
 	m_opPull = port;
 	return true;
 }
@@ -113,11 +129,22 @@ unsigned int Incoming::_threadEntry(void)
 	{
 		zmq_msg_t recv_command;
 		zmq_msg_init(&recv_command);
+
 		//receive
-		if(zmq_msg_recv(&recv_command, m_opPull, 0)>0)
+		zmq_pollitem_t wait_items[] = {
+			{ m_opQuit, 0, ZMQ_POLLIN, 0 },
+			{ m_opPull, 0, ZMQ_POLLIN, 0 }
+		};
+
+		//wait receive command or quit signal
+		zmq_poll(wait_items, 2, -1);
+
+		//receive quit signal, quit!
+		if ((wait_items[0].revents & ZMQ_POLLIN)) break;
+
+		//receive message
+		if ((wait_items[1].revents & ZMQ_POLLIN) && zmq_msg_recv(&recv_command, m_opPull, 0)>0)
 		{
-			//quit?
-			if(WAIT_OBJECT_0 == WaitForSingleObject(m_hQuitSignal, 0)) break;
 			if(System::getSingleton()->getConfig()->getCapture())
 			{
 				SYSTEMTIME tTime;
@@ -136,14 +163,9 @@ unsigned int Incoming::_threadEntry(void)
 //--------------------------------------------------------------------------------------------
 void Incoming::closeListen(void)
 {
-	//light quit signal
-	SetEvent(m_hQuitSignal);
-
 	//push a dummy msg to let incoming loop quit
-	char temp[MAX_PATH] = { 0 };
-	StringCchPrintfA(temp, MAX_PATH, "tcp://127.0.0.1:%d", m_nListenPort);
 	void* s = zmq_socket(System::getSingleton()->getZeroMQ(), ZMQ_PUSH);
-	zmq_connect(s, temp);
+	zmq_connect(s, QUIT_SIGNAL_PORT.c_str());
 	zmq_send(s, " ", 1, 0);
 	zmq_close(s);
 
@@ -153,11 +175,15 @@ void Incoming::closeListen(void)
 		//destroy thread
 		::TerminateThread(m_hReceiveThread, 0);
 	}
-	CloseHandle(m_hReceiveThread); m_hReceiveThread=0;
 
 	//close zmq bind
-	zmq_unbind(m_opPull, m_strListenPort.c_str());
+	if (m_bridgeMode)
+		zmq_disconnect(m_opPull, m_strListenPort.c_str());
+	else
+		zmq_unbind(m_opPull, m_strListenPort.c_str());
+
 	zmq_close(m_opPull);
+	zmq_close(m_opQuit);
 }
 
 }

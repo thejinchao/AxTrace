@@ -24,12 +24,16 @@ private:
 	int			m_nListenPort;		//!< tcp port
 	std::string	m_strListenPort;	//!< listen port(string format)
 
+	bool		m_bridgeMode;		//!< connect to a axtrace bridge server
+
 	//default listen port is 1978 :)
 	enum { DEFAULT_PORT=1978, MAX_TRY_COUNTS=100 };
 	void*		m_opPull;			//!< zmp port to recive msg
 
 	//force quit signal
-	HANDLE		m_hQuitSignal;
+	void*		m_opQuit;
+	
+	const std::string QUIT_SIGNAL_PORT;
 
 private:
 	/** thread entry function */
@@ -38,6 +42,8 @@ private:
 	unsigned int _threadEntry(void);
 	/** create zmp port*/
 	bool _createPullPort(void);
+	/** connect to bridge */
+	bool _connectToBridge(const std::string& bridgeServer, int bridgePort);
 
 public:
 	Incoming();

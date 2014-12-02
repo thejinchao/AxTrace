@@ -26,6 +26,7 @@ public:
 		COLORREF colBak;
 	};
 	enum { MAX_TRACE_STYLE_COUNTS = 256 };
+	enum { DEFAULT_BRIDGE_SERVER_PORT = 1982 };
 
 	/*************************************************************************
 		Public Methods
@@ -44,6 +45,10 @@ public:
 	void setAutoScroll(bool a) { m_bAutoscroll=a; }
 	HFONT getFont(void) const { return m_hFont; }
 	void setFont(LPLOGFONT lf);
+
+	bool isBridgeMode(void) const { return m_bBridgeMode; }
+	const std::string& getBridgeServer(void) const { return m_strBridgeAddr; }
+	int getBridgePort(void) const { return m_nBridgePort; }
 
 	COLORREF getForegroundColor(int styleID) const;
 	void setForegroundColor(int styleID, COLORREF col);
@@ -70,6 +75,9 @@ private:
 	bool m_bAutoscroll;			//!< Auto scroll trace window	(default : true)
 	bool m_bAlwaysOnTop;		//!< Mainframe always on top	(default : false)
 	bool m_bShowMilliseconds;	//!< Show milliseconds (default : true)
+	bool m_bBridgeMode;			//!< Bridge Mode (default: false)
+	std::string m_strBridgeAddr;//!< Bridge Server Address
+	int m_nBridgePort;			//!< Bridge Server Port
 
 	TraceStyle m_allTraceStyle[MAX_TRACE_STYLE_COUNTS];	//!< Trace style buf
 
