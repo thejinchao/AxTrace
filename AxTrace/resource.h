@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by AxTrace3.rc
+// Used by AxTrace.rc
 //
 #define IDR_MAINFRAME                   101
 #define IDR_TRACEFRAME                  102
