@@ -11,6 +11,7 @@
 #include "AT_System.h"
 #include "AT_MainFrame.h"
 #include "AT_Config.h"
+#include "AT_Message.h"
 
 namespace AT3
 {
@@ -78,8 +79,11 @@ LRESULT TraceFrameWnd::OnCreate(UINT, WPARAM, LPARAM, BOOL& bHandled)
 	// Create list view columns
 	m_wndListView.InsertColumn(0, _T("#"), LVCFMT_LEFT, 40, 0);
 	m_wndListView.InsertColumn(1, _T("Time"), LVCFMT_LEFT, 90, 0);
-	int remainWidth = rect.right-rect.left-(40+90+32);
-	m_wndListView.InsertColumn(2, _T("Log"), LVCFMT_LEFT, remainWidth, 0);
+	m_wndListView.InsertColumn(2, _T("PID"), LVCFMT_LEFT, 50, 0);
+	m_wndListView.InsertColumn(3, _T("TID"), LVCFMT_LEFT, 50, 0);
+
+	int remainWidth = rect.right - rect.left - (40 + 90 + 50+ 50 + 32);
+	m_wndListView.InsertColumn(4, _T("Log"), LVCFMT_LEFT, remainWidth, 0);
 
 	bHandled = TRUE;
 	return 1;
@@ -95,11 +99,12 @@ LRESULT TraceFrameWnd::OnSize(UINT, WPARAM wParam, LPARAM lParam, BOOL& bHandled
 		RECT rect;
 		GetClientRect(&rect);
 
-		int nWidth0 = m_wndListView.GetColumnWidth(0);
-		int nWidth1 = m_wndListView.GetColumnWidth(1);
+		int total = 0;
+		for (int i = 0; i < 4; i++)
+			total += m_wndListView.GetColumnWidth(i);
 
 		m_wndListView.MoveWindow(0, 0, width, height);
-		m_wndListView.SetColumnWidth(2, width-nWidth0-nWidth1-32);
+		m_wndListView.SetColumnWidth(4, width - total - 32);
 	}
 	bHandled = FALSE;
 	return FALSE;
@@ -113,21 +118,31 @@ LRESULT TraceFrameWnd::OnSetFocus(UINT, WPARAM wParam, LPARAM lParam, BOOL& bHan
 }
 
 //--------------------------------------------------------------------------------------------
-void TraceFrameWnd::insertLog(unsigned int styleID, const AXIATRACE_TIME* tTime, const wchar_t* logString, unsigned int len_string)
+void TraceFrameWnd::insertLog(const LogMessage* message)
 {
+	const AXIATRACE_TIME* tTime = message->getTraceTime();
+	unsigned int styleID = message->getTraceType();
+
 	int nCount = m_wndListView.GetItemCount();
 	
-	wchar_t strIndex[32];
-	StringCchPrintfW(strIndex, 32, _T("%d"), m_nLogIndex++);
-	m_wndListView.InsertItem(nCount, strIndex);
+	wchar_t wszTemp[MAX_PATH];
+	StringCchPrintfW(wszTemp, MAX_PATH, _T("%d"), m_nLogIndex++);
+	m_wndListView.InsertItem(nCount, wszTemp);
 
-	wchar_t szTime[64];
-	StringCchPrintfW(szTime, 64, _T("%02d:%02d %02d.%03d"), tTime->wHour, tTime->wMinute, tTime->wSecond, tTime->wMilliseconds);
+	//Time
+	StringCchPrintfW(wszTemp, MAX_PATH, _T("%02d:%02d %02d.%d"), tTime->wHour, tTime->wMinute, tTime->wSecond, tTime->wMilliseconds);
+	m_wndListView.SetItemText(nCount, 1, wszTemp);
 
-	m_wndListView.SetItemText(nCount, 1, szTime);
+	//PID
+	StringCchPrintfW(wszTemp, MAX_PATH, _T("%d"), message->getProcessID());
+	m_wndListView.SetItemText(nCount, 2, wszTemp);
+
+	//TID
+	StringCchPrintfW(wszTemp, MAX_PATH, _T("%d"), message->getThreadID());
+	m_wndListView.SetItemText(nCount, 3, wszTemp);
 
 	//may be multi line
-	const wchar_t* current=logString;
+	const wchar_t* current = message->getLogBuf();
 	do
 	{
 		const wchar_t* end = wcschr(current, L'\n');
@@ -137,7 +152,7 @@ void TraceFrameWnd::insertLog(unsigned int styleID, const AXIATRACE_TIME* tTime,
 			{
 				m_wndListView.InsertItem(nCount, _T(""));
 			}
-			m_wndListView.SetItemText(nCount, 2, current);
+			m_wndListView.SetItemText(nCount, 4, current);
 			m_wndListView.SetItemData(nCount, (DWORD_PTR)styleID);
 			break;
 		}
@@ -152,7 +167,7 @@ void TraceFrameWnd::insertLog(unsigned int styleID, const AXIATRACE_TIME* tTime,
 			{
 				m_wndListView.InsertItem(nCount, _T(""));
 			}
-			m_wndListView.SetItemText(nCount, 2, lineBuf);
+			m_wndListView.SetItemText(nCount, 4, lineBuf);
 			m_wndListView.SetItemData(nCount, (DWORD_PTR)styleID);
 
 			//next

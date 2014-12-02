@@ -167,7 +167,7 @@ void System::_insertStringLog(const LogMessage* message)
 	TraceFrameWnd* logWnd = m_wndMainFrame->getTraceWnd(message->getWindowID());
 	assert(logWnd!=0);
 
-	logWnd->insertLog(message->getStyleID(), message->getTraceTime(), message->getLogBuf(), message->getLogSizeChar());
+	logWnd->insertLog(message);
 }
 
 //--------------------------------------------------------------------------------------------

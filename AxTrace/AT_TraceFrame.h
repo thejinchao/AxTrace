@@ -14,12 +14,16 @@
 
 namespace AT3
 {
+//pre-define
+class LogMessage;
+
 /** ChildFrame - Trace text
 */
 class TraceFrameWnd : public CMDIChildWindowImpl<TraceFrameWnd>, public IChildFrame
 {
 public:
-	void insertLog(unsigned int styleID, const AXIATRACE_TIME* tTime, const wchar_t* logString, unsigned int len_string);
+	/** insert a log message */
+	void insertLog(const LogMessage* message);
 	/** get child type */
 	virtual CHILD_STYLE getChildType(void) { return CS_TRACE_FRAME; }
 	/** get window id*/

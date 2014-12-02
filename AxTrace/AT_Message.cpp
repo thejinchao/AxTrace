@@ -11,6 +11,7 @@ namespace AT3
 //////////////////////////////////////////////////////////////////////////////////////////////
 Message::Message(void)
 	: m_nProcessID(0)
+	, m_nThreadID(0)
 	, m_nWindowID(0)
 	, m_nStyleID(0)
 {
@@ -48,6 +49,7 @@ void LogMessage::build(const AXIATRACE_TIME& traceTime, const AXIATRACE_DATAHEAD
 	memcpy(&m_traceTime, &traceTime, sizeof(m_traceTime));
 
 	m_nProcessID = head.dwProcessID;
+	m_nThreadID = head.dwThreadID;
 	m_nWindowID = head.cWinID;
 	m_nStyleID = head.cStyleID;
 
