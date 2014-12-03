@@ -117,16 +117,16 @@ public class MainActivity extends Activity implements OnClickListener
 			AxTrace.Value("Int_Test", (int)-12345);
 	
 			AxTrace.Value("BYTE_MAX_VALUE", (byte)Byte.MAX_VALUE);
-			AxTrace.Value("BYTE_INT_VALUE", (byte)Byte.MIN_VALUE);
+			AxTrace.Value("BYTE_MIN_VALUE", (byte)Byte.MIN_VALUE);
 	
 			AxTrace.Value("SHORT_MAX_VALUE", (short)Short.MAX_VALUE);
-			AxTrace.Value("SHORT_INT_VALUE", (short)Short.MIN_VALUE);
+			AxTrace.Value("SHORT_MIN_VALUE", (short)Short.MIN_VALUE);
 	
 			AxTrace.Value("INT_MAX_VALUE", (int)Integer.MAX_VALUE);
-			AxTrace.Value("INT_INT_VALUE", (int)Integer.MIN_VALUE);
+			AxTrace.Value("INT_MIN_VALUE", (int)Integer.MIN_VALUE);
 	
 			AxTrace.Value("LONG_MAX_VALUE", (long)Long.MAX_VALUE);
-			AxTrace.Value("LONG_INT_VALUE", (long)Long.MIN_VALUE);
+			AxTrace.Value("LONG_MIN_VALUE", (long)Long.MIN_VALUE);
 			
 			AxTrace.Value("Float_Test", (float)-3.1415926f);
 			AxTrace.Value("Double_Test", (double)-3.141592653589793238462643383279);
