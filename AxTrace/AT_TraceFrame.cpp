@@ -121,7 +121,7 @@ LRESULT TraceFrameWnd::OnSetFocus(UINT, WPARAM wParam, LPARAM lParam, BOOL& bHan
 void TraceFrameWnd::insertLog(const LogMessage* message)
 {
 	const AXIATRACE_TIME* tTime = message->getTraceTime();
-	unsigned int styleID = message->getTraceType();
+	unsigned int styleID = message->getStyleID();
 
 	int nCount = m_wndListView.GetItemCount();
 	
