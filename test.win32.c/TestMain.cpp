@@ -167,9 +167,13 @@ int main(int argc, char* argv[])
 
 		float float_32=0.f;
 		AXVALUE(float_32, "_0", AX_FLOAT32, "%f", 0.f);
+		AXVALUE(float_32, "_MAX", AX_FLOAT32, "%e", FLT_MAX);
+		AXVALUE(float_32, "_MIN", AX_FLOAT32, "%e", FLT_MIN);
 
 		double double_64=0.0;
 		AXVALUE(double_64, "_0", AX_FLOAT64, "%f", 0.0);
+		AXVALUE(double_64, "_MAX", AX_FLOAT64, "%e", DBL_MAX);
+		AXVALUE(double_64, "_MIN", AX_FLOAT64, "%e", DBL_MIN);
 
 		const char* pszString = "String ºº×Ö(ACP)";
 		AxValue("String_ACP", AX_STR_ACP, pszString);
