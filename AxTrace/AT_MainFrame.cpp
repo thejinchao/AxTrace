@@ -36,7 +36,7 @@ LRESULT MainFrame::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 	CreateMDIClient();
 
 	// Set Main Title
-	SetWindowText(_T("AxTrace3"));
+	SetWindowText(_T("AxTrace"));
 
 	// Create MDI CommandBar
 	m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
