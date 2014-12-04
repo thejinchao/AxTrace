@@ -94,6 +94,6 @@ int __stdcall AxTrace_InsertLogA(int idWindow, int idStyle, int isUTF8, const ch
 int __stdcall AxTrace_InsertLogW(int idWindow, int idStyle, const unsigned short* stringBuf);
 
 /** */
-int __stdcall AxTrace_WatchValue(int idWindow, int idStyle, int valueType, const char* valueName, int valueNameLength, const void* value);
+int __stdcall AxTrace_WatchValue(int idWindow, int idStyle, int valueType, const char* name, int nameLengthInBytes, const void* value);
 
 #endif

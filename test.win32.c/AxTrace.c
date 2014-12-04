@@ -177,7 +177,7 @@ void AxValueEx(int win_id, int style_id, const char *psz_name, AXTRACE_VALUE_TYP
 	if(FAILED(hr)) return;
 
 	/* Call Real Send Function */
-	pGlobalData->funcWatchValue(win_id, style_id, (int)type, psz_name, (int)valueNameLength+1, value);
+	pGlobalData->funcWatchValue(win_id, style_id, (int)type, psz_name, (int)valueNameLength, value);
 }
 
 /*---------------------------------------------------------------------------------------------*/

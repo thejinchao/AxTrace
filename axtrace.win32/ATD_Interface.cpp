@@ -77,13 +77,17 @@ int _InsertLog(int idWindow, int idStyle, int codePage, const void* stringBuf, i
 //--------------------------------------------------------------------------------------------
 int __stdcall AxTrace_InsertLogA(int idWindow, int idStyle, int isUTF8, const char* stringBuf)
 {
-	return _InsertLog(idWindow, idStyle, (isUTF8!=0 ? ATC_UTF8 : ATC_ACP), stringBuf, strlen(stringBuf)+1);
+	size_t lengthInBytes = 0;
+	StringCbLengthA(stringBuf, AT_MaxLogLengthInByte, &lengthInBytes);
+	return _InsertLog(idWindow, idStyle, (isUTF8 != 0 ? ATC_UTF8 : ATC_ACP), stringBuf, (int)lengthInBytes);
 }
 
 //--------------------------------------------------------------------------------------------
 int __stdcall AxTrace_InsertLogW(int idWindow, int idStyle, const unsigned short* stringBuf)
 {
-	return _InsertLog(idWindow, idStyle, ATC_UTF16, stringBuf, (wcslen((const wchar_t*)stringBuf)+1)*2);
+	size_t lengthInBytes = 0;
+	StringCbLengthW((const wchar_t*)stringBuf, AT_MaxLogLengthInByte, &lengthInBytes);
+	return _InsertLog(idWindow, idStyle, ATC_UTF16, stringBuf, (int)lengthInBytes);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -105,7 +109,7 @@ size_t _getValueLength(AXTRACE_VALUE_TYPE valueType, const void* value)
 }
 
 //--------------------------------------------------------------------------------------------
-int __stdcall AxTrace_WatchValue(int idWindow, int idStyle, int valueType, const char* valueName, int valueNameLength, const void* value)
+int __stdcall AxTrace_WatchValue(int idWindow, int idStyle, int valueType, const char* name, int nameLengthInBytes, const void* value)
 {
 	//init faile or already failed?
 	if(AxTrace_Init()!=0) return 1;
@@ -115,8 +119,8 @@ int __stdcall AxTrace_WatchValue(int idWindow, int idStyle, int valueType, const
 	if(idStyle<0 || idStyle>AT_MaxStyleID) return 1;
 	if(valueType<0 || valueType>AX_MAX_VALUETYPE) return 1;
 
-	if(valueName==0) return false;
-	if(valueNameLength<=0 || valueNameLength> AT_MaxValueNameLength) return 1;
+	if(name == 0) return false;
+	if(nameLengthInBytes <= 0 || nameLengthInBytes> AT_MaxValueNameLength) return 1;
 	if(value==0) return false;
 
 	//get thread value
@@ -125,7 +129,7 @@ int __stdcall AxTrace_WatchValue(int idWindow, int idStyle, int valueType, const
 
 	//calc final length
 	size_t value_length = _getValueLength((AXTRACE_VALUE_TYPE)valueType, value);
-	size_t final_length = sizeof(valueType)+sizeof(valueNameLength)+valueNameLength+sizeof(value_length)+value_length;
+	size_t final_length = sizeof(valueType) + sizeof(nameLengthInBytes) + nameLengthInBytes + sizeof(value_length) + value_length;
 
 	//build message 
 	AXIATRACE_DATAHEAD head;
@@ -147,9 +151,9 @@ int __stdcall AxTrace_WatchValue(int idWindow, int idStyle, int valueType, const
 	//1. write value type
 	memcpy((void*)msg_data, &valueType, sizeof(int)); msg_data += sizeof(int);
 	//2. write value name length
-	memcpy((void*)msg_data, &valueNameLength, sizeof(int)); msg_data += sizeof(int);
+	memcpy((void*)msg_data, &nameLengthInBytes, sizeof(int)); msg_data += sizeof(int);
 	//3. write value name
-	memcpy((void*)msg_data, valueName, valueNameLength); msg_data += valueNameLength;
+	memcpy((void*)msg_data, name, nameLengthInBytes); msg_data += nameLengthInBytes;
 	//4. write value length
 	memcpy((void*)msg_data, &value_length, sizeof(value_length)); msg_data += sizeof(value_length);
 	//5. write value

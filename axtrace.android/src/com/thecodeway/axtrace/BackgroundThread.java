@@ -116,9 +116,8 @@ public class BackgroundThread implements Runnable {
 			buf.put((byte)logData.idStyle);
 			//-----
 			buf.putInt(ATC_UTF8);
-			buf.putInt(byteString.length+1);
+			buf.putInt(byteString.length);
 			buf.put(byteString);	
-			buf.put((byte)0);
 			//-----
 			
 	        socketZMQ.send(buf.array(), 0, buf.position(), 0); 
@@ -144,8 +143,8 @@ public class BackgroundThread implements Runnable {
 			buf.put((byte)logData.idStyle);
 			//-----
 			buf.putInt(logData.valueType);
-			buf.putInt(byteName.length+1);
-			buf.put(byteName); buf.put((byte)0);
+			buf.putInt(byteName.length);
+			buf.put(byteName);
 			buf.putInt(logData.value.length);
 			buf.put(logData.value);
 			//-----

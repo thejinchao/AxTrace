@@ -46,69 +46,49 @@ namespace com.thecodeway
             AxTrace_InsertLogA(idwindow, idStyle, 1, System.Text.Encoding.UTF8.GetBytes(final));
         }
 
-        static private byte[] _getStringWithBlank(string value)
-        {
-            byte[] _value = System.Text.Encoding.UTF8.GetBytes(value);
-            byte[] _value_with_blank = new byte[_value.Length + 1];
-            _value.CopyTo(_value_with_blank, 0);
-            _value_with_blank[_value.Length] = 0;
-            return _value_with_blank;
-        }
-
         static public void Value(string name, sbyte value)
         {
-            byte[] _name = _getStringWithBlank(name);
-            AxTrace_WatchValue(0, 0, AX_INT8, _name, _name.Length, BitConverter.GetBytes(value));
+            AxTrace_WatchValue(0, 0, AX_INT8, System.Text.Encoding.UTF8.GetBytes(name), name.Length, BitConverter.GetBytes(value));
         }
         static public void Value(string name, byte value)
         {
-            byte[] _name = _getStringWithBlank(name);
-            AxTrace_WatchValue(0, 0, AX_UINT8, _name, _name.Length, BitConverter.GetBytes(value));
+            AxTrace_WatchValue(0, 0, AX_UINT8, System.Text.Encoding.UTF8.GetBytes(name), name.Length, BitConverter.GetBytes(value));
         }
         static public void Value(string name, short value)
         {
-            byte[] _name = _getStringWithBlank(name);
-            AxTrace_WatchValue(0, 0, AX_INT16, _name, _name.Length, BitConverter.GetBytes(value));
+            AxTrace_WatchValue(0, 0, AX_INT16, System.Text.Encoding.UTF8.GetBytes(name), name.Length, BitConverter.GetBytes(value));
         }
         static public void Value(string name, ushort value)
         {
-            byte[] _name = _getStringWithBlank(name);
-            AxTrace_WatchValue(0, 0, AX_UINT16, _name, _name.Length, BitConverter.GetBytes(value));
+            AxTrace_WatchValue(0, 0, AX_UINT16, System.Text.Encoding.UTF8.GetBytes(name), name.Length, BitConverter.GetBytes(value));
         }
         static public void Value(string name, int value)
         {
-            byte[] _name = _getStringWithBlank(name);
-            AxTrace_WatchValue(0, 0, AX_INT32, _name, _name.Length, BitConverter.GetBytes(value));
+            AxTrace_WatchValue(0, 0, AX_INT32, System.Text.Encoding.UTF8.GetBytes(name), name.Length, BitConverter.GetBytes(value));
         }
         static public void Value(string name, uint value)
         {
-            byte[] _name = _getStringWithBlank(name);
-            AxTrace_WatchValue(0, 0, AX_UINT32, _name, _name.Length, BitConverter.GetBytes(value));
+            AxTrace_WatchValue(0, 0, AX_UINT32, System.Text.Encoding.UTF8.GetBytes(name), name.Length, BitConverter.GetBytes(value));
         }
         static public void Value(string name, long value)
         {
-            byte[] _name = _getStringWithBlank(name);
-            AxTrace_WatchValue(0, 0, AX_INT64, _name, _name.Length, BitConverter.GetBytes(value));
+            AxTrace_WatchValue(0, 0, AX_INT64, System.Text.Encoding.UTF8.GetBytes(name), name.Length, BitConverter.GetBytes(value));
         }
         static public void Value(string name, ulong value)
         {
-            byte[] _name = _getStringWithBlank(name);
-            AxTrace_WatchValue(0, 0, AX_UINT64, _name, _name.Length, BitConverter.GetBytes(value));
+            AxTrace_WatchValue(0, 0, AX_UINT64, System.Text.Encoding.UTF8.GetBytes(name), name.Length, BitConverter.GetBytes(value));
         }
         static public void Value(string name, float value)
         {
-            byte[] _name = _getStringWithBlank(name);
-            AxTrace_WatchValue(0, 0, AX_FLOAT32, _name, _name.Length, BitConverter.GetBytes(value));
+            AxTrace_WatchValue(0, 0, AX_FLOAT32, System.Text.Encoding.UTF8.GetBytes(name), name.Length, BitConverter.GetBytes(value));
         }
         static public void Value(string name, double value)
         {
-            byte[] _name = _getStringWithBlank(name);
-            AxTrace_WatchValue(0, 0, AX_FLOAT64, _name, _name.Length, BitConverter.GetBytes(value));
+            AxTrace_WatchValue(0, 0, AX_FLOAT64, System.Text.Encoding.UTF8.GetBytes(name), name.Length, BitConverter.GetBytes(value));
         }
         static public void Value(string name, string value)
         {
-            byte[] _name = _getStringWithBlank(name);
-            AxTrace_WatchValue(0, 0, AX_STR_UTF8, _name, _name.Length, _getStringWithBlank(value));
+            AxTrace_WatchValue(0, 0, AX_STR_UTF8, System.Text.Encoding.UTF8.GetBytes(name), name.Length, System.Text.Encoding.UTF8.GetBytes(value));
         }
     }
 

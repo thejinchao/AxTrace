@@ -69,12 +69,12 @@ void LogMessage::build(const AXIATRACE_TIME& traceTime, const AXIATRACE_DATAHEAD
 	if(codePage == ATC_UTF16)
 	{
 		m_pLogBufInChar = logLength/2;
-		m_pLogBuf=new wchar_t[m_pLogBufInChar];
+		m_pLogBuf=new wchar_t[m_pLogBufInChar+1];
 
 		rc = ringbuf_memcpy_from(m_pLogBuf, ringBuf, logLength);
 		assert(rc!=0);
 
-		m_pLogBuf[m_pLogBufInChar-1]=0;
+		m_pLogBuf[m_pLogBufInChar]=0;
 	}
 	else if(codePage == ATC_UTF8)
 	{
@@ -84,33 +84,34 @@ void LogMessage::build(const AXIATRACE_TIME& traceTime, const AXIATRACE_DATAHEAD
 
 		//convert to utf16
 		m_pLogBufInChar = logLength;
-		m_pLogBuf=new wchar_t[m_pLogBufInChar];
+		m_pLogBuf=new wchar_t[m_pLogBufInChar+1];
 
 		const UTF8* sourceStart = (const UTF8*)tempBuf;
 		UTF16* targetStart = (UTF16*)m_pLogBuf;
 
 		::ConvertUTF8toUTF16(&sourceStart, sourceStart+logLength, 
-			&targetStart, (UTF16*)(m_pLogBuf+m_pLogBufInChar), strictConversion);
+			&targetStart, (UTF16*)(m_pLogBuf+m_pLogBufInChar+1), strictConversion);
 
 		delete[] tempBuf; tempBuf=0;
 
-		m_pLogBuf[m_pLogBufInChar-1]=0;
+		*targetStart = 0;
 		m_pLogBufInChar = wcslen(m_pLogBuf);
 
 	}
 	else if(codePage == ATC_ACP)
 	{
-		char* tempBuf = new char[logLength];
+		char* tempBuf = new char[logLength+1];
 		rc = ringbuf_memcpy_from(tempBuf, ringBuf, logLength);
 		assert(rc!=0);
 
+		tempBuf[logLength] = 0;
+
 		m_pLogBufInChar = logLength;
-		m_pLogBuf=new wchar_t[m_pLogBufInChar];
-		::MultiByteToWideChar(CP_ACP, 0, tempBuf, logLength, m_pLogBuf, m_pLogBufInChar);
+		m_pLogBuf=new wchar_t[m_pLogBufInChar+1];
+		::MultiByteToWideChar(CP_ACP, 0, tempBuf, logLength+1, m_pLogBuf, m_pLogBufInChar+1);
 
 		delete[] tempBuf; tempBuf=0;
 
-		m_pLogBuf[m_pLogBufInChar-1]=0;
 		m_pLogBufInChar = wcslen(m_pLogBuf);
 	}
 	else
@@ -179,7 +180,8 @@ void ValueMessage::build(const AXIATRACE_TIME& traceTime, const AXIATRACE_DATAHE
 	char tempName[AT_MaxValueNameLength];
 	rc = ringbuf_memcpy_from(tempName, ringBuf, name_length);	//TODO: length check!
 	assert(rc!=0);
-	wcscpy_s(m_name, AT_MaxValueNameLength, convertUTF8ToUTF16(tempName, name_length));
+	tempName[name_length] = 0;
+	wcscpy_s(m_name, AT_MaxValueNameLength, convertUTF8ToUTF16(tempName, name_length+1));
 
 	//value length
 	rc = ringbuf_memcpy_from(&m_valueSize, ringBuf, sizeof(m_valueSize));
@@ -190,7 +192,7 @@ void ValueMessage::build(const AXIATRACE_TIME& traceTime, const AXIATRACE_DATAHE
 	{
 		//string value
 		m_valueBuf = new char[m_valueSize];
-	
+		memset(m_valueBuf, 0, m_valueSize);
 	}
 	else
 	{
