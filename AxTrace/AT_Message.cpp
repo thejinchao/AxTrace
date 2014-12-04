@@ -223,13 +223,25 @@ void ValueMessage::getValueAsString(std::wstring& value) const
 	case AX_UINT32:
 		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%u", *((unsigned __int32*)m_valueBuf));	break;
 	case AX_FLOAT32:
-		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%.8f", *((float*)m_valueBuf)); break;
+		{
+			float abs_value = abs(*((float*)m_valueBuf));
+			bool need_scientific_notation = ((abs_value>(1e+16)) || ((abs_value>0.f) && abs_value<(1e-16)));
+
+			StringCchPrintfW(temp, TEMP_STR_SIZE, need_scientific_notation ? L"%e" : L"%.8f", *((float*)m_valueBuf));
+		}
+		break;
 	case AX_INT64:
 		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%I64d", *((__int64*)m_valueBuf));	break;
 	case AX_UINT64:
 		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%I64u", *((unsigned __int64*)m_valueBuf));	break;
 	case AX_FLOAT64:
-		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%.16f", *((double*)m_valueBuf)); break;
+		{
+			double abs_value = abs(*((double*)m_valueBuf));
+			bool need_scientific_notation = ((abs_value>(1e+16)) || (abs_value>0.0 && (abs_value<(1e-16))));
+
+			StringCchPrintfW(temp, TEMP_STR_SIZE, need_scientific_notation ? L"%e" : L"%.16f", *((double*)m_valueBuf));
+		}
+		break;
 	case AX_STR_ACP:
 		{
 			wchar_t* wszBuf = new wchar_t[m_valueSize];
