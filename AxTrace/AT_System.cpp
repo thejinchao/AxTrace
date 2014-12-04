@@ -135,7 +135,8 @@ BOOL System::OnIdle(void)
 
 			_processAxTraceData(msg);
 
-			delete[] msg;
+			delete msg; 
+			msgVector[i] = 0;
 		}
 		msgVector.clear();
 	}
