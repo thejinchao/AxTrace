@@ -198,12 +198,12 @@ BEGIN
         BLOCK "080404b0"
         BEGIN
             VALUE "CompanyName", "TheCodeway.com"
-            VALUE "FileDescription", "Axia Trace 3 Application"
+            VALUE "FileDescription", "Axia Trace Application"
             VALUE "FileVersion", "3.0.0.1"
-            VALUE "InternalName", "AxTrace3"
+            VALUE "InternalName", "AxTrace Receiver"
             VALUE "LegalCopyright", "Copyright TheCodeway.com(C) 2013"
-            VALUE "OriginalFilename", "AxTrace3.exe"
-            VALUE "ProductName", " AxTrace3 Application"
+            VALUE "OriginalFilename", "AxTrace.exe"
+            VALUE "ProductName", " AxTrace Application"
             VALUE "ProductVersion", "3.0.0.1"
         END
     END
