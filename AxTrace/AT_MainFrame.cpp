@@ -136,9 +136,8 @@ LRESULT MainFrame::OnAllWndEditCommand(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 //--------------------------------------------------------------------------------------------
 LRESULT MainFrame::OnAppAbout(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	getTickWnd(0);
-//	AboutDlg dlg;
-	//dlg.DoModal();
+	AboutDlg dlg;
+	dlg.DoModal();
 	return 0;
 }
 
