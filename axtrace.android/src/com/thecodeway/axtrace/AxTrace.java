@@ -145,7 +145,7 @@ public class AxTrace {
 		}
 	}
 	
-	static private void _trace(int idWindow, int idStyle, String strTrace) {
+	static public void _trace(int idWindow, int idStyle, String strTrace) {
 		if(!_Init()) return;
 		
 		//check range
@@ -167,7 +167,7 @@ public class AxTrace {
 		msg.sendToTarget();
 	}
 	
-	static private void _value(int idWindow, int idStyle, String name, int valueType, byte[] value) {
+	static public void _value(int idWindow, int idStyle, String name, int valueType, byte[] value) {
 		if(!_Init()) return;
 		
 		//check range
