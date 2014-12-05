@@ -24,7 +24,7 @@ namespace com.thecodeway
         public static readonly int AX_STR_UTF16 = 12;
         
         [DllImport("axtrace")]
-        static extern void AxTrace_Init();
+        static extern void AxTrace_Init(byte[] traceServer, int tracePort);
 
         [DllImport("axtrace")]
         static extern void AxTrace_InsertLogA(int idWindow, int idStyle, int isUTF8, byte[] stringBuf);
@@ -34,6 +34,11 @@ namespace com.thecodeway
 
         [DllImport("axtrace")]
         static extern void AxTrace_WatchValue(int idWindow, int idStyle, int valueType, byte[] valueName, int valueNameLength, byte[] value);
+
+        static public void SetTraceServer(string ip, int port)
+        {
+            AxTrace_Init(System.Text.Encoding.UTF8.GetBytes(ip), port);
+        }
 
         static public void Trace(string format, params object[] args)
         {

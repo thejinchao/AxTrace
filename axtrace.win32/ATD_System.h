@@ -10,12 +10,15 @@
 /** static global value */
 struct GlobalValue
 {
+	enum { MAX_SERVER_ADDR_LENGTH = 128 };
+
 	bool	isInited;		//!< is inited
 	bool	isInitSucc;		//!< if already init, is successed?
 	//!< critical section for init
 	CRITICAL_SECTION criticalSection;
 
 	void*	zmqContex;		//!< contex of zeromq
+	char	szServer[MAX_SERVER_ADDR_LENGTH];	//!< axtrace server addr
 	int		nListenPort;	//!< axtrace listen port
 	DWORD	dwTlsIndex;		//!< tls index
 };
@@ -39,7 +42,7 @@ bool _OnProcessAttached(void);
 void _OnProcessDetached(void);
 
 /** try init global value*/
-bool _InitGlobalValue(GlobalValue& global);
+bool _InitGlobalValue(GlobalValue& global, const char* szTraceServer, int nTracePort);
 
 /** try init thread value value*/
 bool _InitThreadValue(GlobalValue& global);

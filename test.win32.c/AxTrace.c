@@ -18,7 +18,7 @@
 #define AXTRACE_VALUENAME_LENGTH (128)
 
 /** Dll function */
-typedef int (__stdcall* AXTRACE_DLLFUNC_INIT)(void);
+typedef int(__stdcall* AXTRACE_DLLFUNC_INIT)(const char* szTraceServer, int nTracePort);
 typedef int (__stdcall* AXTRACE_DLLFUNC_INSERTLOGA)(int idWindow, int idStyle, int isUTF8, const char* string);
 typedef int (__stdcall* AXTRACE_DLLFUNC_INSERTLOGW)(int idWindow, int idStyle, const unsigned short* utf16_string);
 typedef int (__stdcall* AXTRACE_DLLFUNC_WATEVALUE)(int idWindow, int idStyle, int valueType, const char* valueName, int valueNameLength, const void* value);
@@ -72,6 +72,17 @@ LPAXTRACE_GLOBAL_DATA _AxTrace_GetGlobalData(void)
 		LocalFree(pTemp);
 	}
 	return ((s_theAxTraceGlobal && s_theAxTraceGlobal->isInitSucc!=0) ? s_theAxTraceGlobal : 0);
+}
+
+/*---------------------------------------------------------------------------------------------*/
+void AxTrace_Init(const char *szTraceServer, int nTracePort)
+{
+	LPAXTRACE_GLOBAL_DATA pGlobalData = 0;
+
+	pGlobalData = _AxTrace_GetGlobalData();
+	if (pGlobalData == 0) return;
+
+	pGlobalData->funcInit(szTraceServer, nTracePort);
 }
 
 /*---------------------------------------------------------------------------------------------*/

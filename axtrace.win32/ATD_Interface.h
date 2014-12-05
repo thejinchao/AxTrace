@@ -9,7 +9,7 @@
 #define __AXTRACE_INTERFACE__
 
 /** Init axtrace */
-int __stdcall AxTrace_Init(void);
+int __stdcall AxTrace_Init(const char* szTraceServer = 0, int nTracePort = 0);
 
 #define AXTRACE_MAGIC_HEAD		(0x5841)	/* 'AX' */
 

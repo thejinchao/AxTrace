@@ -48,6 +48,7 @@ Finds the compiler type and version.
 		typedef unsigned short wchar_t;
 	#endif
 
+	AXTRACE_EXTERN_C void AxTrace_Init(const char *szTraceServer, int nTracePort);
 	AXTRACE_EXTERN_C void AxTrace(const char *psz_fmt, ...);
 	AXTRACE_EXTERN_C void AxTraceExA(int win_id, int style_id, int is_utf8, const char *psz_fmt, ...);
 	AXTRACE_EXTERN_C void AxTraceExW(int win_id, int style_id, const wchar_t *wsz_fmt, ...);

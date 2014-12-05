@@ -37,7 +37,7 @@ void _OnProcessDetached(void)
 }
 
 //--------------------------------------------------------------------------------------------
-bool _InitGlobalValue(GlobalValue& global)
+bool _InitGlobalValue(GlobalValue& global, const char* szTraceServer, int nTracePort)
 {
 	//already inited?
 	if(global.isInited) return global.isInitSucc;
@@ -52,10 +52,19 @@ bool _InitGlobalValue(GlobalValue& global)
 		global.isInitSucc = false; //as default result
 
 		//---------------
-		//0. get listen port
-		global.nListenPort = _GetListenPort();
-		if(global.nListenPort<=0) return false;	// get listen port error
-
+		//0. get server addr and listen port
+		if (szTraceServer == 0 || nTracePort == 0)
+		{
+			//from share memory
+			StringCbCopyA(global.szServer, global.MAX_SERVER_ADDR_LENGTH, "127.0.0.1");
+			global.nListenPort = _GetListenPort();
+			if (global.nListenPort <= 0) return false;	// get listen port error
+		}
+		else
+		{
+			StringCbCopyA(global.szServer, global.MAX_SERVER_ADDR_LENGTH, szTraceServer);
+			global.nListenPort = nTracePort;
+		}
 		//---------------
 		//1: init zeromq
 		global.zmqContex = zmq_ctx_new();
@@ -114,7 +123,7 @@ bool _InitThreadValue(GlobalValue& global)
 
 		//connect to listen port 
 		char temp[64]={0};
-		StringCchPrintfA(temp, 64, "tcp://localhost:%d", global.nListenPort);
+		StringCchPrintfA(temp, 64, "tcp://%s:%d", global.szServer, global.nListenPort);
 		if(0!=zmq_connect(tls->zmqSocket, temp)) return 1;
 
 		tls->isInitSucc = true;

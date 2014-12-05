@@ -11,12 +11,12 @@
 #include "ATD_System.h"
 
 //--------------------------------------------------------------------------------------------
-int __stdcall AxTrace_Init(void)
+int __stdcall AxTrace_Init(const char* szTraceServer, int nTracePort)
 {
 	GlobalValue& global = getGlobalValue();
 
 	//init global value
-	if(!_InitGlobalValue(global)) return 1;
+	if(!_InitGlobalValue(global, szTraceServer, nTracePort)) return 1;
 	//init thread value
 	if(!_InitThreadValue(global)) return 1;
 
