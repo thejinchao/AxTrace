@@ -104,7 +104,7 @@ public class BackgroundThread implements Runnable {
 		try {
 			byte[] byteString = logData.strTrace.getBytes("UTF-8");
 		
-			int finalLength = 4*2 +byteString.length+1;
+			int finalLength = 4*2 +byteString.length;
 			
 			ByteBuffer buf = ByteBuffer.wrap(new byte[AXTRACE_HEAD_SIZE+finalLength]).order(ByteOrder.LITTLE_ENDIAN);
 			buf.putShort((short)AXTRACE_MAGIC_HEAD);
@@ -131,7 +131,7 @@ public class BackgroundThread implements Runnable {
 		try {
 			byte[] byteName = logData.strName.getBytes("UTF-8");	
 			
-			int finalLength = 4*3 + byteName.length + 1 + logData.value.length;
+			int finalLength = 4*3 + byteName.length + logData.value.length;
 			
 			ByteBuffer buf = ByteBuffer.wrap(new byte[AXTRACE_HEAD_SIZE+finalLength]).order(ByteOrder.LITTLE_ENDIAN);
 			buf.putShort((short)AXTRACE_MAGIC_HEAD);
