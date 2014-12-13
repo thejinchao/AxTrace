@@ -28,7 +28,7 @@ public:
 	DWORD OnItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW pCD);
 
 public:
-	enum { COLUMN_COUNTS=3, MAX_SUBITEM_LENGTH=2048 };	//hack...
+	enum { MAX_SUBITEM_LENGTH=2048 };	//hack...
 
 	/** scroll to bottom */
 	void scrollToBottom(void);

@@ -87,16 +87,18 @@ void CListCtrlEx::copyToClipboard(void)
 	if(nItem<0) return;
 	if(!OpenClipboard()) return;
 
+	int columnCounts = Header_GetItemCount(ListView_GetHeader(m_hWnd));
+
 	std::wstring strClip;
 	wchar_t wszTemp[MAX_SUBITEM_LENGTH]={0};
 	while(nItem>=0)
 	{
-		for(int i=0; i<COLUMN_COUNTS; i++)
+		for (int i = 0; i<columnCounts; i++)
 		{
 			GetItemText(nItem, i, wszTemp, MAX_SUBITEM_LENGTH);
 
 			strClip += wszTemp;
-			if(i != COLUMN_COUNTS-1) strClip += _T("\t");
+			if (i != columnCounts - 1) strClip += _T("\t");
 			else strClip += _T("\r\n");
 		}
 
@@ -145,15 +147,16 @@ void CListCtrlEx::saveToFile(void)
 
 	wchar_t wszTemp[MAX_SUBITEM_LENGTH]={0};
 
+	int columnCounts = Header_GetItemCount(ListView_GetHeader(m_hWnd));
 	int counts = this->GetItemCount();
 	for(int i=0; i<counts; i++)
 	{
-		for(int j=0; j<COLUMN_COUNTS; j++)
+		for (int j = 0; j<columnCounts; j++)
 		{
 			GetItemText(i, j, wszTemp, MAX_SUBITEM_LENGTH);
 
 			fwrite(wszTemp, 2, wcslen(wszTemp), fp);
-			if(j != COLUMN_COUNTS-1) fwrite(_T("\t"), 2, 1, fp);
+			if (j != columnCounts - 1) fwrite(_T("\t"), 2, 1, fp);
 			else fwrite(_T("\r\n"), 2, 2, fp);
 		}
 	}
