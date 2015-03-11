@@ -58,10 +58,6 @@ LRESULT MainFrame::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 
 	// Set Menu status
 	updateButtons(MS_MDI);
-
-	// set main handle into common cookie
-	System::getSingleton()->getCommonCookie()->hMainWnd = m_hWnd;
-
 	return 0;
 }
 

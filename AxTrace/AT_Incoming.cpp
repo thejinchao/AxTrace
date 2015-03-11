@@ -37,8 +37,6 @@ bool Incoming::init(void)
 
 	//create pull port
 	if (!_createPullPort()) return false;
-	//write port number to global memory file
-	System::getSingleton()->getCommonCookie()->nListenPort = m_nListenPort;
 
 	//create quit op port
 	m_opQuit = zmq_socket(System::getSingleton()->getZeroMQ(), ZMQ_PULL);
@@ -69,24 +67,18 @@ bool Incoming::_createPullPort(void)
 	void* ctx = System::getSingleton()->getZeroMQ();
 
 	//try create zmp port
-	do
+	void* port = zmq_socket(System::getSingleton()->getZeroMQ(), ZMQ_PULL);
+
+	char temp[MAX_PATH]={0};
+	StringCchPrintfA(temp, MAX_PATH, "tcp://*:%d", m_nListenPort);
+	if(0==zmq_bind(port, temp))
 	{
-		void* port = zmq_socket(System::getSingleton()->getZeroMQ(), ZMQ_PULL);
-
-		char temp[MAX_PATH]={0};
-		StringCchPrintfA(temp, MAX_PATH, "tcp://*:%d", m_nListenPort);
-		if(0==zmq_bind(port, temp))
-		{
-			m_opPull = port;
-			m_strListenPort = temp;
-			break;
-		}
-		m_nListenPort++;
-		zmq_close(port);
-	}while(m_nListenPort-DEFAULT_PORT<MAX_TRY_COUNTS);
-	if(m_opPull==0) return false;
-
-	return true;
+		m_opPull = port;
+		m_strListenPort = temp;
+		return true;
+	}
+	zmq_close(port);
+	return false;
 }
 
 //--------------------------------------------------------------------------------------------

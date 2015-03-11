@@ -11,6 +11,8 @@
 struct GlobalValue
 {
 	enum { MAX_SERVER_ADDR_LENGTH = 128 };
+	//default listen port is 1978 :)
+	enum { DEFAULT_PORT = 1978 };
 
 	bool	isInited;		//!< is inited
 	bool	isInitSucc;		//!< if already init, is successed?
@@ -52,6 +54,3 @@ ThreadValue* _GetThreadValue(GlobalValue& global);
 
 /** relloc memory of tls */
 bool _Relloc_TLSMemory(ThreadValue& thread, size_t size);
-
-/* get listen port from common cookie memory file(-1 means failed) */
-int _GetListenPort(void);

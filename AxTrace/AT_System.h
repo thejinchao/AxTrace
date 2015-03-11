@@ -53,8 +53,6 @@ public:
 	Config* getConfig(void) { return m_theConfig; }
 	/** get app module */
 	CAppModule& getAppModule(void) { return m_AppModule; }
-	/** get common cookie memory */
-	AXTRACE_COMMON_COOKIE* getCommonCookie(void) { return m_pCookie; }
 
 	/*************************************************************************
 			Inherit Methods
@@ -65,8 +63,6 @@ public:
 	virtual BOOL OnIdle(void);
 
 private:
-	/** create common coookie memory */
-	bool _createCommonCookie(void);
 	/** process Axtrace data node */
 	void _processAxTraceData(const Message* message);
 	/** insert string log*/
@@ -90,11 +86,6 @@ private:
 	void*					m_zmpHandle;		//!< Zeromq handle
 	Incoming*				m_pIncoming;		//!< Incoming thread to receive msg
 	MessageQueue*			m_msgQueue;			//!< Message Queue
-
-	//common cookie
-	HANDLE m_hCookieMutex;
-	HANDLE m_hCookieFile;
-	AXTRACE_COMMON_COOKIE* m_pCookie;
 
 	/*************************************************************************
 		Construction and Destruction

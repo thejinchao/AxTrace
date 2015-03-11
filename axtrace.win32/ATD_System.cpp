@@ -57,7 +57,7 @@ bool _InitGlobalValue(GlobalValue& global, const char* szTraceServer, int nTrace
 		{
 			//from share memory
 			StringCbCopyA(global.szServer, global.MAX_SERVER_ADDR_LENGTH, "127.0.0.1");
-			global.nListenPort = _GetListenPort();
+			global.nListenPort = GlobalValue::DEFAULT_PORT;
 			if (global.nListenPort <= 0) return false;	// get listen port error
 		}
 		else

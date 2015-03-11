@@ -25,9 +25,6 @@ System::System()
 	, m_zmpHandle(0)
 	, m_pIncoming(0)
 	, m_msgQueue(0)
-	, m_hCookieMutex(0)
-	, m_hCookieFile(0)
-	, m_pCookie(0)
 {
 	s_pMe = this;
 }
@@ -35,23 +32,6 @@ System::System()
 //--------------------------------------------------------------------------------------------
 System::~System()
 {
-	if(m_pCookie)
-	{
-		UnmapViewOfFile(m_pCookie);
-		m_pCookie=0;
-	}
-
-	if(m_hCookieFile)
-	{
-		CloseHandle(m_hCookieFile);
-		m_hCookieFile=0;
-	}
-
-	if(m_hCookieMutex)
-	{
-		CloseHandle(m_hCookieMutex);
-		m_hCookieMutex=0;
-	}
 }
 
 //--------------------------------------------------------------------------------------------
@@ -60,8 +40,6 @@ bool System::init(HINSTANCE hInstance, LPSTR lpCmdLine)
 	m_hInstance = hInstance;
 	m_strCmdLine = lpCmdLine;
 	
-	if(!_createCommonCookie()) return false;
-
 	m_theConfig = new Config;
 	m_wndMainFrame = new MainFrame;
 	m_pIncoming = new Incoming;
@@ -182,40 +160,4 @@ void System::_watchValue(const ValueMessage* message)
 	valueWnd->watchValue(message->getStyleID(), message->getTraceTime(), message->getValueName(), value.c_str());
 }
 
-//--------------------------------------------------------------------------------------------
-bool System::_createCommonCookie(void)
-{
-	//create global mutex
-	m_hCookieMutex = CreateMutex(0, FALSE, _T("Global\\fa023401-93f6-468b-94e0-f40a35e7c760"));
-	if(m_hCookieMutex!=0 && ::GetLastError()==ERROR_ALREADY_EXISTS)
-	{
-		//other process exist!
-		MessageBox(0, _T("Another process already run!"), _T("AxTrace 3"), MB_OK|MB_ICONSTOP);
-		return false;
-	}
-
-	if(m_hCookieMutex==0)
-	{
-		//TODO: information...
-		return false;
-	}
-
-	//create memory file
-	m_hCookieFile = CreateFileMapping(INVALID_HANDLE_VALUE, 0, PAGE_READWRITE, 0, sizeof(AXTRACE_COMMON_COOKIE), AXTRACE_COMMON_COOKIE_FILENAME);
-	if(m_hCookieFile==NULL)
-	{
-		//TODO: information
-		return false;
-	}
-
-	//map view
-	m_pCookie = (AXTRACE_COMMON_COOKIE*)MapViewOfFileEx(m_hCookieFile, FILE_MAP_ALL_ACCESS, 0, 0, 0, 0);
-	if(!m_pCookie)
-	{
-		//TODO: information
-		return false;
-	}
-
-	return true;
-}
 }

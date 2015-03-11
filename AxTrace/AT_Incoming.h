@@ -25,7 +25,7 @@ private:
 	std::string	m_strListenPort;	//!< listen port(string format)
 
 	//default listen port is 1978 :)
-	enum { DEFAULT_PORT=1978, MAX_TRY_COUNTS=100 };
+	enum { DEFAULT_PORT=1978 };
 	void*		m_opPull;			//!< zmp port to recive msg
 
 	//force quit signal
