@@ -17,7 +17,6 @@ namespace AT3
 //--------------------------------------------------------------------------------------------
 Incoming::Incoming()
 	: m_nListenPort(DEFAULT_PORT)	
-	, m_bridgeMode(false)
 	, m_hReceiveThread(0)
 	, m_opPull(0)
 	, m_opQuit(0)
@@ -35,22 +34,11 @@ bool Incoming::init(void)
 {
 	assert(m_hReceiveThread==0);
 	const Config* config = System::getSingleton()->getConfig();
-	if (config->isBridgeMode())
-	{
-		//connect to bridge server
-		if (!_connectToBridge(config->getBridgeServer(), config->getBridgePort())) return false;
 
-		m_bridgeMode = true;
-	}
-	else
-	{
-		//create pull port
-		if (!_createPullPort()) return false;
-		//write port number to global memory file
-		System::getSingleton()->getCommonCookie()->nListenPort = m_nListenPort;
-
-		m_bridgeMode = false;
-	}
+	//create pull port
+	if (!_createPullPort()) return false;
+	//write port number to global memory file
+	System::getSingleton()->getCommonCookie()->nListenPort = m_nListenPort;
 
 	//create quit op port
 	m_opQuit = zmq_socket(System::getSingleton()->getZeroMQ(), ZMQ_PULL);
@@ -98,26 +86,6 @@ bool Incoming::_createPullPort(void)
 	}while(m_nListenPort-DEFAULT_PORT<MAX_TRY_COUNTS);
 	if(m_opPull==0) return false;
 
-	return true;
-}
-
-//--------------------------------------------------------------------------------------------
-bool Incoming::_connectToBridge(const std::string& bridgeServer, int bridgePort)
-{
-	void* ctx = System::getSingleton()->getZeroMQ();
-
-	char temp[MAX_PATH] = { 0 };
-	StringCchPrintfA(temp, MAX_PATH, "tcp://%s:%d", bridgeServer.c_str(), bridgePort);
-
-	void* port = zmq_socket(System::getSingleton()->getZeroMQ(), ZMQ_PULL);
-	if (0 != zmq_connect(port, temp))
-	{
-		zmq_close(port);
-		return false;
-	}
-
-	m_strListenPort = temp;
-	m_opPull = port;
 	return true;
 }
 
@@ -177,10 +145,7 @@ void Incoming::closeListen(void)
 	}
 
 	//close zmq bind
-	if (m_bridgeMode)
-		zmq_disconnect(m_opPull, m_strListenPort.c_str());
-	else
-		zmq_unbind(m_opPull, m_strListenPort.c_str());
+	zmq_unbind(m_opPull, m_strListenPort.c_str());
 
 	zmq_close(m_opPull);
 	zmq_close(m_opQuit);
