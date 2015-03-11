@@ -80,18 +80,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AxTrace.c" />
+    <ClCompile Include="axtrace.win.c" />
     <ClCompile Include="StdAfx.cpp" />
     <ClCompile Include="TestMain.cpp" />
-    <ClCompile Include="TestThreadPool.cpp" />
-    <ClCompile Include="TestUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AxTrace.h" />
+    <ClInclude Include="axtrace.win.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="TestThreadPool.h" />
-    <ClInclude Include="TestUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Test_CPP.rc" />

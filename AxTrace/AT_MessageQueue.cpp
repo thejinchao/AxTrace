@@ -12,6 +12,7 @@
 #include "AT_MainFrame.h"
 
 #include <ATD_Interface.h>
+#include "AT_Interface.h"
 
 namespace AT3
 {
@@ -21,6 +22,8 @@ MessageQueue::MessageQueue()
 	: m_hNotEmptySignal(0)
 {
 	m_ringBuf = ringbuf_new(DEFAULT_RINGBUF_SIZE);
+	m_ring_buf = new cyclone::RingBuf();
+
 	InitializeCriticalSection(&m_criticalSection);
 	m_hNotEmptySignal = CreateEvent(0, TRUE, FALSE, 0);
 }
@@ -28,6 +31,7 @@ MessageQueue::MessageQueue()
 //--------------------------------------------------------------------------------------------
 MessageQueue::~MessageQueue()
 {
+	delete m_ring_buf; m_ring_buf = 0;
 	ringbuf_free(&m_ringBuf);
 	DeleteCriticalSection(&m_criticalSection);
 	CloseHandle(m_hNotEmptySignal);
@@ -47,6 +51,33 @@ bool MessageQueue::_checkMessageValid(const void* pMessage, size_t size)
 
 	//TODO: more check for special message valid
 
+	return true;
+}
+
+//--------------------------------------------------------------------------------------------
+bool MessageQueue::insertMessage(cyclone::RingBuf* buf, size_t msg_length, const LPSYSTEMTIME tTime)
+{
+	AXIATRACE_TIME traceTime;
+	traceTime.wHour = tTime->wHour;
+	traceTime.wMinute = tTime->wMinute;
+	traceTime.wSecond = tTime->wSecond;
+	traceTime.wMilliseconds = tTime->wMilliseconds;
+
+	//enter lock
+	{
+		AutoLock autoLock(&m_criticalSection);
+
+
+		//copy time fist
+		m_ring_buf->memcpy_into(&traceTime, sizeof(traceTime));
+		//copy trace memory
+		buf->copyto(m_ring_buf, msg_length);
+
+		//Set singnal
+		SetEvent(m_hNotEmptySignal);
+		PostMessage(System::getSingleton()->getMainFrame()->m_hWnd, MainFrame::WM_ON_AXTRACE_MESSAGE, 0, 0);
+
+	}
 	return true;
 }
 
@@ -113,28 +144,32 @@ Message* MessageQueue::_popMessage(void)
 	void* rc = 0;
 	
 	AXIATRACE_TIME traceTime;
-	rc = ringbuf_memcpy_from(&traceTime, m_ringBuf, sizeof(traceTime));
-	assert(rc!=0);
+	size_t len = m_ring_buf->memcpy_out(&traceTime, sizeof(traceTime));
+	//rc = ringbuf_memcpy_from(&traceTime, m_ringBuf, sizeof(traceTime));
+	assert(len == sizeof(traceTime));
 
-	AXIATRACE_DATAHEAD head;
-	rc = ringbuf_memcpy_from(&head, m_ringBuf, sizeof(head));
-	assert(rc!=0);
+	axtrace_head_s head;
+	len = m_ring_buf->peek(0, &head, sizeof(head));
+	//rc = ringbuf_memcpy_from(&head, m_ringBuf, sizeof(head));
+	assert(len==sizeof(head));
 
 	Message* message = 0;
-	switch(head.wTraceType)
+	switch(head.type)
 	{
-	case ATT_LOG: 
+	case AXTRACE_CMD_TYPE_TRACE:
 		{
-			LogMessage* msg = new LogMessage;
-			msg->build(traceTime, head, m_ringBuf);
+			LogMessage* msg = new LogMessage();
+			msg->build(traceTime, head, m_ring_buf);
 			message = msg;
 		}
 		break;
-	case ATT_VALUE:
+	case AXTRACE_CMD_TYPE_VALUE:
 		{
-			ValueMessage* msg = new ValueMessage;
-			msg->build(traceTime, head, m_ringBuf);
+#if 0
+			ValueMessage* msg = new ValueMessage();
+			msg->build(traceTime, head, m_ring_buf);
 			message = msg;
+#endif
 		}
 		break;
 	default: assert(false); break;
@@ -171,7 +206,7 @@ void MessageQueue::processMessage(MessageVector& msgVector)
 		
 		do
 		{
-			if(ringbuf_bytes_used(m_ringBuf)==0) break;
+			if (m_ring_buf->empty()) break;
 
 			Message* msg = _popMessage();
 			assert(msg != 0);

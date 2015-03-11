@@ -30,8 +30,70 @@ Incoming::~Incoming()
 }
 
 //--------------------------------------------------------------------------------------------
+bool Incoming::init_cyclone(void)
+{
+	cyclone::Address address(DEFAULT_PORT, false);
+	m_server = new cyclone::TcpServer(address, this);
+
+	m_server->set_message_callback(_cyclone_message_callback_entry);
+
+	m_server->start(2);
+
+	return true;
+}
+
+//--------------------------------------------------------------------------------------------
+void Incoming::_cyclone_message_callback_entry(cyclone::TcpServer* server, cyclone::Connection* conn)
+{
+	((Incoming*)(server->get_callback_param()))->_cyclone_message_callback(conn);
+}
+
+//--------------------------------------------------------------------------------------------
+void Incoming::_cyclone_message_callback(cyclone::Connection* conn)
+{
+	cyclone::RingBuf& input_buf = conn->get_input_buf();
+
+	if (System::getSingleton()->getConfig()->getCapture())
+	{
+		SYSTEMTIME tTime;
+		GetLocalTime(&tTime);
+
+		cyclone::RingBuf& input = conn->get_input_buf();
+
+		//peek size, and check valid
+		do {
+			size_t input_size = input.size();
+			if (input_size < sizeof(axtrace_head_s)) return;
+
+			axtrace_head_s head;
+			if (sizeof(head) != input.peek(0, &head, sizeof(head)) || head.flag != 'A') {
+				//error!, kick off this session
+				m_server->shutdown_connection(conn);
+				return;
+			}
+
+			//package is completed
+			if (input_size < head.length) {
+				//TODO: size too large?
+				return;
+			}
+
+			System::getSingleton()->getMessageQueue()->insertMessage(&input, head.length, &tTime);
+		} while (true);
+	}
+
+}
+
+//--------------------------------------------------------------------------------------------
+void Incoming::closeListen_cyclone(void)
+{
+	delete m_server;
+}
+
+//--------------------------------------------------------------------------------------------
 bool Incoming::init(void)
 {
+	return init_cyclone();
 	assert(m_hReceiveThread==0);
 	const Config* config = System::getSingleton()->getConfig();
 

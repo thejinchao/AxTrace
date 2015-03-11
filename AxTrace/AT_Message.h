@@ -7,9 +7,16 @@
 #pragma once
 
 #include <ATD_Interface.h>
+#include "AT_Interface.h"
+
 extern "C"
 {
 #include "c-ringbuf/ringbuf.h"
+}
+
+namespace cyclone
+{
+	class RingBuf;
 }
 
 namespace AT3
@@ -20,7 +27,7 @@ class Message
 {
 public:
 	/** build message */
-	virtual void build(const AXIATRACE_TIME& traceTime, const AXIATRACE_DATAHEAD& head, ringbuf_t ringBuf) = 0;
+	virtual void build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf) = 0;
 	/** get trace type*/
 	virtual unsigned int getTraceType(void) const = 0;
 	/** get process id*/
@@ -52,7 +59,7 @@ class LogMessage : public Message
 {
 public:
 	/** build message */
-	virtual void build(const AXIATRACE_TIME& traceTime, const AXIATRACE_DATAHEAD& head, ringbuf_t ringBuf);
+	virtual void build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
 	/** get trace type*/
 	virtual unsigned int getTraceType(void) const { return ATT_LOG; }
 
@@ -76,7 +83,7 @@ class ValueMessage : public Message
 {
 public:
 	/** build message */
-	virtual void build(const AXIATRACE_TIME& traceTime, const AXIATRACE_DATAHEAD& head, ringbuf_t ringBuf);
+	virtual void build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
 	/** get trace type*/
 	virtual unsigned int getTraceType(void) const { return ATT_VALUE; }
 

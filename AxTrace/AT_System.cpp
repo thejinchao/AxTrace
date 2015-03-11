@@ -152,12 +152,14 @@ void System::_insertStringLog(const LogMessage* message)
 //--------------------------------------------------------------------------------------------
 void System::_watchValue(const ValueMessage* message)
 {
+#if 0
 	ValueFrameWnd* valueWnd = m_wndMainFrame->getValueWnd(message->getWindowID());
 	assert(valueWnd!=0);
 
 	std::wstring value;
 	message->getValueAsString(value);
 	valueWnd->watchValue(message->getStyleID(), message->getTraceTime(), message->getValueName(), value.c_str());
+#endif
 }
 
 }

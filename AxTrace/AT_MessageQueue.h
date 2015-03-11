@@ -11,6 +11,10 @@ extern "C"
 #include "c-ringbuf/ringbuf.h"
 }
 #include "AT_Message.h"
+namespace cyclone
+{
+	class RingBuf;
+}
 
 namespace AT3
 {
@@ -22,6 +26,7 @@ class MessageQueue
 public:
 	/** insert message to queue(should call by incoming thread)*/
 	bool insertMessage(const char* pMessage, size_t size, const LPSYSTEMTIME tTime);
+	bool insertMessage(cyclone::RingBuf* buf, size_t msg_length, const LPSYSTEMTIME tTime);
 	/** process message in quueu(should call by main thread)*/
 	void processMessage(MessageVector& message);
 
@@ -35,7 +40,7 @@ private:
 	ringbuf_t			m_ringBuf;
 	CRITICAL_SECTION	m_criticalSection;
 	HANDLE				m_hNotEmptySignal;
-
+	cyclone::RingBuf*	m_ring_buf;
 public:
 	MessageQueue();
 	virtual ~MessageQueue();

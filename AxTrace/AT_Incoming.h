@@ -6,6 +6,12 @@
 ***************************************************/
 #pragma once
 
+namespace cyclone
+{
+	class TcpServer;
+	class Connection;
+}
+
 namespace AT3
 {
 
@@ -16,8 +22,16 @@ class Incoming
 public:
 	/** create receive thread */
 	bool init(void);
+	bool init_cyclone(void);
 	/** try close receive thread*/
 	void closeListen(void);
+	void closeListen_cyclone(void);
+
+private:
+	cyclone::TcpServer* m_server;
+
+	static void _cyclone_message_callback_entry(cyclone::TcpServer* server, cyclone::Connection* conn);
+	void _cyclone_message_callback(cyclone::Connection* conn);
 
 private:
 	HANDLE		m_hReceiveThread;	//!< receive thread handle

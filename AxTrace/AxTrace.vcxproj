@@ -56,12 +56,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;ZMQ_STATIC;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\WTL;..\zeromq-4.0.5\include;..\axtrace.win32</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\WTL;..\zeromq-4.0.5\include;..\axtrace.win32;$(CYCLONE_SDK_ROOT)\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;cyclone.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(CYCLONE_SDK_ROOT)\lib\$(Configuration)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -72,14 +73,15 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;ZMQ_STATIC;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\WTL;..\zeromq-4.0.5\include;..\axtrace.win32</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\WTL;..\zeromq-4.0.5\include;..\axtrace.win32;$(CYCLONE_SDK_ROOT)\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;cyclone.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(CYCLONE_SDK_ROOT)\lib\$(Configuration)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -119,6 +121,7 @@
     <ClInclude Include="AT_Config.h" />
     <ClInclude Include="AT_Global.h" />
     <ClInclude Include="AT_Incoming.h" />
+    <ClInclude Include="AT_Interface.h" />
     <ClInclude Include="AT_ListCtrlEx.h" />
     <ClInclude Include="AT_MainFrame.h" />
     <ClInclude Include="AT_Message.h" />

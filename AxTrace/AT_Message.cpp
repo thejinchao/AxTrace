@@ -43,25 +43,25 @@ LogMessage::~LogMessage(void)
 
 
 //--------------------------------------------------------------------------------------------
-void LogMessage::build(const AXIATRACE_TIME& traceTime, const AXIATRACE_DATAHEAD& head, ringbuf_t ringBuf)
+void LogMessage::build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
 {
 	void* rc = 0;
 	memcpy(&m_traceTime, &traceTime, sizeof(m_traceTime));
 
-	m_nProcessID = head.dwProcessID;
-	m_nThreadID = head.dwThreadID;
-	m_nWindowID = head.cWinID;
-	m_nStyleID = head.cStyleID;
+	m_nProcessID = head.pid;
+	m_nThreadID = head.tid;
+	m_nWindowID = 0;
+	m_nStyleID = 0;
+
+	axtrace_trace_s trace_head;
+	size_t len = ringBuf->memcpy_out(&trace_head, sizeof(trace_head));
+	assert(len == sizeof(trace_head));
 
 	//get codepage
-	int codePage;
-	rc = ringbuf_memcpy_from(&codePage, ringBuf, sizeof(int));
-	assert(rc);
+	int codePage = trace_head.code_page;
 
 	//get log length
-	int logLength;
-	ringbuf_memcpy_from(&logLength, ringBuf, sizeof(int));
-	assert(rc);
+	int logLength = trace_head.length;
 
 	//get log
 	if(m_pLogBuf) delete[] m_pLogBuf; 
@@ -71,16 +71,16 @@ void LogMessage::build(const AXIATRACE_TIME& traceTime, const AXIATRACE_DATAHEAD
 		m_pLogBufInChar = logLength/2;
 		m_pLogBuf=new wchar_t[m_pLogBufInChar+1];
 
-		rc = ringbuf_memcpy_from(m_pLogBuf, ringBuf, logLength);
-		assert(rc!=0);
+		size_t len = ringBuf->memcpy_out(m_pLogBuf, logLength);
+		assert(len == logLength);
 
 		m_pLogBuf[m_pLogBufInChar]=0;
 	}
 	else if(codePage == ATC_UTF8)
 	{
 		char* tempBuf = new char[logLength];
-		rc = ringbuf_memcpy_from(tempBuf, ringBuf, logLength);
-		assert(rc!=0);
+		size_t len = ringBuf->memcpy_out(tempBuf, logLength);
+		assert(len == logLength);
 
 		//convert to utf16
 		m_pLogBufInChar = logLength;
@@ -101,8 +101,8 @@ void LogMessage::build(const AXIATRACE_TIME& traceTime, const AXIATRACE_DATAHEAD
 	else if(codePage == ATC_ACP)
 	{
 		char* tempBuf = new char[logLength+1];
-		rc = ringbuf_memcpy_from(tempBuf, ringBuf, logLength);
-		assert(rc!=0);
+		size_t len = ringBuf->memcpy_out(tempBuf, logLength);
+		assert(len == logLength);
 
 		tempBuf[logLength] = 0;
 
@@ -121,6 +121,7 @@ void LogMessage::build(const AXIATRACE_TIME& traceTime, const AXIATRACE_DATAHEAD
 	}
 }
 
+#if 0
 //////////////////////////////////////////////////////////////////////////////////////////////
 //Value Message
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -261,5 +262,6 @@ void ValueMessage::getValueAsString(std::wstring& value) const
 	value = temp;
 }
 
+#endif
 
 }
