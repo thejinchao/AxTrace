@@ -7,8 +7,6 @@
 #include "AT_TraceFrame.h"
 #include "AT_ValueFrame.h"
 
-#include <ATD_Interface.h>
-
 namespace AT3
 {
 
@@ -22,7 +20,6 @@ System::System()
 	, m_hInstance(0)
 	, m_theConfig(0)
 	, m_wndMainFrame(0)
-	, m_zmpHandle(0)
 	, m_pIncoming(0)
 	, m_msgQueue(0)
 {
@@ -51,9 +48,6 @@ bool System::init(HINSTANCE hInstance, LPSTR lpCmdLine)
 
 	// try load system setting from regist
 	m_theConfig->loadSetting();
-
-	// init zmp handle
-	m_zmpHandle = zmq_ctx_new();
 
 	//init receive thread
 	m_pIncoming->init();
@@ -95,9 +89,6 @@ void System::release(void)
 	delete m_wndMainFrame;	m_wndMainFrame=0;
 	delete m_pIncoming;		m_pIncoming=0;
 	delete m_msgQueue;		m_msgQueue=0;
-
-	//destroy zeromp handle
-	zmq_ctx_destroy(m_zmpHandle);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -128,11 +119,11 @@ void System::_processAxTraceData(const Message* message)
 
 	switch(message->getTraceType())
 	{
-	case ATT_LOG:	//string log
+	case AXTRACE_CMD_TYPE_TRACE:	//string log
 		_insertStringLog((LogMessage*)message);
 		break;
 
-	case ATT_VALUE:	//value
+	case AXTRACE_CMD_TYPE_VALUE:	//value
 		_watchValue((ValueMessage*)message);
 		break;
 

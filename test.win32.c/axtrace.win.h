@@ -19,6 +19,10 @@ Copyright(C) thecodeway.com
 #define AXT_FATAL	(5)
 #define AXT_USERDEF	(10)
 
+#define ATC_ACP		(0)	//Default Windows ANSI code page.
+#define ATC_UTF8	(1)	//Unicode 8
+#define ATC_UTF16	(2)	//Unicode 16
+
 #define AXV_INT8		(0)
 #define AXV_UINT8		(1)
 #define AXV_INT16		(2)

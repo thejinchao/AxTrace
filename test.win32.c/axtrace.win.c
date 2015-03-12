@@ -160,7 +160,7 @@ void axtrace(unsigned int style, const char *format, ...)
 	trace_head->head.tid = GetCurrentThreadId();
 	trace_head->head.style = style;
 
-	trace_head->code_page = 0;	/* TODO: get current system code page*/
+	trace_head->code_page = ATC_ACP;	/* TODO: get current system code page*/
 	trace_head->length = (unsigned short)contents_byte_size;
 
 	/* send to axtrace server*/

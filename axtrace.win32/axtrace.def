@@ -1,8 +1,0 @@
-LIBRARY	axtrace
-EXPORTS	
-	AxTrace_Init
-	AxTrace_InsertLogA
-	AxTrace_InsertLogW
-	AxTrace_WatchValue
-
-

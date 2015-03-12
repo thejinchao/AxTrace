@@ -43,9 +43,6 @@
 #include <assert.h>
 #include <tchar.h>
 
-#include <zmq.h>
-#include <zmq_utils.h>
-
 #include <cy_core.h>
 #include <cy_event.h>
 #include <cy_network.h>

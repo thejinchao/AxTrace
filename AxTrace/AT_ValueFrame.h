@@ -8,8 +8,7 @@
 #include "Resource.h"
 #include "AT_ListCtrlEx.h"
 #include "AT_ChildFrame.h"
-
-#include <ATD_Interface.h>
+#include "AT_Interface.h"
 
 namespace AT3
 {

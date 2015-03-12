@@ -56,7 +56,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;ZMQ_STATIC;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\WTL;..\zeromq-4.0.5\include;..\axtrace.win32;$(CYCLONE_SDK_ROOT)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\WTL;$(CYCLONE_SDK_ROOT)\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -73,7 +73,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;ZMQ_STATIC;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\WTL;..\zeromq-4.0.5\include;..\axtrace.win32;$(CYCLONE_SDK_ROOT)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\WTL;$(CYCLONE_SDK_ROOT)\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -101,10 +101,6 @@
     <ClCompile Include="AT_TraceFrame.cpp" />
     <ClCompile Include="AT_Util.cpp" />
     <ClCompile Include="AT_ValueFrame.cpp" />
-    <ClCompile Include="c-ringbuf\ringbuf.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -133,18 +129,12 @@
     <ClInclude Include="AT_TraceFrame.h" />
     <ClInclude Include="AT_Util.h" />
     <ClInclude Include="AT_ValueFrame.h" />
-    <ClInclude Include="c-ringbuf\ringbuf.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="utf\ConvertUTF.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AxTrace.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\zeromq-4.0.5\libzmq.vcxproj">
-      <Project>{641c5f36-32ee-4323-b740-992b651cf9d6}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AxTrace.ico" />

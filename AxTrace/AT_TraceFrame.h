@@ -10,8 +10,6 @@
 #include "AT_ChildFrame.h"
 #include "AT_Util.h"
 
-#include <ATD_Interface.h>
-
 namespace AT3
 {
 //pre-define

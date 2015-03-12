@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="c-ringbuf">
-      <UniqueIdentifier>{28181a4e-b133-437a-b457-37553b7226b6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="utf">
       <UniqueIdentifier>{4430a06b-e030-43fd-941c-39b1c8cb331f}</UniqueIdentifier>
     </Filter>
@@ -71,9 +68,6 @@
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="c-ringbuf\ringbuf.c">
-      <Filter>c-ringbuf</Filter>
     </ClCompile>
     <ClCompile Include="utf\ConvertUTF.c">
       <Filter>utf</Filter>
@@ -133,9 +127,6 @@
     </ClInclude>
     <ClInclude Include="StdAfx.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="c-ringbuf\ringbuf.h">
-      <Filter>c-ringbuf</Filter>
     </ClInclude>
     <ClInclude Include="utf\ConvertUTF.h">
       <Filter>utf</Filter>

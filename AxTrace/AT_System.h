@@ -6,8 +6,6 @@
 ***************************************************/
 #pragma once
 
-#include <ATD_Interface.h>
-
 namespace AT3
 {
 /** pre-define class
@@ -45,8 +43,6 @@ public:
 	MainFrame* getMainFrame(void) { return m_wndMainFrame; }
 	/** Get Message Looper*/
 	CMessageLoop* getMessageLoop(void) { return &m_theMsgLoop; }
-	/** get zeromp handle */
-	void* getZeroMQ(void) { return m_zmpHandle; }
 	/** Get Message Queue */
 	MessageQueue* getMessageQueue(void) { return m_msgQueue; }
 	/** get config*/
@@ -83,7 +79,6 @@ private:
 	CMessageLoop			m_theMsgLoop;		//!< WTL Message looper
 	Config*					m_theConfig;		//!< Global config system
 	MainFrame*				m_wndMainFrame;		//!< Main MDI Frame
-	void*					m_zmpHandle;		//!< Zeromq handle
 	Incoming*				m_pIncoming;		//!< Incoming thread to receive msg
 	MessageQueue*			m_msgQueue;			//!< Message Queue
 

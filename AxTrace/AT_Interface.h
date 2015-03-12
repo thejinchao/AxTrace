@@ -18,6 +18,10 @@ namespace AT3
 #define AXT_FATAL	(5)
 #define AXT_USERDEF	(10)
 
+#define ATC_ACP		(0)	//Default Windows ANSI code page.
+#define ATC_UTF8	(1)	//Unicode 8
+#define ATC_UTF16	(2)	//Unicode 16
+
 #define AXV_INT8		(0)
 #define AXV_UINT8		(1)
 #define AXV_INT16		(2)
@@ -72,5 +76,13 @@ typedef __declspec(align(1)) struct
 	/* [name buf  with '\0' ended]*/
 	/* [value buf] */
 } axtrace_value_s;
+
+typedef __declspec(align(16)) struct
+{
+	WORD wHour;
+	WORD wMinute;
+	WORD wSecond;
+	WORD wMilliseconds;
+} AXIATRACE_TIME;
 
 }

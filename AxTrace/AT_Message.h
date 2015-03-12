@@ -6,13 +6,7 @@
 ***************************************************/
 #pragma once
 
-#include <ATD_Interface.h>
 #include "AT_Interface.h"
-
-extern "C"
-{
-#include "c-ringbuf/ringbuf.h"
-}
 
 namespace cyclone
 {
@@ -61,7 +55,7 @@ public:
 	/** build message */
 	virtual void build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
 	/** get trace type*/
-	virtual unsigned int getTraceType(void) const { return ATT_LOG; }
+	virtual unsigned int getTraceType(void) const { return AXTRACE_CMD_TYPE_TRACE; }
 
 	/** get log size*/
 	size_t getLogSizeChar(void) const { return m_pLogBufInChar; }
@@ -85,7 +79,7 @@ public:
 	/** build message */
 	virtual void build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
 	/** get trace type*/
-	virtual unsigned int getTraceType(void) const { return ATT_VALUE; }
+	virtual unsigned int getTraceType(void) const { return AXTRACE_CMD_TYPE_VALUE; }
 
 	/** get name */
 	const wchar_t* getValueName(void) const { return m_name; }

@@ -143,22 +143,6 @@ ValueMessage::~ValueMessage(void)
 }
 
 //--------------------------------------------------------------------------------------------
-size_t _getValueLength(AXTRACE_VALUE_TYPE valueType)
-{
-	switch(valueType)
-	{
-	case AX_INT8: case AX_UINT8: return 1;
-	case AX_INT16: case AX_UINT16: return 2;
-	case AX_INT32: case AX_UINT32: return 4;
-	case AX_INT64: case AX_UINT64: return 8;
-	case AX_FLOAT32: return 4;
-	case AX_FLOAT64: return 8;
-	default: break;
-	}
-	return 0;
-}
-
-//--------------------------------------------------------------------------------------------
 void ValueMessage::build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
 {
 	memcpy(&m_traceTime, &traceTime, sizeof(m_traceTime));
@@ -183,7 +167,7 @@ void ValueMessage::build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& 
 	wcscpy_s(m_name, AXTRACE_MAX_VALUENAME_LENGTH, convertUTF8ToUTF16(tempName, name_length+1));
 
 	//value
-	if ((m_valuetype == AX_STR_ACP || m_valuetype == AX_STR_UTF8 || m_valuetype == AX_STR_UTF16) && m_valueSize>STANDARD_VALUE_SIZE)
+	if ((m_valuetype == AXV_STR_ACP || m_valuetype == AXV_STR_UTF8 || m_valuetype == AXV_STR_UTF16) && m_valueSize>STANDARD_VALUE_SIZE)
 	{
 		//string value
 		m_valueBuf = new char[m_valueSize];
@@ -207,19 +191,19 @@ void ValueMessage::getValueAsString(std::wstring& value) const
 
 	switch(m_valuetype)
 	{
-	case AX_INT8:
+	case AXV_INT8:
 		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%d", *((__int8*)m_valueBuf)); break;
-	case AX_UINT8:
+	case AXV_UINT8:
 		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%u", *((unsigned __int8*)m_valueBuf)); break;
-	case AX_INT16:
+	case AXV_INT16:
 		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%d", *((__int16*)m_valueBuf)); break;
-	case AX_UINT16:
+	case AXV_UINT16:
 		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%u", *((unsigned __int16*)m_valueBuf));	break;
-	case AX_INT32:
+	case AXV_INT32:
 		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%d", *((__int32*)m_valueBuf));	break;
-	case AX_UINT32:
+	case AXV_UINT32:
 		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%u", *((unsigned __int32*)m_valueBuf));	break;
-	case AX_FLOAT32:
+	case AXV_FLOAT32:
 		{
 			float abs_value = abs(*((float*)m_valueBuf));
 			bool need_scientific_notation = ((abs_value>(1e+16)) || ((abs_value>0.f) && abs_value<(1e-16)));
@@ -227,11 +211,11 @@ void ValueMessage::getValueAsString(std::wstring& value) const
 			StringCchPrintfW(temp, TEMP_STR_SIZE, need_scientific_notation ? L"%e" : L"%.8f", *((float*)m_valueBuf));
 		}
 		break;
-	case AX_INT64:
+	case AXV_INT64:
 		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%I64d", *((__int64*)m_valueBuf));	break;
-	case AX_UINT64:
+	case AXV_UINT64:
 		StringCchPrintfW(temp, TEMP_STR_SIZE, L"%I64u", *((unsigned __int64*)m_valueBuf));	break;
-	case AX_FLOAT64:
+	case AXV_FLOAT64:
 		{
 			double abs_value = abs(*((double*)m_valueBuf));
 			bool need_scientific_notation = ((abs_value>(1e+16)) || (abs_value>0.0 && (abs_value<(1e-16))));
@@ -239,7 +223,7 @@ void ValueMessage::getValueAsString(std::wstring& value) const
 			StringCchPrintfW(temp, TEMP_STR_SIZE, need_scientific_notation ? L"%e" : L"%.16f", *((double*)m_valueBuf));
 		}
 		break;
-	case AX_STR_ACP:
+	case AXV_STR_ACP:
 		{
 			wchar_t* wszBuf = new wchar_t[m_valueSize];
 			::MultiByteToWideChar(CP_ACP, 0, (const char*)m_valueBuf, m_valueSize, wszBuf, m_valueSize);
@@ -247,9 +231,9 @@ void ValueMessage::getValueAsString(std::wstring& value) const
 			delete[] wszBuf;
 		}
 		return;
-	case AX_STR_UTF8:
+	case AXV_STR_UTF8:
 		value = convertUTF8ToUTF16((const char*)m_valueBuf, m_valueSize); return;
-	case AX_STR_UTF16:
+	case AXV_STR_UTF16:
 		value = (const wchar_t*)m_valueBuf; return;
 	}
 
