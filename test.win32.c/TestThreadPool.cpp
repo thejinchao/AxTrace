@@ -218,7 +218,7 @@ void CThreadPool::ShutDown(void)
 	//强制关闭线程
 	for(it = m_vThreadPool.begin() ; it != m_vThreadPool.end() ; ++it)
 	{
-		switch(::WaitForSingleObject(*it, 10))
+		switch(::WaitForSingleObject(*it, INFINITE))
 		{
 		case WAIT_OBJECT_0:
 			// This is what we WANT to happen.
