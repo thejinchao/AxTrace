@@ -68,7 +68,7 @@ set(AXTRACE_SOURCES_RC
 source_group("Resource Files" FILES ${AXTRACE_SOURCES_RC})
 
 include_directories(
-	${CMAKE_CURRENT_SOURCE_DIR}/../WTL
+	${CMAKE_CURRENT_SOURCE_DIR}/WTL
 	$ENV{CYCLONE_SDK_ROOT}/include
 )
 
