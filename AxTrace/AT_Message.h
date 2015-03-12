@@ -93,13 +93,15 @@ public:
 	void getValueAsString(std::wstring& value) const;
 
 private:
-	AXTRACE_VALUE_TYPE m_valuetype;
-	wchar_t	m_name[AT_MaxValueNameLength];
+	unsigned int m_valuetype;
+	wchar_t	m_name[AXTRACE_MAX_VALUENAME_LENGTH];
 
 	void*	m_valueBuf;
 	size_t	m_valueSize;
 
-	unsigned char m_standValueBuf[8];
+	enum { STANDARD_VALUE_SIZE =32 };
+	unsigned char m_standValueBuf[STANDARD_VALUE_SIZE];
+
 public:
 	ValueMessage();
 	virtual ~ValueMessage();

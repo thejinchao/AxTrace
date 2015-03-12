@@ -121,16 +121,16 @@ void LogMessage::build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& he
 	}
 }
 
-#if 0
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 //Value Message
 //////////////////////////////////////////////////////////////////////////////////////////////
 ValueMessage::ValueMessage(void)
-	: m_valueBuf(0)
+	: Message()
+	, m_valueBuf(0)
 	, m_valueSize(0)
-	, Message()
 {
-	memset(m_name, 0, AT_MaxValueNameLength*sizeof(wchar_t));
+	memset(m_name, 0, AXTRACE_MAX_VALUENAME_LENGTH*sizeof(wchar_t));
 }
 
 //--------------------------------------------------------------------------------------------
@@ -159,37 +159,31 @@ size_t _getValueLength(AXTRACE_VALUE_TYPE valueType)
 }
 
 //--------------------------------------------------------------------------------------------
-void ValueMessage::build(const AXIATRACE_TIME& traceTime, const AXIATRACE_DATAHEAD& head, ringbuf_t ringBuf)
+void ValueMessage::build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
 {
 	memcpy(&m_traceTime, &traceTime, sizeof(m_traceTime));
 
-	m_nProcessID = head.dwProcessID;
-	m_nWindowID = head.cWinID;
-	m_nStyleID = head.cStyleID;
+	m_nProcessID = head.pid;
+	m_nThreadID = head.tid;
+	m_nWindowID = 0;
+	m_nStyleID = 0;
 
-	int value_type;
-	int name_length;
+	axtrace_value_s value_head;
+	size_t len = ringBuf->memcpy_out(&value_head, sizeof(value_head));
+	assert(len == sizeof(value_head));
 
-	void* rc = ringbuf_memcpy_from(&value_type, ringBuf, sizeof(int));
-	assert(rc!=0 && value_type>=0 && value_type<AX_MAX_VALUETYPE);
-	m_valuetype = (AXTRACE_VALUE_TYPE)value_type;
-
-	rc = ringbuf_memcpy_from(&name_length, ringBuf, sizeof(int));
-	assert(rc!=0 && name_length<AT_MaxValueNameLength);
+	m_valuetype = value_head.value_type;
+	m_valueSize = value_head.value_len;
 
 	//copy name 
-	char tempName[AT_MaxValueNameLength];
-	rc = ringbuf_memcpy_from(tempName, ringBuf, name_length);	//TODO: length check!
-	assert(rc!=0);
-	tempName[name_length] = 0;
-	wcscpy_s(m_name, AT_MaxValueNameLength, convertUTF8ToUTF16(tempName, name_length+1));
-
-	//value length
-	rc = ringbuf_memcpy_from(&m_valueSize, ringBuf, sizeof(m_valueSize));
-	assert(rc!=0);
+	char tempName[AXTRACE_MAX_VALUENAME_LENGTH];
+	int name_length = value_head.name_len;
+	len = ringBuf->memcpy_out(tempName, name_length+1);
+	assert(len == name_length+1);
+	wcscpy_s(m_name, AXTRACE_MAX_VALUENAME_LENGTH, convertUTF8ToUTF16(tempName, name_length+1));
 
 	//value
-	if(m_valuetype==AX_STR_ACP || m_valuetype==AX_STR_UTF8 || m_valuetype==AX_STR_UTF16)
+	if ((m_valuetype == AX_STR_ACP || m_valuetype == AX_STR_UTF8 || m_valuetype == AX_STR_UTF16) && m_valueSize>STANDARD_VALUE_SIZE)
 	{
 		//string value
 		m_valueBuf = new char[m_valueSize];
@@ -201,8 +195,8 @@ void ValueMessage::build(const AXIATRACE_TIME& traceTime, const AXIATRACE_DATAHE
 	}
 
 	//value
-	rc = ringbuf_memcpy_from(m_valueBuf, ringBuf, m_valueSize);
-	assert(rc!=0);
+	len = ringBuf->memcpy_out(m_valueBuf, m_valueSize);
+	assert(len == m_valueSize);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -261,7 +255,5 @@ void ValueMessage::getValueAsString(std::wstring& value) const
 
 	value = temp;
 }
-
-#endif
 
 }

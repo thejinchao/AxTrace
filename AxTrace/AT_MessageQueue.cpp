@@ -11,7 +11,6 @@
 #include "AT_System.h"
 #include "AT_MainFrame.h"
 
-#include <ATD_Interface.h>
 #include "AT_Interface.h"
 
 namespace AT3
@@ -165,11 +164,9 @@ Message* MessageQueue::_popMessage(void)
 		break;
 	case AXTRACE_CMD_TYPE_VALUE:
 		{
-#if 0
 			ValueMessage* msg = new ValueMessage();
 			msg->build(traceTime, head, m_ring_buf);
 			message = msg;
-#endif
 		}
 		break;
 	default: assert(false); break;
