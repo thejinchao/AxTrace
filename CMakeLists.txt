@@ -12,3 +12,4 @@ project(AxTrace)
 ########
 add_subdirectory(AxTrace)
 add_subdirectory(test.win32.c)
+add_subdirectory(test.cs)
