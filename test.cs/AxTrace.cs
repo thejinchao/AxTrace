@@ -6,6 +6,8 @@ using System.Text;
 using System.Reflection;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
+using System.Diagnostics;
 
 namespace com.thecodeway
 {
@@ -49,7 +51,6 @@ namespace com.thecodeway
         /* AxTrace Global data  */
         private class Context
         {
-            public bool inited;
             public bool init_success;
             public Socket socket;
             public string server_addr;
@@ -57,7 +58,6 @@ namespace com.thecodeway
 
             public Context()
             {
-                inited = false;
                 init_success = false;
                 server_addr = "127.0.0.1";
                 server_port = 1978;
@@ -65,7 +65,7 @@ namespace com.thecodeway
         };
 
         [ThreadStatic]
-        static Context g_context = new Context();
+        static Context g_context = null;
 
         /*---------------------------------------------------------------------------------------------*/
         /* axtrace communication data struct*/
@@ -102,11 +102,11 @@ namespace com.thecodeway
 
         static private Context _getContext()
         {
-            if (g_context.inited) return g_context;
+            if (g_context !=null) return g_context;
 
             try
             {
-                g_context.inited = true;
+                g_context = new Context();
 
                 //try connect to server
                 g_context.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -140,8 +140,8 @@ namespace com.thecodeway
             head.head.length = (ushort)(final_length);
             head.head.flag = (byte)'A';
             head.head.type = AXTRACE_CMD_TYPE_TRACE;
-            head.head.pid = 0;
-            head.head.tid = 0;
+            head.head.pid = (uint)Process.GetCurrentProcess().Id;
+            head.head.tid = (uint)Thread.CurrentThread.ManagedThreadId;
             head.head.style = style;
             head.code_page = AX_CODEPAGE_UTF8;
             head.length = (ushort)content_length;
@@ -170,8 +170,8 @@ namespace com.thecodeway
             head.head.length = (ushort)(final_length);
             head.head.flag = (byte)'A';
             head.head.type = AXTRACE_CMD_TYPE_VALUE;
-            head.head.pid = 0;
-            head.head.tid = 0;
+            head.head.pid = (uint)Process.GetCurrentProcess().Id;
+            head.head.tid = (uint)Thread.CurrentThread.ManagedThreadId;
             head.head.style = style;
 
             head.value_type = value_type;
