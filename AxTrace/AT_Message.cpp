@@ -162,14 +162,16 @@ void ValueMessage::build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& 
 	//copy name 
 	char tempName[AXTRACE_MAX_VALUENAME_LENGTH];
 	int name_length = value_head.name_len;
-	len = ringBuf->memcpy_out(tempName, name_length+1);
-	assert(len == name_length+1);
+	//TODO: check name length
+	len = ringBuf->memcpy_out(tempName, name_length);
+	assert(len == name_length);
+	tempName[name_length-1] = 0; //make sure last char is '\0'
 	wcscpy_s(m_name, AXTRACE_MAX_VALUENAME_LENGTH, convertUTF8ToUTF16(tempName, name_length+1));
 
 	//value
-	if ((m_valuetype == AXV_STR_ACP || m_valuetype == AXV_STR_UTF8 || m_valuetype == AXV_STR_UTF16) && m_valueSize>STANDARD_VALUE_SIZE)
+	if (m_valueSize>STANDARD_VALUE_SIZE)
 	{
-		//string value
+		//big value
 		m_valueBuf = new char[m_valueSize];
 		memset(m_valueBuf, 0, m_valueSize);
 	}
@@ -181,6 +183,17 @@ void ValueMessage::build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& 
 	//value
 	len = ringBuf->memcpy_out(m_valueBuf, m_valueSize);
 	assert(len == m_valueSize);
+
+	//make sure '\0' ended
+	if (m_valuetype == AXV_STR_ACP || m_valuetype == AXV_STR_UTF8)
+	{
+		((char*)m_valueBuf)[m_valueSize-1] = 0;
+	}
+	else if (m_valuetype == AXV_STR_UTF16)
+	{
+		((char*)m_valueBuf)[m_valueSize-1] = 0;
+		((char*)m_valueBuf)[m_valueSize-2] = 0;
+	}
 }
 
 //--------------------------------------------------------------------------------------------

@@ -92,6 +92,16 @@ static axtrace_contex_s* _axtrace_try_init(const char* server_ip, unsigned short
 
 	/* connect to axtrace server*/
 	ctx->sfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+	/* TODO: create non-blocking socket, so we can save some time when connect to server */
+
+	/* set SO_LINGER off, make sure all data in send buf can be sended */
+	struct linger linger_;
+	linger_.l_onoff = 0;
+	linger_.l_linger = 0;
+	setsockopt(ctx->sfd, SOL_SOCKET, SO_LINGER, (const void*)&linger_, sizeof(linger_));
+
+	/* connect to server */
 	if (connect(ctx->sfd, (const struct sockaddr*)&(ctx->address), sizeof(struct sockaddr_in)) == SOCKET_ERROR)
 	{
 		closesocket(ctx->sfd);
@@ -211,6 +221,7 @@ void axvalue(unsigned int style, unsigned int value_type, const char* value_name
 	size_t value_name_length;
 	size_t value_length;
 	int send_len;
+	size_t final_length;
 
 	/* buf for send , call send() once*/
 	char buf[sizeof(axtrace_value_s) + AXTRACE_MAX_VALUENAME_LENGTH + AXTRACE_MAX_VALUE_LENGTH] = { 0 };
@@ -225,7 +236,9 @@ void axvalue(unsigned int style, unsigned int value_type, const char* value_name
 	if (value_name == 0) return;
 	hr = StringCbLengthA(value_name, AXTRACE_MAX_VALUENAME_LENGTH - 1, &value_name_length);
 	if (FAILED(hr)) return;
-	if (value_name_length <= 0 || value_name_length>= AXTRACE_MAX_VALUENAME_LENGTH) return;
+	/* add '\0' ended */
+	value_name_length += 1;
+	if (value_name_length <= 0 || value_name_length >= AXTRACE_MAX_VALUENAME_LENGTH) return;
 
 	if (value == 0) return;
 	hr = _get_value_length(value_type, value, &value_length);
@@ -233,7 +246,7 @@ void axvalue(unsigned int style, unsigned int value_type, const char* value_name
 	if (value_length <= 0 || value_length >= AXTRACE_MAX_VALUE_LENGTH) return;
 
 	/*calc final length */
-	size_t final_length = sizeof(axtrace_value_s) + value_name_length + 1 + value_length;
+	final_length = sizeof(axtrace_value_s) + value_name_length + value_length;
 
 	trace_head->head.length = (unsigned short)(final_length);
 	trace_head->head.flag = 'A';
@@ -247,8 +260,8 @@ void axvalue(unsigned int style, unsigned int value_type, const char* value_name
 	trace_head->value_len = value_length;
 
 	/* fill the value data */
-	memcpy(value_name_buf, value_name, value_name_length + 1);
-	memcpy(value_name_buf + value_name_length + 1, value, value_length);
+	memcpy(value_name_buf, value_name, value_name_length);
+	memcpy(value_name_buf + value_name_length, value, value_length);
 
 	/* send to axtrace server*/
 	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
