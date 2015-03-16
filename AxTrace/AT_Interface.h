@@ -77,7 +77,7 @@ typedef __declspec(align(1)) struct
 	/* [value buf] */
 } axtrace_value_s;
 
-typedef __declspec(align(16)) struct
+typedef __declspec(align(2)) struct
 {
 	WORD wHour;
 	WORD wMinute;
