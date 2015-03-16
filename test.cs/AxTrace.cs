@@ -100,13 +100,19 @@ namespace com.thecodeway
             public ushort value_len;		/* length of value */
         } ;
 
-        static private Context _getContext()
+        static private Context _getContext(string ip, int port)
         {
             if (g_context !=null) return g_context;
 
             try
             {
                 g_context = new Context();
+                
+                if(ip!=null)
+                {
+                	g_context.server_addr = ip;
+                	g_context.server_port = port;
+                }
 
                 //try connect to server
                 g_context.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -123,9 +129,14 @@ namespace com.thecodeway
             return g_context;
         }
 
+        static public void SetServer(string ip, int port)
+        {
+            _getContext(ip, port);
+        }
+        
         static public void Trace(uint style, string format, params object[] args)
         {
-            Context ctx = _getContext();
+            Context ctx = _getContext(null, 0);
             if (!ctx.init_success) return;
 
             int headSize = Marshal.SizeOf(typeof(axtrace_trace_s));
@@ -190,7 +201,7 @@ namespace com.thecodeway
         }
         static public void Value(uint style, string name, sbyte value)
         {
-            Context ctx = _getContext();
+            Context ctx = _getContext(null, 0);
             if (!ctx.init_success) return;
 
             _value(ctx, style, name, 
@@ -199,7 +210,7 @@ namespace com.thecodeway
         }
         static public void Value(uint style, string name, byte value)
         {
-            Context ctx = _getContext();
+            Context ctx = _getContext(null, 0);
             if (!ctx.init_success) return;
 
             _value(ctx, style, name,
@@ -208,7 +219,7 @@ namespace com.thecodeway
         }
         static public void Value(uint style, string name, short value)
         {
-            Context ctx = _getContext();
+            Context ctx = _getContext(null, 0);
             if (!ctx.init_success) return;
 
             _value(ctx, style, name,
@@ -217,7 +228,7 @@ namespace com.thecodeway
         }
         static public void Value(uint style, string name, ushort value)
         {
-            Context ctx = _getContext();
+            Context ctx = _getContext(null, 0);
             if (!ctx.init_success) return;
 
             _value(ctx, style, name,
@@ -226,7 +237,7 @@ namespace com.thecodeway
         }
         static public void Value(uint style, string name, int value)
         {
-            Context ctx = _getContext();
+            Context ctx = _getContext(null, 0);
             if (!ctx.init_success) return;
 
             _value(ctx, style, name,
@@ -235,7 +246,7 @@ namespace com.thecodeway
         }
         static public void Value(uint style, string name, uint value)
         {
-            Context ctx = _getContext();
+            Context ctx = _getContext(null, 0);
             if (!ctx.init_success) return;
 
             _value(ctx, style, name,
@@ -244,7 +255,7 @@ namespace com.thecodeway
         }
         static public void Value(uint style, string name, long value)
         {
-            Context ctx = _getContext();
+            Context ctx = _getContext(null, 0);
             if (!ctx.init_success) return;
 
             _value(ctx, style, name,
@@ -253,7 +264,7 @@ namespace com.thecodeway
         }
         static public void Value(uint style, string name, ulong value)
         {
-            Context ctx = _getContext();
+            Context ctx = _getContext(null, 0);
             if (!ctx.init_success) return;
 
             _value(ctx, style, name,
@@ -262,7 +273,7 @@ namespace com.thecodeway
         }
         static public void Value(uint style, string name, float value)
         {
-            Context ctx = _getContext();
+            Context ctx = _getContext(null, 0);
             if (!ctx.init_success) return;
 
             _value(ctx, style, name,
@@ -271,7 +282,7 @@ namespace com.thecodeway
         }
         static public void Value(uint style, string name, double value)
         {
-            Context ctx = _getContext();
+            Context ctx = _getContext(null, 0);
             if (!ctx.init_success) return;
 
             _value(ctx, style, name,
@@ -280,7 +291,7 @@ namespace com.thecodeway
         }
         static public void Value(uint style, string name, string value)
         {
-            Context ctx = _getContext();
+            Context ctx = _getContext(null, 0);
             if (!ctx.init_success) return;
 
             byte[] stringBytes = System.Text.Encoding.UTF8.GetBytes(value);
