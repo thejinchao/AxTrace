@@ -229,7 +229,8 @@ void MainFrame::updateButtons(MDI_STATUS status)
 	UISetCheck(ID_SYSTEM_RECEIVE, System::getSingleton()->getConfig()->getCapture());
 	UISetCheck(ID_SYSTEM_AUTOSCROLL, System::getSingleton()->getConfig()->getAutoScroll());
 	UIEnable(ID_HELP, FALSE); //NOT SUPPORT YET...
-	
+	UIEnable(ID_OPTION_SETTING, FALSE);
+
 	if(status==MS_MDI)
 	{
 		UIEnable(ID_FILE_SAVEAS, FALSE);
