@@ -14,6 +14,7 @@ import com.thecodeway.axtrace.AxTrace;
 public class MainActivity extends Activity implements OnClickListener
 {
 	private Button buttonTest;
+	private ExecutorService threadPool = Executors.newFixedThreadPool(5);
 	
     /** Called when the activity is first created. */
     @Override
@@ -26,7 +27,7 @@ public class MainActivity extends Activity implements OnClickListener
         buttonTest.setOnClickListener(this);
         
         //set axtrace server address
-        AxTrace.SetTraceServer("127.0.0.1", 1978);
+        //AxTrace.SetTraceServer("127.0.0.1", 1978);
     }
     
     @Override
@@ -40,22 +41,19 @@ public class MainActivity extends Activity implements OnClickListener
     
     private void startTest() {
 		//test AxTrace
-		AxTrace.Trace("-=-=-=-=-=-= Hello,World -=-=-=-=-=-=-=-=-=-");
-		AxTrace.Trace("中文字符+Ascii");
-		AxTrace.Trace("MultiLineTest\nLine1:第一行\nLine2:第二行\nLine%d:第三行",3);
+    	AxTrace.Trace(AxTrace.AXT_TRACE, "-=-=-=-=-=-= Hello,World -=-=-=-=-=-=-=-=-=-");
+    	AxTrace.Trace(AxTrace.AXT_TRACE, "中文字符+Ascii");
+    	AxTrace.Trace(AxTrace.AXT_TRACE, "MultiLineTest\nLine1:第一行\nLine2:第二行\nLine%d:第三行",3);
 	
-		AxTrace.TraceEx(0, 1, "TraceEx: 中文字符, Style=%d", 1);
-		AxTrace.TraceEx(0, 2, "TraceEx: 中文字符, Style=%d", 2);
-		AxTrace.TraceEx(1, 2, "Window%d, Style%d: TraceEx: 中文字符", 1, 2);
     	
 		//--------------------------
-		//press test
+		//pressure test
 		{
 			int blank_Count=0;
 			int step=1;
 			int MAX_BLANK_COUNT=50;
 
-			AxTrace.Trace("<BEGIN>");
+			AxTrace.Trace(AxTrace.AXT_TRACE, "<BEGIN>");
 			for(int i=0; i<500; i++)
 			{
 				byte[] szTemp = new byte[blank_Count+1];
@@ -70,30 +68,30 @@ public class MainActivity extends Activity implements OnClickListener
 				szTemp[j++] = '*';
 
 				String str = new String(szTemp);
-				AxTrace.Trace(str);
+				AxTrace.Trace(AxTrace.AXT_TRACE, str);
 			}
-			AxTrace.Trace("<END>");
+			AxTrace.Trace(AxTrace.AXT_TRACE, "<END>");
 		}
-		
+
+    	
 		//--------------------------------------
-		//thread pool
+		//thread pool press test
 		{
-			class MyThread extends Thread {
-				public MyThread(String str) {
+			class TraceThread extends Thread {
+				public TraceThread(String str) {
 					strToShow = str;
 				}
-				public String strToShow;
+				private String strToShow;
 				public void run() {
-					AxTrace.Trace("[%d]%s", Thread.currentThread().getId(), strToShow);
+					AxTrace.Trace(AxTrace.AXT_TRACE, strToShow);
                 }
 			}
 			
 			int blank_Count=0;
 			int step=1;
 			int MAX_BLANK_COUNT=50;
-		
-			ExecutorService pool = Executors.newFixedThreadPool(10);
-			for(int i=0 ; i< 500 ; i++) {
+			AxTrace.Trace(AxTrace.AXT_TRACE, "<MULTI THREAD BEGIN>");
+			for(int i=0 ; i< 100 ; i++) {
 				
 				byte[] szTemp = new byte[blank_Count+1];
 				
@@ -104,14 +102,17 @@ public class MainActivity extends Activity implements OnClickListener
 				if(blank_Count>=MAX_BLANK_COUNT) step=-1;
 				if(blank_Count<=0)step=1;
 
-				szTemp[j++] = '*';
-				
-				Thread tt = new MyThread(new String(szTemp));
-				//tt.strToShow = new String(szTemp);
-	            pool.submit(tt);
-	        }			
+				szTemp[j++] = '#';
+				String r = String.format("[%03d]", i) + new String(szTemp);
+				threadPool.submit(new TraceThread(r));
+	        }	
+			
+			AxTrace.Trace(AxTrace.AXT_TRACE, "<MULTI THREAD END>");
 		}
-	
+		
+		/*
+		//--------------------------------------
+		//value test
 		{
 			//test value
 			AxTrace.Value("Int_Test", (int)-12345);
@@ -227,5 +228,6 @@ public class MainActivity extends Activity implements OnClickListener
 				if(start_blank<=0) start_step=1;
 			}			
 		}
+		*/
     }
 }
