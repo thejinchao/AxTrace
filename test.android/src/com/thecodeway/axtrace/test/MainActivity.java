@@ -8,12 +8,16 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.thecodeway.axtrace.AxTrace;
 
 public class MainActivity extends Activity implements OnClickListener
 {
 	private Button buttonTest;
+	private TextView editServerIp;
+	private TextView editServerPort;
+	
 	private ExecutorService threadPool = Executors.newFixedThreadPool(5);
 	
     /** Called when the activity is first created. */
@@ -25,6 +29,9 @@ public class MainActivity extends Activity implements OnClickListener
         
         buttonTest = (Button)findViewById(R.id.button_test);
         buttonTest.setOnClickListener(this);
+        
+        editServerIp = (TextView)findViewById(R.id.edit_server_ip);
+        editServerPort = (TextView)findViewById(R.id.edit_server_port);
         
         //set axtrace server address
         //AxTrace.SetTraceServer("127.0.0.1", 1978);
@@ -40,7 +47,11 @@ public class MainActivity extends Activity implements OnClickListener
     }
     
     private void startTest() {
-    	
+    	String serverIp = editServerIp.getText().toString();
+    	String serverPort = editServerPort.getText().toString();
+    	AxTrace.SetTraceServer(serverIp, (int)Long.parseLong(serverPort));
+ 
+  	
 		//test AxTrace
     	AxTrace.Trace(AxTrace.AXT_TRACE, "-=-=-=-=-=-= Hello,World -=-=-=-=-=-=-=-=-=-");
     	AxTrace.Trace(AxTrace.AXT_TRACE, "ÖÐÎÄ×Ö·û+Ascii");

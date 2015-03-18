@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
-import android.util.Log;
 
 public class AxTrace {
 	public static final int AXT_TRACE = 1;
@@ -49,6 +48,11 @@ public class AxTrace {
     
     private static String mServerAddress="127.0.0.1";
     private static int mServerPort = 1978;
+    
+    static public synchronized void SetTraceServer(String ip, int port) {
+		mServerAddress = ip;
+		mServerPort = port;
+	}
     
 	static public void Trace(int style, String param, Object... args) {
 		String finalString = String.format(param, args);
@@ -381,7 +385,6 @@ public class AxTrace {
 			
 			//send in current thread
 			mThreadData.get().mNetwork.sendValue(valueData);
-		
 		}
 		
 	}

@@ -1,20 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     >
+    
+ <TextView
+     android:id="@+id/label_server_ip"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:layout_alignParentLeft="true"
+	android:layout_alignParentTop="true"
+	android:text="AxTrace ServerIP:     "
+	>
+ </TextView>
+     
+ <EditText
+	android:id="@+id/edit_server_ip"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:layout_alignParentRight="true"
+	android:layout_toRightOf="@id/label_server_ip"
+	android:layout_marginTop="1dp"
+	android:text="127.0.0.1"
+	android:ems="10" >
 
+ 	<requestFocus />
+ </EditText>
+    
+<TextView
+    android:id="@+id/label_server_port"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:layout_alignParentLeft="true"
+	android:layout_below="@id/edit_server_ip"
+	android:text="AxTrace ServerPort: "
+	>
+ </TextView>
+     
+  <EditText
+	android:id="@+id/edit_server_port"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:layout_alignParentRight="true"
+    android:layout_below="@id/edit_server_ip"
+	android:layout_toRightOf="@id/label_server_port"
+	android:layout_marginTop="1dp"
+	android:text="1978"
+	android:ems="10" >
+
+ </EditText>
+ 
 <Button
     android:id="@+id/button_test"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    android:layout_below="@id/edit_server_port"
+	android:layout_alignParentLeft="true"
     android:text="Test" />
 
-<TextView
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:text="Hello World" />
 
-</LinearLayout>
+</RelativeLayout>
 
