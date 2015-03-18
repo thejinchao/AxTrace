@@ -40,11 +40,11 @@ public class MainActivity extends Activity implements OnClickListener
     }
     
     private void startTest() {
+    	
 		//test AxTrace
     	AxTrace.Trace(AxTrace.AXT_TRACE, "-=-=-=-=-=-= Hello,World -=-=-=-=-=-=-=-=-=-");
     	AxTrace.Trace(AxTrace.AXT_TRACE, "中文字符+Ascii");
     	AxTrace.Trace(AxTrace.AXT_TRACE, "MultiLineTest\nLine1:第一行\nLine2:第二行\nLine%d:第三行",3);
-	
     	
 		//--------------------------
 		//pressure test
@@ -110,37 +110,39 @@ public class MainActivity extends Activity implements OnClickListener
 			AxTrace.Trace(AxTrace.AXT_TRACE, "<MULTI THREAD END>");
 		}
 		
-		/*
+    	
+    	
 		//--------------------------------------
 		//value test
 		{
 			//test value
-			AxTrace.Value("Int_Test", (int)-12345);
+			AxTrace.Value(AxTrace.AXT_TRACE, "Int_Test", (int)-12345);
 	
-			AxTrace.Value("BYTE_MAX_VALUE", (byte)Byte.MAX_VALUE);
-			AxTrace.Value("BYTE_MIN_VALUE", (byte)Byte.MIN_VALUE);
+			AxTrace.Value(AxTrace.AXT_TRACE, "BYTE_MAX_VALUE", (byte)Byte.MAX_VALUE);
+			AxTrace.Value(AxTrace.AXT_TRACE, "BYTE_MIN_VALUE", (byte)Byte.MIN_VALUE);
 	
-			AxTrace.Value("SHORT_MAX_VALUE", (short)Short.MAX_VALUE);
-			AxTrace.Value("SHORT_MIN_VALUE", (short)Short.MIN_VALUE);
+			AxTrace.Value(AxTrace.AXT_TRACE, "SHORT_MAX_VALUE", (short)Short.MAX_VALUE);
+			AxTrace.Value(AxTrace.AXT_TRACE, "SHORT_MIN_VALUE", (short)Short.MIN_VALUE);
 	
-			AxTrace.Value("INT_MAX_VALUE", (int)Integer.MAX_VALUE);
-			AxTrace.Value("INT_MIN_VALUE", (int)Integer.MIN_VALUE);
+			AxTrace.Value(AxTrace.AXT_TRACE, "INT_MAX_VALUE", (int)Integer.MAX_VALUE);
+			AxTrace.Value(AxTrace.AXT_TRACE, "INT_MIN_VALUE", (int)Integer.MIN_VALUE);
 	
-			AxTrace.Value("LONG_MAX_VALUE", (long)Long.MAX_VALUE);
-			AxTrace.Value("LONG_MIN_VALUE", (long)Long.MIN_VALUE);
+			AxTrace.Value(AxTrace.AXT_TRACE, "LONG_MAX_VALUE", (long)Long.MAX_VALUE);
+			AxTrace.Value(AxTrace.AXT_TRACE, "LONG_MIN_VALUE", (long)Long.MIN_VALUE);
 			
-			AxTrace.Value("Float_Test", (float)-3.1415926f);
-			AxTrace.Value("Double_Test", (double)-3.141592653589793238462643383279);
+			AxTrace.Value(AxTrace.AXT_TRACE, "Float_Test", (float)-3.1415926f);
+			AxTrace.Value(AxTrace.AXT_TRACE, "Double_Test", (double)-3.141592653589793238462643383279);
 			
-			AxTrace.Value("FLOAT_MAX_VALUE", (float)Float.MAX_VALUE);
-			AxTrace.Value("FLOAT_MIN_VALUE", (float)Float.MIN_VALUE);
+			AxTrace.Value(AxTrace.AXT_TRACE, "FLOAT_MAX_VALUE", (float)Float.MAX_VALUE);
+			AxTrace.Value(AxTrace.AXT_TRACE, "FLOAT_MIN_VALUE", (float)Float.MIN_VALUE);
 			
-			AxTrace.Value("DOUBLE_MAX_VALUE", (double)Double.MAX_VALUE);
-			AxTrace.Value("DOUBLE_MIN_VALUE", (double)Double.MIN_VALUE);
+			AxTrace.Value(AxTrace.AXT_TRACE, "DOUBLE_MAX_VALUE", (double)Double.MAX_VALUE);
+			AxTrace.Value(AxTrace.AXT_TRACE, "DOUBLE_MIN_VALUE", (double)Double.MIN_VALUE);
 			
-			AxTrace.Value("String_Test", "String 汉字");
+			AxTrace.Value(AxTrace.AXT_TRACE, "String_Test", "String 汉字");
 		}
 		
+    			
 		{
 
 			//AxValue Pressure Test
@@ -150,7 +152,7 @@ public class MainActivity extends Activity implements OnClickListener
 	
 			for(int i=0; i<100; i++)
 			{
-				AxTrace.Value("start_blank", start_blank);
+				AxTrace.Value(AxTrace.AXT_TRACE, "start_blank", start_blank);
 				
 				int blank_Count=start_blank;
 				int step=start_step;
@@ -169,7 +171,7 @@ public class MainActivity extends Activity implements OnClickListener
 					szTemp[k++] = '*';
 	
 					String value_name = "Value_"+ j;
-					AxTrace.Value(value_name, new String(szTemp));
+					AxTrace.Value(AxTrace.AXT_TRACE, value_name, new String(szTemp));
 				}
 	
 				start_blank += start_step;
@@ -180,14 +182,14 @@ public class MainActivity extends Activity implements OnClickListener
 		
 		
 		{
-			class MyValueThread extends Thread {
-				public MyValueThread(String name, String value) {
+			class AxValueThread extends Thread {
+				public AxValueThread(String name, String value) {
 					strName = name; strValue = value;
 				}
 				private String strName;
 				private String strValue;
 				public void run() {
-					AxTrace.Value(strName, strValue);
+					AxTrace.Value(AxTrace.AXT_TRACE, strName, strValue);
                 }
 			}
 			
@@ -196,11 +198,9 @@ public class MainActivity extends Activity implements OnClickListener
 			int start_step=1;
 			int MAX_BLANK_COUNT=50;
 			
-			ExecutorService pool = Executors.newFixedThreadPool(10);
-			
-			for(int i=0; i<500; i++)
+			for(int i=0; i<100; i++)
 			{
-				AxTrace.Value("start_blank_multiThread", start_blank);
+				AxTrace.Value(AxTrace.AXT_TRACE, "start_blank_multiThread", start_blank);
 				int blank_Count=start_blank;
 				int step=start_step;
 
@@ -215,12 +215,12 @@ public class MainActivity extends Activity implements OnClickListener
 					if(blank_Count>=MAX_BLANK_COUNT) step=-1;
 					if(blank_Count<=0)step=1;
 
-					szTemp[k++] = '*';
+					szTemp[k++] = '#';
 
 					String value_name = "Value_" + j;
 
-					Thread tt = new MyValueThread(value_name, new String(szTemp));
-		            pool.submit(tt);
+					Thread tt = new AxValueThread(value_name, new String(szTemp));
+		            threadPool.submit(tt);
 				}
 
 				start_blank += start_step;
@@ -228,6 +228,5 @@ public class MainActivity extends Activity implements OnClickListener
 				if(start_blank<=0) start_step=1;
 			}			
 		}
-		*/
     }
 }
