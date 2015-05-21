@@ -31,6 +31,9 @@ Incoming::~Incoming()
 //--------------------------------------------------------------------------------------------
 bool Incoming::init(void)
 {
+	//disable cyclone log
+	cyclone::set_log_threshold(cyclone::L_MAXIMUM_LEVEL);
+
 	cyclone::Address address(DEFAULT_PORT, false);
 	m_server = new cyclone::TcpServer(this);
 
