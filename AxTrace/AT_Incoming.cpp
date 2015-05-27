@@ -39,7 +39,8 @@ bool Incoming::init(void)
 
 	m_server->set_message_callback(_cyclone_message_callback_entry);
 
-	return m_server->start(address, false, 2);
+	m_server->bind(address, false);
+	return m_server->start(2);
 }
 
 //--------------------------------------------------------------------------------------------
