@@ -17,7 +17,7 @@ namespace AT3
 
 /** Incoming module
 */
-class Incoming
+class Incoming : public cyclone::TcpServer::Listener
 {
 public:
 	//default listen port is 1978 :)
@@ -31,8 +31,10 @@ public:
 private:
 	cyclone::TcpServer* m_server;
 
-	static void _cyclone_message_callback_entry(cyclone::TcpServer* server, cyclone::Connection* conn);
-	void _cyclone_message_callback(cyclone::Connection* conn);
+	virtual void on_connection_callback(cyclone::TcpServer* server, int32_t thread_index, cyclone::Connection* conn);
+	virtual void on_message_callback(cyclone::TcpServer* server, int32_t thread_index, cyclone::Connection* conn);
+	virtual void on_close_callback(cyclone::TcpServer* server, int32_t thread_index, cyclone::Connection* conn);
+	virtual void on_extra_workthread_msg(cyclone::TcpServer* server, int32_t thread_index, cyclone::Packet* msg);
 
 public:
 	Incoming();

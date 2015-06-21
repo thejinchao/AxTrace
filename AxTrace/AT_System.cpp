@@ -50,9 +50,7 @@ bool System::init(HINSTANCE hInstance, LPSTR lpCmdLine)
 	m_theConfig->loadSetting();
 
 	//init receive thread
-	m_pIncoming->init();
-
-	return true;
+	return m_pIncoming->init();
 }
 
 //--------------------------------------------------------------------------------------------

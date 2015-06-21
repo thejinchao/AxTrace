@@ -77,8 +77,6 @@ link_directories(
 )
 
 add_definitions(-D_UNICODE -DUNICODE)
-set(CMAKE_CXX_FLAGS_DEBUG	"${CMAKE_CXX_FLAGS_DEBUG} /MTd")
-set(CMAKE_CXX_FLAGS_RELEASE	"${CMAKE_CXX_FLAGS_RELEASE} /MT")
 
 foreach(src_file ${AXTRACE_SOURCES_CPP})
 	set_source_files_properties(
@@ -104,4 +102,5 @@ ADD_EXECUTABLE(AxTrace WIN32
 target_link_libraries(AxTrace
 	ws2_32
 	cyclone
+	winmm
 )

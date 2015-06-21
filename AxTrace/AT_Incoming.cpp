@@ -35,22 +35,20 @@ bool Incoming::init(void)
 	cyclone::set_log_threshold(cyclone::L_MAXIMUM_LEVEL);
 
 	cyclone::Address address(DEFAULT_PORT, false);
-	m_server = new cyclone::TcpServer(this);
-
-	m_server->set_message_callback(_cyclone_message_callback_entry);
+	m_server = new cyclone::TcpServer(this, "axtrace");
 
 	m_server->bind(address, false);
 	return m_server->start(2);
 }
 
 //--------------------------------------------------------------------------------------------
-void Incoming::_cyclone_message_callback_entry(cyclone::TcpServer* server, cyclone::Connection* conn)
+void Incoming::on_connection_callback(cyclone::TcpServer* server, int32_t thread_index, cyclone::Connection* conn)
 {
-	((Incoming*)(server->get_callback_param()))->_cyclone_message_callback(conn);
+
 }
 
 //--------------------------------------------------------------------------------------------
-void Incoming::_cyclone_message_callback(cyclone::Connection* conn)
+void Incoming::on_message_callback(cyclone::TcpServer* server, int32_t thread_index, cyclone::Connection* conn)
 {
 	cyclone::RingBuf& input_buf = conn->get_input_buf();
 
@@ -82,6 +80,18 @@ void Incoming::_cyclone_message_callback(cyclone::Connection* conn)
 			System::getSingleton()->getMessageQueue()->insertMessage(&input, head.length, &tTime);
 		} while (true);
 	}
+
+}
+
+//--------------------------------------------------------------------------------------------
+void Incoming::on_close_callback(cyclone::TcpServer* server, int32_t thread_index, cyclone::Connection* conn)
+{
+
+}
+
+//--------------------------------------------------------------------------------------------
+void Incoming::on_extra_workthread_msg(cyclone::TcpServer* server, int32_t thread_index, cyclone::Packet* msg)
+{
 
 }
 
