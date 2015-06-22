@@ -21,7 +21,7 @@ public:
 	struct Result
 	{
 		bool		display;
-		std::string wndTitle;
+		std::string wndTitle;		//utf8
 		ExtraColor	fontColor;
 		ExtraColor	backColor;
 	};

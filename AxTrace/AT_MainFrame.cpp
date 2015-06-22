@@ -261,7 +261,7 @@ TraceFrameWnd* MainFrame::getTraceWnd(const std::string& windowTitle)
 	if(it!=m_traceWndMap.end()) return it->second;
 
 	wchar_t temp[64]={0};
-	StringCchPrintfW(temp, 64, _T("Log:%s"), windowTitle.c_str());
+	StringCchPrintfW(temp, 64, _T("Log:%s"), convertUTF8ToUTF16(windowTitle.c_str(), windowTitle.length()+1));
 
 	TraceFrameWnd* pChild = new TraceFrameWnd((CUpdateUIBase*)this, windowTitle);
 	pChild->CreateEx(m_hWndClient, NULL, temp);
@@ -277,7 +277,7 @@ ValueFrameWnd* MainFrame::getValueWnd(const std::string& windowTitle)
 	if(it!=m_valueWndMap.end()) return it->second;
 
 	wchar_t temp[64]={0};
-	StringCchPrintfW(temp, 64, _T("Value:%s"), windowTitle.c_str());
+	StringCchPrintfW(temp, 64, _T("Value:%s"), convertUTF8ToUTF16(windowTitle.c_str(), windowTitle.length()+1));
 
 	ValueFrameWnd* pChild = new ValueFrameWnd((CUpdateUIBase*)this, windowTitle);
 	pChild->CreateEx(m_hWndClient, NULL, temp);
