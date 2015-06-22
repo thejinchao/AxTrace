@@ -205,15 +205,15 @@ void MainFrame::onChildDestroy(IChildFrame* child)
 	if(m_currentActiveChild==child) m_currentActiveChild=0;
 	if(child->getChildType()==IChildFrame::CS_TRACE_FRAME)
 	{
-		m_traceWndMap.erase(child->getWindowID());
+		m_traceWndMap.erase(child->getWindowTitle());
 	}
 	else if(child->getChildType()==IChildFrame::CS_VALUE_FRAME)
 	{
-		m_valueWndMap.erase(child->getWindowID());
+		m_valueWndMap.erase(child->getWindowTitle());
 	}
 	else if(child->getChildType()==IChildFrame::CS_TICK_FRAME)
 	{
-		m_tickWndMap.erase(child->getWindowID());
+		m_tickWndMap.erase(child->getWindowTitle());
 	}
 }
 
@@ -255,50 +255,50 @@ void MainFrame::updateButtons(MDI_STATUS status)
 }
 
 //--------------------------------------------------------------------------------------------
-TraceFrameWnd* MainFrame::getTraceWnd(unsigned int winID)
+TraceFrameWnd* MainFrame::getTraceWnd(const std::string& windowTitle)
 {
-	TraceWndMap::iterator it = m_traceWndMap.find(winID);
+	TraceWndMap::iterator it = m_traceWndMap.find(windowTitle);
 	if(it!=m_traceWndMap.end()) return it->second;
 
 	wchar_t temp[64]={0};
-	StringCchPrintfW(temp, 64, _T("Log %d"), winID);
+	StringCchPrintfW(temp, 64, _T("Log:%s"), windowTitle.c_str());
 
-	TraceFrameWnd* pChild = new TraceFrameWnd((CUpdateUIBase*)this, winID);
+	TraceFrameWnd* pChild = new TraceFrameWnd((CUpdateUIBase*)this, windowTitle);
 	pChild->CreateEx(m_hWndClient, NULL, temp);
 
-	m_traceWndMap.insert(std::make_pair(winID, pChild));
+	m_traceWndMap.insert(std::make_pair(windowTitle, pChild));
 	return pChild;
 }
 
 //--------------------------------------------------------------------------------------------
-ValueFrameWnd* MainFrame::getValueWnd(unsigned int winID)
+ValueFrameWnd* MainFrame::getValueWnd(const std::string& windowTitle)
 {
-	ValueWndMap::iterator it = m_valueWndMap.find(winID);
+	ValueWndMap::iterator it = m_valueWndMap.find(windowTitle);
 	if(it!=m_valueWndMap.end()) return it->second;
 
 	wchar_t temp[64]={0};
-	StringCchPrintfW(temp, 64, _T("Value %d"), winID);
+	StringCchPrintfW(temp, 64, _T("Value:%s"), windowTitle.c_str());
 
-	ValueFrameWnd* pChild = new ValueFrameWnd((CUpdateUIBase*)this, winID);
+	ValueFrameWnd* pChild = new ValueFrameWnd((CUpdateUIBase*)this, windowTitle);
 	pChild->CreateEx(m_hWndClient, NULL, temp);
 
-	m_valueWndMap.insert(std::make_pair(winID, pChild));
+	m_valueWndMap.insert(std::make_pair(windowTitle, pChild));
 	return pChild;
 }
 
 //--------------------------------------------------------------------------------------------
-TickFrameWnd* MainFrame::getTickWnd(unsigned int winID)
+TickFrameWnd* MainFrame::getTickWnd(const std::string& windowTitle)
 {
-	TickWndMap::iterator it = m_tickWndMap.find(winID);
+	TickWndMap::iterator it = m_tickWndMap.find(windowTitle);
 	if(it!=m_tickWndMap.end()) return it->second;
 
 	wchar_t temp[64]={0};
-	StringCchPrintfW(temp, 64, _T("Tick %d"), winID);
+	StringCchPrintfW(temp, 64, _T("Tick:%s"), windowTitle.c_str());
 
-	TickFrameWnd* pChild = new TickFrameWnd((CUpdateUIBase*)this, winID);
+	TickFrameWnd* pChild = new TickFrameWnd((CUpdateUIBase*)this, windowTitle);
 	pChild->CreateEx(m_hWndClient, NULL, temp);
 
-	m_tickWndMap.insert(std::make_pair(winID, pChild));
+	m_tickWndMap.insert(std::make_pair(windowTitle, pChild));
 	return pChild;
 }
 

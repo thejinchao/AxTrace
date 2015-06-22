@@ -113,9 +113,9 @@ public:
 	void updateButtons(MDI_STATUS status=MS_UNKNOWN);
 
 public:
-	TraceFrameWnd* getTraceWnd(unsigned int winID);
-	ValueFrameWnd* getValueWnd(unsigned int winID);
-	TickFrameWnd* getTickWnd(unsigned int winID);
+	TraceFrameWnd* getTraceWnd(const std::string& windowTitle);
+	ValueFrameWnd* getValueWnd(const std::string& windowTitle);
+	TickFrameWnd* getTickWnd(const std::string& windowTitle);
 
 	void onChildActive(IChildFrame* child);
 	void onChildDestroy(IChildFrame* child);
@@ -126,13 +126,13 @@ public:
 private:
 	CMDICommandBarCtrl		m_CmdBar;		//!< Command Bar Control.
 
-	typedef std::map< unsigned int, TraceFrameWnd* > TraceWndMap;
+	typedef std::map< std::string, TraceFrameWnd* > TraceWndMap;
 	TraceWndMap				m_traceWndMap;
 
-	typedef std::map< unsigned int, ValueFrameWnd* > ValueWndMap;
+	typedef std::map< std::string, ValueFrameWnd* > ValueWndMap;
 	ValueWndMap				m_valueWndMap;
 
-	typedef std::map< unsigned int, TickFrameWnd* > TickWndMap;
+	typedef std::map< std::string, TickFrameWnd* > TickWndMap;
 	TickWndMap				m_tickWndMap;
 
 	MDI_STATUS				m_mdiStatus;

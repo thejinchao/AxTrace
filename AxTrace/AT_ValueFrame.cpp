@@ -15,9 +15,9 @@ namespace AT3
 {
 
 //--------------------------------------------------------------------------------------------
-ValueFrameWnd::ValueFrameWnd(CUpdateUIBase* pUpdateUI, int windowID)
+ValueFrameWnd::ValueFrameWnd(CUpdateUIBase* pUpdateUI, const std::string& windowTitle)
 	: m_pUpdateUI(pUpdateUI)
-	, m_windowID(windowID)
+	, m_windowTitle(windowTitle)
 {
 
 }

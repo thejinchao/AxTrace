@@ -17,9 +17,9 @@ namespace AT3
 {
 
 //--------------------------------------------------------------------------------------------
-TraceFrameWnd::TraceFrameWnd(CUpdateUIBase* pUpdateUI, int windowID)
+TraceFrameWnd::TraceFrameWnd(CUpdateUIBase* pUpdateUI, const std::string& windowTitle)
 	: m_pUpdateUI(pUpdateUI)
-	, m_windowID(windowID)
+	, m_windowTitle(windowTitle)
 	, m_nLogIndex(0)
 {
 

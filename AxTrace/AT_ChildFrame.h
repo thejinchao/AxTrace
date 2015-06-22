@@ -23,8 +23,8 @@ public:
 
 	/** get child type */
 	virtual CHILD_STYLE getChildType(void) = 0;
-	/** get window id*/
-	virtual int getWindowID(void) = 0;
+	/** get window title*/
+	virtual const std::string& getWindowTitle(void) = 0;
 	/** get native wnd handle */
 	virtual HWND getNativeWnd(void) = 0;
 	/** redraw */

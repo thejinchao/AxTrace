@@ -21,7 +21,8 @@ set(AXTRACE_SOURCES_CPP
 	AT_TickFrame.cpp    
 	AT_TraceFrame.cpp   
 	AT_Util.cpp         
-	AT_ValueFrame.cpp   
+	AT_ValueFrame.cpp 
+	AT_Filter.cpp  
 )
 
 set(AXTRACE_SOURCES_CPP_PRECOMPILED 
@@ -54,6 +55,7 @@ set(AXTRACE_SOURCES_INC
 	AT_TraceFrame.h  
 	AT_Util.h        
 	AT_ValueFrame.h  
+	AT_Filter.h
 	resource.h       
 	StdAfx.h         
 )

@@ -20,8 +20,8 @@ class TickFrameWnd : public CMDIChildWindowImpl<TickFrameWnd>, public IChildFram
 public:
 	/** get child type */
 	virtual CHILD_STYLE getChildType(void) { return CS_TICK_FRAME; }
-	/** get window id*/
-	virtual int getWindowID(void) { return m_windowID; }
+	/** get window title*/
+	virtual const std::string& getWindowTitle(void) { return m_windowTitle; }
 	/** redraw */
 	virtual void redraw(void);
 	/** get native wnd handle */
@@ -58,14 +58,14 @@ public:
 	*************************************************************************/
 private:
 	CUpdateUIBase* m_pUpdateUI;
-	int m_windowID;
+	std::string m_windowTitle;
 	CTickDialog* m_wndTickWnd;
 
 	/*************************************************************************
 		Construction and Destruction
 	*************************************************************************/
 public:
-	TickFrameWnd(CUpdateUIBase* pUpdateUI, int windowID);
+	TickFrameWnd(CUpdateUIBase* pUpdateUI, const std::string& windowTitle);
 	~TickFrameWnd();
 };
 

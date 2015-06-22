@@ -12,7 +12,6 @@ namespace AT3
 Message::Message(void)
 	: m_nProcessID(0)
 	, m_nThreadID(0)
-	, m_nWindowID(0)
 	, m_nStyleID(0)
 {
 }
@@ -50,7 +49,6 @@ void LogMessage::build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& he
 
 	m_nProcessID = head.pid;
 	m_nThreadID = head.tid;
-	m_nWindowID = head.pid; //HACK!
 	m_nStyleID = 0;
 
 	axtrace_trace_s trace_head;
@@ -149,7 +147,6 @@ void ValueMessage::build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& 
 
 	m_nProcessID = head.pid;
 	m_nThreadID = head.tid;
-	m_nWindowID = head.pid; //HACK
 	m_nStyleID = 0;
 
 	axtrace_value_s value_head;

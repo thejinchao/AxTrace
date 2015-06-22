@@ -28,8 +28,6 @@ public:
 	unsigned int getProcessID(void) const { return m_nProcessID; }
 	/** get thread id*/
 	unsigned int getThreadID(void) const { return m_nThreadID; }
-	/** get window id*/
-	unsigned int getWindowID(void) const { return m_nWindowID; }
 	/** get Style id*/
 	unsigned int getStyleID(void) const { return m_nStyleID; }
 	/** get trace time */
@@ -38,7 +36,6 @@ public:
 protected:
 	unsigned int	m_nProcessID;
 	unsigned int	m_nThreadID;
-	unsigned int	m_nWindowID;
 	unsigned int	m_nStyleID;
 	AXIATRACE_TIME	m_traceTime;
 

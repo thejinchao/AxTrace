@@ -83,9 +83,9 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////////////////////////
-TickFrameWnd::TickFrameWnd(CUpdateUIBase* pUpdateUI, int windowID)
+TickFrameWnd::TickFrameWnd(CUpdateUIBase* pUpdateUI, const std::string& windowTitle)
 	: m_pUpdateUI(pUpdateUI)
-	, m_windowID(windowID)
+	, m_windowTitle(windowTitle)
 	, m_wndTickWnd(0)
 {
 	m_wndTickWnd = new CTickDialog;

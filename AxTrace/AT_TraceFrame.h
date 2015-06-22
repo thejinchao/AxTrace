@@ -24,8 +24,8 @@ public:
 	void insertLog(const LogMessage* message);
 	/** get child type */
 	virtual CHILD_STYLE getChildType(void) { return CS_TRACE_FRAME; }
-	/** get window id*/
-	virtual int getWindowID(void) { return m_windowID; }
+	/** get window title*/
+	virtual const std::string& getWindowTitle(void) { return m_windowTitle; }
 	/** redraw */
 	virtual void redraw(void);
 	/** get native wnd handle */
@@ -72,7 +72,7 @@ public:
 private:
 	CListCtrlEx m_wndListView;
 	CUpdateUIBase* m_pUpdateUI;
-	int m_windowID;
+	std::string m_windowTitle;
 	int m_nLogIndex;
 	AutoSizeBuf m_bufMaxLine;
 
@@ -80,7 +80,7 @@ private:
 		Construction and Destruction
 	*************************************************************************/
 public:
-	TraceFrameWnd(CUpdateUIBase* pUpdateUI, int windowID);
+	TraceFrameWnd(CUpdateUIBase* pUpdateUI, const std::string& windowTitle);
 	~TraceFrameWnd();
 };
 

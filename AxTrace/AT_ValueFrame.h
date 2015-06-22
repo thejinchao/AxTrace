@@ -20,8 +20,8 @@ public:
 	void watchValue(unsigned int styleID, const AXIATRACE_TIME* tTime, const wchar_t* valueName, const wchar_t* value);
 	/** get child type */
 	virtual CHILD_STYLE getChildType(void) { return CS_VALUE_FRAME; }
-	/** get window id */
-	virtual int getWindowID(void) { return m_windowID; }
+	/** get window title*/
+	virtual const std::string& getWindowTitle(void)  { return m_windowTitle; }
 	/** redraw */
 	virtual void redraw(void);
 	/** get native wnd handle */
@@ -68,7 +68,7 @@ public:
 private:
 	CListCtrlEx m_wndListView;
 	CUpdateUIBase* m_pUpdateUI;
-	int m_windowID;
+	std::string m_windowTitle;
 
 	//value map
 	typedef std::hash_map< std::wstring, int > ValueHashMap;
@@ -78,7 +78,7 @@ private:
 		Construction and Destruction
 	*************************************************************************/
 public:
-	ValueFrameWnd(CUpdateUIBase* pUpdateUI, int m_windowID);
+	ValueFrameWnd(CUpdateUIBase* pUpdateUI, const std::string& windowTitle);
 	~ValueFrameWnd();
 };
 

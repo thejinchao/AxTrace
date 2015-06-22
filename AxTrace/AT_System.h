@@ -17,6 +17,7 @@ class MessageQueue;
 class Message;
 class LogMessage;
 class ValueMessage;
+class Filter;
 
 /**Global System
 */
@@ -81,6 +82,7 @@ private:
 	MainFrame*				m_wndMainFrame;		//!< Main MDI Frame
 	Incoming*				m_pIncoming;		//!< Incoming thread to receive msg
 	MessageQueue*			m_msgQueue;			//!< Message Queue
+	Filter*					m_filter;			//!< Display filter
 
 	/*************************************************************************
 		Construction and Destruction

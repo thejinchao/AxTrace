@@ -6,6 +6,7 @@
 #include "AT_MessageQueue.h"
 #include "AT_TraceFrame.h"
 #include "AT_ValueFrame.h"
+#include "AT_Filter.h"
 
 namespace AT3
 {
@@ -22,6 +23,7 @@ System::System()
 	, m_wndMainFrame(0)
 	, m_pIncoming(0)
 	, m_msgQueue(0)
+	, m_filter(0)
 {
 	s_pMe = this;
 }
@@ -41,6 +43,7 @@ bool System::init(HINSTANCE hInstance, LPSTR lpCmdLine)
 	m_wndMainFrame = new MainFrame;
 	m_pIncoming = new Incoming;
 	m_msgQueue = new MessageQueue;
+	m_filter = new Filter;
 
 	// Init WTL app module
 	::InitCommonControls();
@@ -132,7 +135,12 @@ void System::_processAxTraceData(const Message* message)
 //--------------------------------------------------------------------------------------------
 void System::_insertStringLog(const LogMessage* message)
 {
-	TraceFrameWnd* logWnd = m_wndMainFrame->getTraceWnd(message->getWindowID());
+	Filter::Result filterResult;
+	m_filter->onTraceMessage(message, filterResult);
+
+	if (!filterResult.display) return;
+
+	TraceFrameWnd* logWnd = m_wndMainFrame->getTraceWnd(filterResult.wndTitle);
 	assert(logWnd!=0);
 
 	logWnd->insertLog(message);
@@ -141,7 +149,12 @@ void System::_insertStringLog(const LogMessage* message)
 //--------------------------------------------------------------------------------------------
 void System::_watchValue(const ValueMessage* message)
 {
-	ValueFrameWnd* valueWnd = m_wndMainFrame->getValueWnd(message->getWindowID());
+	Filter::Result filterResult;
+	m_filter->onValueMessage(message, filterResult);
+
+	if (!filterResult.display) return;
+
+	ValueFrameWnd* valueWnd = m_wndMainFrame->getValueWnd(filterResult.wndTitle);
 	assert(valueWnd!=0);
 
 	std::wstring value;
