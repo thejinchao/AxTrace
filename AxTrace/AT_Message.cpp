@@ -49,7 +49,7 @@ void LogMessage::build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& he
 
 	m_nProcessID = head.pid;
 	m_nThreadID = head.tid;
-	m_nStyleID = 0;
+	m_nStyleID = head.style;
 
 	axtrace_trace_s trace_head;
 	size_t len = ringBuf->memcpy_out(&trace_head, sizeof(trace_head));
@@ -147,7 +147,7 @@ void ValueMessage::build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& 
 
 	m_nProcessID = head.pid;
 	m_nThreadID = head.tid;
-	m_nStyleID = 0;
+	m_nStyleID = head.style;
 
 	axtrace_value_s value_head;
 	size_t len = ringBuf->memcpy_out(&value_head, sizeof(value_head));
