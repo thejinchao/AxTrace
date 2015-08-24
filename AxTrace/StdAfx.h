@@ -24,6 +24,10 @@
 #define _WIN32_IE 0x0400		//for IE4.0
 #endif
 
+#include <cy_core.h>
+#include <cy_event.h>
+#include <cy_network.h>
+
 #include <atlbase.h>
 #include <atlapp.h>
 #include <atlwin.h>
@@ -43,6 +47,3 @@
 #include <assert.h>
 #include <tchar.h>
 
-#include <cy_core.h>
-#include <cy_event.h>
-#include <cy_network.h>
