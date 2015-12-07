@@ -35,7 +35,7 @@ bool Incoming::init(void)
 	cyclone::set_log_threshold(cyclone::L_MAXIMUM_LEVEL);
 
 	cyclone::Address address(DEFAULT_PORT, false);
-	m_server = new cyclone::TcpServer(this, "axtrace");
+	m_server = new cyclone::TcpServer(this, "axtrace", 0);
 
 	m_server->bind(address, false);
 	return m_server->start(2);
