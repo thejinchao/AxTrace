@@ -162,7 +162,7 @@ int main(int argc, char* argv[])
 		AXVALUE(uint_32, "_MAX", AXV_UINT32, "%u", UINT_MAX);
 
 		__int64 int_64 = 0;
-		AXVALUE(int_64, "_0", AXV_INT64, "%d", 0i64);
+		AXVALUE(int_64, "_0", AXV_INT64, "%I64d", 0i64);
 		AXVALUE(int_64, "_MIN", AXV_INT64, "%I64d", LLONG_MIN);
 		AXVALUE(int_64, "_MAX", AXV_INT64, "%I64d", LLONG_MAX);
 
