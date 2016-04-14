@@ -71,7 +71,7 @@ private:
 	std::string m_windowTitle;
 
 	//value map
-	typedef std::hash_map< std::wstring, int > ValueHashMap;
+	typedef std::unordered_map< std::wstring, int > ValueHashMap;
 	ValueHashMap m_valueHashMap;
 
 	/*************************************************************************
