@@ -45,8 +45,10 @@ namespace AT3
 #define AXTRACE_MAX_VALUE_LENGTH		(1024)
 
 /*---------------------------------------------------------------------------------------------*/
+#pragma pack(push)
+#pragma pack(1)
 /* axtrace communication data struct*/
-typedef __declspec(align(1)) struct
+typedef struct
 {
 	unsigned short	length;			/* length */
 	unsigned char	flag;			/* magic flag, always 'A' */
@@ -57,7 +59,7 @@ typedef __declspec(align(1)) struct
 } axtrace_head_s;
 
 /* axtrace trace data struct*/
-typedef __declspec(align(1)) struct
+typedef struct
 {
 	axtrace_head_s	head;			/* common head */
 	unsigned short	code_page;		/* code page */
@@ -66,7 +68,7 @@ typedef __declspec(align(1)) struct
 	/* [trace string data with '\0' ended] */
 } axtrace_trace_s;
 
-typedef __declspec(align(1)) struct
+typedef struct
 {
 	axtrace_head_s	head;			/* common head */
 	unsigned int	value_type;		/* value type AXV_* */
@@ -77,12 +79,14 @@ typedef __declspec(align(1)) struct
 	/* [value buf] */
 } axtrace_value_s;
 
-typedef __declspec(align(2)) struct
+typedef struct
 {
 	WORD wHour;
 	WORD wMinute;
 	WORD wSecond;
 	WORD wMilliseconds;
 } AXIATRACE_TIME;
+
+#pragma pack(pop)
 
 }

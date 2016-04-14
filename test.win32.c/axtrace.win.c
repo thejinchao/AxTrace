@@ -35,8 +35,10 @@ typedef struct
 } axtrace_contex_s;
 
 /*---------------------------------------------------------------------------------------------*/
+#pragma pack(push)
+#pragma pack(1)
 /* axtrace communication data struct*/
-typedef __declspec(align(1)) struct
+typedef struct
 {
 	unsigned short	length;			/* length */
 	unsigned char	flag;			/* magic flag, always 'A' */
@@ -47,7 +49,7 @@ typedef __declspec(align(1)) struct
 } axtrace_head_s;
 
 /* axtrace trace data struct*/
-typedef __declspec(align(1)) struct
+typedef struct
 {
 	axtrace_head_s	head;			/* common head */
 	unsigned short	code_page;		/* code page */
@@ -56,7 +58,7 @@ typedef __declspec(align(1)) struct
 	/* [trace string data with '\0' ended] */
 } axtrace_trace_s;
 
-typedef __declspec(align(1)) struct
+typedef struct
 {
 	axtrace_head_s	head;			/* common head */
 	unsigned int	value_type;		/* value type AXV_* */
@@ -66,6 +68,8 @@ typedef __declspec(align(1)) struct
 	/* [name buf  with '\0' ended]*/
 	/* [value buf] */
 } axtrace_value_s;
+
+#pragma pack(pop)
 
 /*---------------------------------------------------------------------------------------------*/
 static axtrace_contex_s* _axtrace_try_init(const char* server_ip, unsigned short server_port)
@@ -256,8 +260,8 @@ void axvalue(unsigned int style, unsigned int value_type, const char* value_name
 	trace_head->head.style = style;
 
 	trace_head->value_type = value_type;
-	trace_head->name_len = value_name_length;
-	trace_head->value_len = value_length;
+	trace_head->name_len = (unsigned short)value_name_length;
+	trace_head->value_len = (unsigned short)value_length;
 
 	/* fill the value data */
 	memcpy(value_name_buf, value_name, value_name_length);
