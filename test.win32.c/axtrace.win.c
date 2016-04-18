@@ -128,7 +128,8 @@ static axtrace_contex_s* _axtrace_get_thread_contex(const char* server_ip, unsig
 	}
 
 	/* try init */
-	return s_the_thread_data = _axtrace_try_init(server_ip, server_port);
+	s_the_thread_data = _axtrace_try_init(server_ip, server_port);
+	return (s_the_thread_data->is_init_succ != 0) ? s_the_thread_data : 0;
 }
 
 /*---------------------------------------------------------------------------------------------*/
