@@ -36,7 +36,14 @@ void Filter::init(void)
 	//run init lua script
 	static const char* init_script =
 		"function onTraceMessage(msg) \n"
-		" return true, \"defult\", BLACK, WHITE; \n" 
+		" local frontColor=BLACK; \n"
+		" local backColor=WHITE; \n"
+		" local msgStyle=msg:get_style(); \n"
+		" if(msgStyle>=4) then \n"
+		"   frontColor=RED; \n"
+		"   if(msgStyle==5) then backColor=YELLOW; end; \n"
+		" end; \n"
+		" return true, \"defult\", frontColor, backColor; \n" 
 		"end; \n" 
 		"" 
 		"function onValueMessage(msg) \n" 
@@ -55,9 +62,11 @@ void Filter::_luaopen(lua_State* L)
 {
 	lua_pushinteger(L, 0x000); 	lua_setglobal(L, "BLACK");
 	lua_pushinteger(L, 0xFFF); 	lua_setglobal(L, "WHITE");
-	lua_pushinteger(L, 0xF00); 	lua_setglobal(L, "RED");
+	lua_pushinteger(L, 0x00F); 	lua_setglobal(L, "RED");
 	lua_pushinteger(L, 0x0F0); 	lua_setglobal(L, "GREEN");
-	lua_pushinteger(L, 0x00F); 	lua_setglobal(L, "BLUE");
+	lua_pushinteger(L, 0xF00); 	lua_setglobal(L, "BLUE");
+	lua_pushinteger(L, 0x777); 	lua_setglobal(L, "GRAY");
+	lua_pushinteger(L, 0x0FF); 	lua_setglobal(L, "YELLOW");
 
 }
 

@@ -118,7 +118,7 @@ LRESULT TraceFrameWnd::OnSetFocus(UINT, WPARAM wParam, LPARAM lParam, BOOL& bHan
 }
 
 //--------------------------------------------------------------------------------------------
-void TraceFrameWnd::insertLog(const LogMessage* message)
+void TraceFrameWnd::insertLog(const LogMessage* message, const Filter::Result& filter)
 {
 	const AXIATRACE_TIME* tTime = message->getTraceTime();
 	unsigned int styleID = message->getStyleID();
@@ -153,7 +153,7 @@ void TraceFrameWnd::insertLog(const LogMessage* message)
 				m_wndListView.InsertItem(nCount, _T(""));
 			}
 			m_wndListView.SetItemText(nCount, 4, current);
-			m_wndListView.SetItemData(nCount, (DWORD_PTR)styleID);
+			m_wndListView.SetItemData(nCount, (DWORD_PTR)((filter.fontColor<<16) | filter.backColor));
 			break;
 		}
 		else
@@ -168,7 +168,7 @@ void TraceFrameWnd::insertLog(const LogMessage* message)
 				m_wndListView.InsertItem(nCount, _T(""));
 			}
 			m_wndListView.SetItemText(nCount, 4, lineBuf);
-			m_wndListView.SetItemData(nCount, (DWORD_PTR)styleID);
+			m_wndListView.SetItemData(nCount, (DWORD_PTR)((filter.fontColor << 16) | filter.backColor));
 
 			//next
 			nCount++;

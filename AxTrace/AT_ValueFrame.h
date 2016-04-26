@@ -9,6 +9,7 @@
 #include "AT_ListCtrlEx.h"
 #include "AT_ChildFrame.h"
 #include "AT_Interface.h"
+#include "AT_Filter.h"
 
 namespace AT3
 {
@@ -17,7 +18,7 @@ namespace AT3
 class ValueFrameWnd : public CMDIChildWindowImpl<ValueFrameWnd>, public IChildFrame
 {
 public:
-	void watchValue(unsigned int styleID, const AXIATRACE_TIME* tTime, const wchar_t* valueName, const wchar_t* value);
+	void watchValue(unsigned int styleID, const AXIATRACE_TIME* tTime, const wchar_t* valueName, const wchar_t* value, const Filter::Result& filterResult);
 	/** get child type */
 	virtual CHILD_STYLE getChildType(void) { return CS_VALUE_FRAME; }
 	/** get window title*/

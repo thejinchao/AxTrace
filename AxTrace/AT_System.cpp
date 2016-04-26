@@ -146,7 +146,7 @@ void System::_insertStringLog(const LogMessage* message)
 	TraceFrameWnd* logWnd = m_wndMainFrame->getTraceWnd(filterResult.wndTitle);
 	assert(logWnd!=0);
 
-	logWnd->insertLog(message);
+	logWnd->insertLog(message, filterResult);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -162,7 +162,7 @@ void System::_watchValue(const ValueMessage* message)
 
 	std::wstring value;
 	message->getValueAsString(value);
-	valueWnd->watchValue(message->getStyleID(), message->getTraceTime(), message->getValueName(), value.c_str());
+	valueWnd->watchValue(message->getStyleID(), message->getTraceTime(), message->getValueName(), value.c_str(), filterResult);
 }
 
 }

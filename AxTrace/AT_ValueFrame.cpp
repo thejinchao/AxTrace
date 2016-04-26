@@ -110,7 +110,7 @@ LRESULT ValueFrameWnd::OnSetFocus(UINT, WPARAM wParam, LPARAM lParam, BOOL& bHan
 }
 
 //--------------------------------------------------------------------------------------------
-void ValueFrameWnd::watchValue(unsigned int styleID, const AXIATRACE_TIME* tTime, const wchar_t* valueName, const wchar_t* value)
+void ValueFrameWnd::watchValue(unsigned int styleID, const AXIATRACE_TIME* tTime, const wchar_t* valueName, const wchar_t* value, const Filter::Result& filter)
 {
 	int nIndex = 0;
 
@@ -134,7 +134,7 @@ void ValueFrameWnd::watchValue(unsigned int styleID, const AXIATRACE_TIME* tTime
 	}
 
 	m_wndListView.SetItemText(nIndex, 2, value);
-	m_wndListView.SetItemData(nIndex, (DWORD_PTR)styleID);
+	m_wndListView.SetItemData(nIndex, (DWORD_PTR)((filter.fontColor << 16) | filter.backColor));
 }
 
 //--------------------------------------------------------------------------------------------

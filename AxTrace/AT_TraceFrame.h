@@ -9,6 +9,7 @@
 #include "AT_ListCtrlEx.h"
 #include "AT_ChildFrame.h"
 #include "AT_Util.h"
+#include "AT_Filter.h"
 
 namespace AT3
 {
@@ -21,7 +22,7 @@ class TraceFrameWnd : public CMDIChildWindowImpl<TraceFrameWnd>, public IChildFr
 {
 public:
 	/** insert a log message */
-	void insertLog(const LogMessage* message);
+	void insertLog(const LogMessage* message, const Filter::Result& filter);
 	/** get child type */
 	virtual CHILD_STYLE getChildType(void) { return CS_TRACE_FRAME; }
 	/** get window title*/
