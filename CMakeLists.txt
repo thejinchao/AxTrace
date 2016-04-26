@@ -11,5 +11,6 @@ project(AxTrace)
 #sub dictionary
 ########
 add_subdirectory(AxTrace)
+add_subdirectory(luajit)
 add_subdirectory(test.win32.c)
 add_subdirectory(test.cs)

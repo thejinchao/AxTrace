@@ -1,0 +1,149 @@
+cmake_minimum_required (VERSION 3.0)
+
+
+set(LUAJIT_C_FILES
+	lj_alloc.c
+	lj_api.c
+	lj_asm.c
+	lj_bc.c
+	lj_bcread.c
+	lj_bcwrite.c
+	lj_carith.c
+	lj_ccall.c
+	lj_ccallback.c
+	lj_cconv.c
+	lj_cdata.c
+	lj_char.c
+	lj_clib.c
+	lj_cparse.c
+	lj_crecord.c
+	lj_ctype.c
+	lj_debug.c
+	lj_dispatch.c
+	lj_err.c
+	lj_ffrecord.c
+	lj_func.c
+	lj_gc.c
+	lj_gdbjit.c
+	lj_ir.c
+	lj_lex.c
+	lj_lib.c
+	lj_load.c
+	lj_mcode.c
+	lj_meta.c
+	lj_obj.c
+	lj_opt_dce.c
+	lj_opt_fold.c
+	lj_opt_loop.c
+	lj_opt_mem.c
+	lj_opt_narrow.c
+	lj_opt_sink.c
+	lj_opt_split.c
+	lj_parse.c
+	lj_record.c
+	lj_snap.c
+	lj_state.c
+	lj_str.c
+	lj_strscan.c
+	lj_tab.c
+	lj_trace.c
+	lj_udata.c
+	lj_vmevent.c
+	lj_vmmath.c
+)
+
+set(LUALIB_C_FILES
+	lib_aux.c
+	lib_base.c
+	lib_bit.c
+	lib_debug.c
+	lib_ffi.c
+	lib_init.c
+	lib_io.c
+	lib_jit.c
+	lib_math.c
+	lib_os.c
+	lib_package.c
+	lib_string.c
+	lib_table.c
+)
+
+set(LUAJIT_H_FILES
+	lauxlib.h
+	lj_alloc.h
+	lj_arch.h
+	lj_asm.h
+	lj_asm_arm.h
+	lj_asm_mips.h
+	lj_asm_ppc.h
+	lj_asm_x86.h
+	lj_bc.h
+	lj_bcdef.h
+	lj_bcdump.h
+	lj_carith.h
+	lj_ccall.h
+	lj_ccallback.h
+	lj_cconv.h
+	lj_cdata.h
+	lj_char.h
+	lj_clib.h
+	lj_cparse.h
+	lj_crecord.h
+	lj_ctype.h
+	lj_debug.h
+	lj_def.h
+	lj_dispatch.h
+	lj_emit_arm.h
+	lj_emit_mips.h
+	lj_emit_ppc.h
+	lj_emit_x86.h
+	lj_err.h
+	lj_errmsg.h
+	lj_ff.h
+	lj_ffdef.h
+	lj_ffrecord.h
+	lj_folddef.h
+	lj_frame.h
+	lj_func.h
+	lj_gc.h
+	lj_gdbjit.h
+	lj_ir.h
+	lj_ircall.h
+	lj_iropt.h
+	lj_jit.h
+	lj_lex.h
+	lj_lib.h
+	lj_libdef.h
+	lj_mcode.h
+	lj_meta.h
+	lj_obj.h
+	lj_parse.h
+	lj_recdef.h
+	lj_record.h
+	lj_snap.h
+	lj_state.h
+	lj_str.h
+	lj_strscan.h
+	lj_tab.h
+	lj_target.h
+	lj_target_arm.h
+	lj_target_mips.h
+	lj_target_ppc.h
+	lj_target_x86.h
+	lj_trace.h
+	lj_traceerr.h
+	lj_udata.h
+	lj_vm.h
+	lj_vmevent.h
+	lua.h
+	luaconf.h
+	luajit.h
+	lualib.h
+)
+
+add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS)
+
+add_library(libluajit 
+	${LUAJIT_C_FILES} 
+	${LUALIB_C_FILES}
+)

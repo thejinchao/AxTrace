@@ -52,6 +52,9 @@ bool System::init(HINSTANCE hInstance, LPSTR lpCmdLine)
 	// try load system setting from regist
 	m_theConfig->loadSetting();
 
+	// init filter
+	m_filter->init();
+
 	//init receive thread
 	return m_pIncoming->init();
 }

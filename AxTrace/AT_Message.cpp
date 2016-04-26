@@ -6,6 +6,8 @@
 namespace AT3
 {
 
+const char* Message::MESSAGE_META_NAME = "AxTrace.Message";
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 //Base Message
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -19,6 +21,85 @@ Message::Message(void)
 //--------------------------------------------------------------------------------------------
 Message::~Message(void)
 {
+}
+
+//-------------------------------------------------------------------------------------
+int _lua_get_type(lua_State *L)
+{
+	const Message* msg = (const Message*)lua_touserdata(L, 1);
+	lua_pushinteger(L, msg->getTraceType());
+	return 1;
+}
+
+//-------------------------------------------------------------------------------------
+int _lua_get_process_id(lua_State *L)
+{
+	const Message* msg = (const Message*)lua_touserdata(L, 1);
+	lua_pushinteger(L, msg->getProcessID());
+	return 1;
+}
+
+//-------------------------------------------------------------------------------------
+int _lua_get_thread_id(lua_State *L)
+{
+	const Message* msg = (const Message*)lua_touserdata(L, 1);
+	lua_pushinteger(L, msg->getThreadID());
+	return 1;
+}
+
+//-------------------------------------------------------------------------------------
+int _lua_get_style(lua_State *L)
+{
+	const Message* msg = (const Message*)lua_touserdata(L, 1);
+	lua_pushinteger(L, msg->getStyleID());
+	return 1;
+}
+
+//-------------------------------------------------------------------------------------
+int _lua_get_content(lua_State *L)
+{
+	const Message* msg = (const Message*)lua_touserdata(L, 1);
+
+	if (msg->getTraceType() == AXTRACE_CMD_TYPE_TRACE) {
+		const wchar_t* msg_content = ((LogMessage*)msg)->getLogBuf();
+		size_t msg_char_length = ((LogMessage*)msg)->getLogSizeChar() + 1;
+
+		lua_pushstring(L, convertUTF16ToUTF8(msg_content, msg_char_length));
+
+		return 1;
+	}
+	else if (msg->getTraceType() == AXTRACE_CMD_TYPE_VALUE)
+	{
+		std::wstring value_as_string;
+
+		((ValueMessage*)msg)->getValueAsString(value_as_string);
+
+		lua_pushstring(L, convertUTF16ToUTF8(value_as_string.c_str(), value_as_string.length()+1));
+		return 1;
+	}
+	return 0;
+}
+
+//--------------------------------------------------------------------------------------------
+void Message::_luaopen(lua_State *L)
+{
+	static luaL_Reg msg_data_meta[] =
+	{
+		{ "get_type", _lua_get_type },
+		{ "get_process_id", _lua_get_process_id },
+		{ "get_thread_id", _lua_get_thread_id },
+		{ "get_style", _lua_get_style },
+		{ "get_content", _lua_get_content },
+		{ 0, 0 }
+	};
+
+
+	//PlayerData meta table
+	luaL_newmetatable(L, MESSAGE_META_NAME);
+	lua_pushvalue(L, -1);  /* push metatable */
+	lua_setfield(L, -2, "__index");  /* metatable.__index = metatable */
+
+	luaL_register(L, NULL, msg_data_meta);  /* file methods */
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

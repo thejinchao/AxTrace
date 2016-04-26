@@ -20,6 +20,8 @@ namespace AT3
 class Message
 {
 public:
+	static const char* MESSAGE_META_NAME;
+
 	/** build message */
 	virtual void build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf) = 0;
 	/** get trace type*/
@@ -32,6 +34,9 @@ public:
 	unsigned int getStyleID(void) const { return m_nStyleID; }
 	/** get trace time */
 	const AXIATRACE_TIME* getTraceTime(void) const { return &m_traceTime; }
+
+public:
+	static void _luaopen(lua_State *L);
 
 protected:
 	unsigned int	m_nProcessID;

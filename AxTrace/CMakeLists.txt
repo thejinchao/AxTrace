@@ -71,6 +71,7 @@ source_group("Resource Files" FILES ${AXTRACE_SOURCES_RC})
 
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/WTL
+	${CMAKE_CURRENT_SOURCE_DIR}/../luajit
 	$ENV{CYCLONE_SDK_ROOT}/include
 )
 
@@ -104,5 +105,8 @@ ADD_EXECUTABLE(AxTrace WIN32
 target_link_libraries(AxTrace
 	ws2_32
 	cyclone
+	libluajit
 	winmm
 )
+
+set_target_properties(AxTrace PROPERTIES LINK_FLAGS "/link ${CMAKE_CURRENT_SOURCE_DIR}/../luajit/lj_vm_x86.obj")
