@@ -23,7 +23,9 @@ struct AutoLock
 };
 
 /** convert to utf16 string(return as static memory block, call by main thread only)*/
-const wchar_t* convertUTF8ToUTF16(const char* utf8_string, size_t len_string);
+const wchar_t* convertUTF8ToUTF16(const char* utf8_string, size_t byte_len);
+/** convert to utf8 string(return as static memory block, call by main thread only)*/
+const char* convertUTF16ToUTF8(const wchar_t* utf16_string, size_t char_len);
 
 /**memory buf
 */
