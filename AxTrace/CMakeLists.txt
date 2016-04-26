@@ -78,7 +78,7 @@ link_directories(
 	$ENV{CYCLONE_SDK_ROOT}/lib
 )
 
-add_definitions(-D_UNICODE -DUNICODE)
+add_definitions(-D_UNICODE -DUNICODE -D_ATL_NO_OLD_NAMES)
 
 foreach(src_file ${AXTRACE_SOURCES_CPP})
 	set_source_files_properties(

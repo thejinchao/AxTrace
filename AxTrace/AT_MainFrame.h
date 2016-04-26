@@ -18,7 +18,7 @@ class IChildFrame;
 /** Main Frame
 */
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, CUpdateUI<MainFrame>,
-		public CMessageFilter, public CUpdateUIObject
+		public CMessageFilter, public CIdleHandler
 {
 	/*************************************************************************
 			Inherit Methods
@@ -32,7 +32,7 @@ public:
 		return CMDIFrameWindowImpl<MainFrame>::PreTranslateMessage(pMsg);
 	}
 
-	virtual BOOL DoUpdate()
+	virtual BOOL OnIdle()
 	{
 		UIUpdateToolBar();
 		return FALSE;

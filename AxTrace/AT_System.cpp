@@ -65,7 +65,7 @@ void System::run(void)
 	if(m_wndMainFrame->CreateEx() == NULL) return;
 
 	m_theMsgLoop.AddMessageFilter(m_wndMainFrame);
-	m_theMsgLoop.AddUpdateUI(m_wndMainFrame);
+	m_theMsgLoop.AddIdleHandler(m_wndMainFrame);
 	m_theMsgLoop.AddIdleHandler(this);
 
 	m_wndMainFrame->ShowWindow(SW_SHOWMAXIMIZED);
