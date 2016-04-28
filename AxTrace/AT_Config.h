@@ -14,20 +14,6 @@ namespace AT3
 class Config
 {
 	/*************************************************************************
-		Public Struct
-	*************************************************************************/
-public:
-	/** Display style for trace item
-	*/
-	struct TraceStyle
-	{
-		bool	 useDefault;
-		COLORREF colFront;
-		COLORREF colBak;
-	};
-	enum { MAX_TRACE_STYLE_COUNTS = 256 };
-
-	/*************************************************************************
 		Public Methods
 	*************************************************************************/
 public:
@@ -44,15 +30,6 @@ public:
 	void setAutoScroll(bool a) { m_bAutoscroll=a; }
 	HFONT getFont(void) const { return m_hFont; }
 	void setFont(LPLOGFONT lf);
-
-	COLORREF getForegroundColor(int styleID) const;
-	void setForegroundColor(int styleID, COLORREF col);
-	COLORREF getBackgroundColor(int styleID) const;
-	void setBackgroundColor(int styleID, COLORREF col);
-
-	const TraceStyle* getAllTraceStyle(void) const { return m_allTraceStyle; }
-	void addNewStyle(int styleID);
-	void removeStyle(int styleID);
 
 	const std::string& getFilterScript(void) const { return m_filterScript; }
 
@@ -72,8 +49,6 @@ private:
 	bool m_bAutoscroll;			//!< Auto scroll trace window	(default : true)
 	bool m_bAlwaysOnTop;		//!< Mainframe always on top	(default : false)
 	bool m_bShowMilliseconds;	//!< Show milliseconds (default : true)
-
-	TraceStyle m_allTraceStyle[MAX_TRACE_STYLE_COUNTS];	//!< Trace style buf
 
 	HFONT m_hFont;
 	std::string m_filterScript;

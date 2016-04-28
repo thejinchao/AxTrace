@@ -136,25 +136,6 @@ BEGIN
     LTEXT           "www.thecodeway.com",IDC_STATIC_LINK,65,35,77,10
 END
 
-IDD_DIALOG_SETTING DIALOGEX 0, 0, 241, 134
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Style Setting"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    CONTROL         "",IDC_LIST_STYLE,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | WS_TABSTOP,7,21,86,82,WS_EX_CLIENTEDGE
-    LTEXT           "Style List:",IDC_STATIC,7,9,41,8
-    RTEXT           "Foreground:",IDC_STATIC,113,15,49,13
-    RTEXT           "Background:",IDC_STATIC,113,35,49,13
-    LTEXT           "Sample:",IDC_STATIC,108,61,58,9
-    RTEXT           "",IDC_PREVIEW,108,78,126,25,SS_NOTIFY,WS_EX_STATICEDGE
-    DEFPUSHBUTTON   "&OK",IDOK,121,111,53,16
-    PUSHBUTTON      "&Cancel",IDCANCEL,181,111,53,16
-    PUSHBUTTON      "+",IDC_BUTTON_ADD,57,9,17,9,BS_FLAT
-    PUSHBUTTON      "-",IDC_BUTTON_REMOVE,76,9,17,9,BS_FLAT
-    PUSHBUTTON      "",IDC_BUTTON_FOREGROUND,170,12,64,15
-    PUSHBUTTON      "",IDC_BUTTON_BACKGROUND,170,33,64,15
-END
-
 IDD_DIALOG_ADDSTYLE DIALOGEX 0, 0, 249, 50
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Add Style"
@@ -240,6 +221,7 @@ END
 
 IDR_MAINFRAME           BITMAP                  "res\\MainToolBar.bmp"
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // DESIGNINFO
@@ -254,14 +236,6 @@ BEGIN
         RIGHTMARGIN, 225
         TOPMARGIN, 7
         BOTTOMMARGIN, 56
-    END
-
-    IDD_DIALOG_SETTING, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 234
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 127
     END
 
     IDD_DIALOG_ADDSTYLE, DIALOG
@@ -291,8 +265,11 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\AxTrace.ico"
+
 IDR_TRACE_FRAME_TYPE    ICON                    "res\\AxTrace_TraceFrame.ico"
+
 IDR_TICK_FRAME_TYPE     ICON                    "res\\AxTrace_TickFrame.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

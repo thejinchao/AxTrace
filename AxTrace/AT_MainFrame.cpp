@@ -11,8 +11,8 @@
 #include "AT_AboutDlg.h"
 #include "AT_TraceFrame.h"
 #include "AT_ValueFrame.h"
-#include "AT_OptionsDlg.h"
 #include "AT_TickFrame.h"
+#include "AT_Config.h"
 
 namespace AT3
 {
@@ -140,6 +140,7 @@ LRESULT MainFrame::OnAppAbout(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bH
 //--------------------------------------------------------------------------------------------
 LRESULT MainFrame::OnOptionSetting(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
+	/*
 	OptionsDlg dlg(*(System::getSingleton()->getConfig()));
 	if(IDOK!=dlg.DoModal()) return 0;
 
@@ -159,7 +160,7 @@ LRESULT MainFrame::OnOptionSetting(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOO
 	{
 		((IChildFrame*)it_value->second)->redraw();
 	}
-
+	*/
 	return 0;
 }
 

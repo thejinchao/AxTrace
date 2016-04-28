@@ -15,7 +15,6 @@ set(AXTRACE_SOURCES_CPP
 	AT_MainFrame.cpp    
 	AT_Message.cpp      
 	AT_MessageQueue.cpp 
-	AT_OptionsDlg.cpp   
 	AT_StylePreview.cpp 
 	AT_System.cpp       
 	AT_TickFrame.cpp    
@@ -48,7 +47,6 @@ set(AXTRACE_SOURCES_INC
 	AT_MainFrame.h   
 	AT_Message.h     
 	AT_MessageQueue.h
-	AT_OptionsDlg.h  
 	AT_StylePreview.h
 	AT_System.h      
 	AT_TickFrame.h   
