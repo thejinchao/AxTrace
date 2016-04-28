@@ -59,14 +59,17 @@ void Config::_resetDefaultSetting(void)
 	COLORREF colBak = GetSysColor(COLOR_WINDOW);
 	COLORREF colFront = GetSysColor(COLOR_WINDOWTEXT);
 
-	m_filterScript = 
+	m_filterScript =
 		"function onTraceMessage(msg) \n"
 		" local frontColor=COL_BLACK; \n"
 		" local backColor=COL_WHITE; \n"
 		" local msgStyle=msg:get_style(); \n"
-		" if(msgStyle>=AXT_ERROR) then \n"
+		" if(msgStyle==AXT_ERROR) then \n"
 		"   frontColor=COL_RED; \n"
-		"   if(msgStyle==AXT_FATAL) then backColor=COL_YELLOW; end; \n"
+		" end; \n"
+		" if(msgStyle==AXT_FATAL) then \n"
+		"   frontColor=COL_RED; \n"
+		"   backColor=COL_YELLOW; \n"
 		" end; \n"
 		" return true, \"defult\", frontColor, backColor; \n"
 		"end; \n"
