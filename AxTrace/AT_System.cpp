@@ -54,6 +54,9 @@ bool System::init(HINSTANCE hInstance, LPSTR lpCmdLine)
 
 	// init filter
 	m_filter->init();
+	if (!(m_filter->reloadScript(m_theConfig, ::GetDesktopWindow()))) {
+		return false;
+	}
 
 	//init receive thread
 	return m_pIncoming->init();

@@ -7,6 +7,7 @@
 
 #include "StdAfx.h"
 #include "AT_Filter.h"
+#include "AT_Config.h"
 
 #include "AT_Message.h"
 
@@ -32,29 +33,18 @@ void Filter::init(void)
 	//register functions
 	Filter::_luaopen(L);
 	Message::_luaopen(L);
+}
 
+//--------------------------------------------------------------------------------------------
+bool Filter::reloadScript(const Config* cfg, HWND hwnd)
+{
 	//run init lua script
-	static const char* init_script =
-		"function onTraceMessage(msg) \n"
-		" local frontColor=COL_BLACK; \n"
-		" local backColor=COL_WHITE; \n"
-		" local msgStyle=msg:get_style(); \n"
-		" if(msgStyle>=AXT_ERROR) then \n"
-		"   frontColor=COL_RED; \n"
-		"   if(msgStyle==AXT_FATAL) then backColor=COL_YELLOW; end; \n"
-		" end; \n"
-		" return true, \"defult\", frontColor, backColor; \n" 
-		"end; \n" 
-		"" 
-		"function onValueMessage(msg) \n" 
-		" return true, \"defult\", COL_BLACK, COL_WHITE; \n" 
-		"end; \n"
-		;
-	if (luaL_dostring(L, init_script)) {
+	if (luaL_dostring(L, cfg->getFilterScript().c_str())) {
 		const char* error_msg = lua_tostring(L, -1);
-		return;
+		MessageBoxA(hwnd, error_msg, "LoadScript Error", MB_OK | MB_ICONSTOP);
+		return false;
 	}
-
+	return true;
 }
 
 //--------------------------------------------------------------------------------------------

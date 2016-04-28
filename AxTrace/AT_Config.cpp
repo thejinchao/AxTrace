@@ -7,6 +7,8 @@
 #include "StdAfx.h"
 #include "AT_Config.h"
 #include "AT_Util.h"
+#include "AT_Filter.h"
+
 #include "utf/ConvertUTF.h"
 
 namespace AT3
@@ -62,6 +64,23 @@ void Config::_resetDefaultSetting(void)
 	m_allTraceStyle[0].useDefault = false;
 	m_allTraceStyle[0].colBak = GetSysColor(COLOR_WINDOW);
 	m_allTraceStyle[0].colFront = GetSysColor(COLOR_WINDOWTEXT);
+
+	m_filterScript = 
+		"function onTraceMessage(msg) \n"
+		" local frontColor=COL_BLACK; \n"
+		" local backColor=COL_WHITE; \n"
+		" local msgStyle=msg:get_style(); \n"
+		" if(msgStyle>=AXT_ERROR) then \n"
+		"   frontColor=COL_RED; \n"
+		"   if(msgStyle==AXT_FATAL) then backColor=COL_YELLOW; end; \n"
+		" end; \n"
+		" return true, \"defult\", frontColor, backColor; \n"
+		"end; \n"
+		""
+		"function onValueMessage(msg) \n"
+		" return true, \"defult\", COL_BLACK, COL_WHITE; \n"
+		"end; \n"
+		;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -106,6 +125,14 @@ void Config::loadSetting(void)
 	if(ERROR_SUCCESS == SHGetValue(HKEY_CURRENT_USER, g_szAxTrace3Key, _T("Font"), &type, &lf, &size))
 	{
 		setFont(&lf);
+	}
+
+	// Load filter script
+	wchar_t* szScriptBuf = new wchar_t[Filter::MAX_SCRIPT_LENGTH_IN_CHAR];
+	size = Filter::MAX_SCRIPT_LENGTH_IN_CHAR * sizeof(wchar_t);
+	if (ERROR_SUCCESS == SHGetValue(HKEY_CURRENT_USER, g_szAxTrace3Key, _T("FilterScript"), &type, szScriptBuf, &size))
+	{
+		m_filterScript = convertUTF16ToUTF8(szScriptBuf, size/ sizeof(wchar_t));
 	}
 
 	// Trace style fold
@@ -155,6 +182,12 @@ void Config::saveSetting(void) const
 	// Trace style fold
 	TCHAR szTraceStyle[MAX_PATH];
 	StringCchPrintfW(szTraceStyle, MAX_PATH, _T("%s\\TraceStyle"), g_szAxTrace3Key);
+
+	// Filter script
+	const wchar_t* wszScript = convertUTF8ToUTF16(m_filterScript.c_str(), m_filterScript.length()+1);
+	SHSetValue(HKEY_CURRENT_USER, g_szAxTrace3Key, _T("FilterScript"),
+		REG_SZ, wszScript, (DWORD)_tcslen(wszScript) * sizeof(wchar_t));
+
 
 	// Delete old style
 	SHDeleteKey(HKEY_CURRENT_USER, szTraceStyle);

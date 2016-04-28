@@ -6,6 +6,7 @@ namespace AT3
 //predefine 
 class LogMessage;
 class ValueMessage;
+class Config;
 
 class Filter
 {
@@ -19,8 +20,11 @@ public:
 		uint16_t	backColor;
 	};
 
+	enum { MAX_SCRIPT_LENGTH_IN_CHAR = 1024*1024*2 };
+
 public:
 	void init(void);
+	bool reloadScript(const Config* cfg, HWND hwnd);
 
 	void onTraceMessage(const LogMessage* message, Result& result);
 	void onValueMessage(const ValueMessage* message, Result& result);

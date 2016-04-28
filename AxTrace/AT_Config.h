@@ -54,6 +54,8 @@ public:
 	void addNewStyle(int styleID);
 	void removeStyle(int styleID);
 
+	const std::string& getFilterScript(void) const { return m_filterScript; }
+
 	/*************************************************************************
 		Implementation Methods
 	*************************************************************************/
@@ -74,6 +76,7 @@ private:
 	TraceStyle m_allTraceStyle[MAX_TRACE_STYLE_COUNTS];	//!< Trace style buf
 
 	HFONT m_hFont;
+	std::string m_filterScript;
 
 	/*************************************************************************
 		Construction and Destruction
