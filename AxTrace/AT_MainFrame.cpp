@@ -138,29 +138,8 @@ LRESULT MainFrame::OnAppAbout(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bH
 }
 
 //--------------------------------------------------------------------------------------------
-LRESULT MainFrame::OnOptionSetting(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+LRESULT MainFrame::OnOptionFilter(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	/*
-	OptionsDlg dlg(*(System::getSingleton()->getConfig()));
-	if(IDOK!=dlg.DoModal()) return 0;
-
-	//update setting
-	System::getSingleton()->getConfig()->copyFrom(dlg.getSetting());
-	System::getSingleton()->getConfig()->saveSetting();
-
-	//redraw all frame
-	TraceWndMap::iterator it_trace, end_trace=m_traceWndMap.end();
-	for(it_trace=m_traceWndMap.begin(); it_trace!=end_trace; it_trace++)
-	{
-		((IChildFrame*)it_trace->second)->redraw();
-	}
-
-	ValueWndMap::iterator it_value, end_value=m_valueWndMap.end();
-	for(it_value=m_valueWndMap.begin(); it_value!=end_value; it_value++)
-	{
-		((IChildFrame*)it_value->second)->redraw();
-	}
-	*/
 	return 0;
 }
 
@@ -230,7 +209,7 @@ void MainFrame::updateButtons(MDI_STATUS status)
 	UISetCheck(ID_SYSTEM_RECEIVE, System::getSingleton()->getConfig()->getCapture());
 	UISetCheck(ID_SYSTEM_AUTOSCROLL, System::getSingleton()->getConfig()->getAutoScroll());
 	UIEnable(ID_HELP, FALSE); //NOT SUPPORT YET...
-	UIEnable(ID_OPTION_SETTING, FALSE);
+	UIEnable(ID_OPTION_FILTER, FALSE);
 
 	if(status==MS_MDI)
 	{

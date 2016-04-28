@@ -41,13 +41,14 @@
 #define ID_OPTIONS_FONT40030            40030
 #define ID_OPTION_FONT                  40031
 #define ID_OPTION_HIDE_TOOLBAR          40032
+#define ID_OPTION_FILTER                40033
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        115
-#define _APS_NEXT_COMMAND_VALUE         40033
+#define _APS_NEXT_COMMAND_VALUE         40034
 #define _APS_NEXT_CONTROL_VALUE         1014
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

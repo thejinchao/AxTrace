@@ -35,7 +35,7 @@ BEGIN
         MENUITEM "&Receive\tCtrl+R",            ID_SYSTEM_RECEIVE
         MENUITEM "&Hide Toolbar",               40032
         MENUITEM SEPARATOR
-        MENUITEM "&Style Setting...",           ID_OPTION_SETTING
+        MENUITEM "Filter &Setting...",          ID_OPTION_FILTER
         MENUITEM "&Font...",                    ID_OPTION_FONT
     END
     POPUP "&Help"
@@ -67,7 +67,7 @@ BEGIN
         MENUITEM "A&uto Scroll\tCtrl+U",        ID_SYSTEM_AUTOSCROLL
         MENUITEM "&Hide Toolbar",               ID_OPTION_HIDE_TOOLBAR
         MENUITEM SEPARATOR
-        MENUITEM "&Style Setting...",           ID_OPTION_SETTING
+        MENUITEM "Filter &Setting...",          ID_OPTION_FILTER
         MENUITEM "&Font...",                    ID_OPTION_FONT
     END
     POPUP "&Window"
@@ -104,7 +104,7 @@ BEGIN
         MENUITEM "A&uto Scroll\tCtrl+U",        ID_SYSTEM_AUTOSCROLL, INACTIVE
         MENUITEM "&Hide Toolbar",               ID_OPTION_HIDE_TOOLBAR
         MENUITEM SEPARATOR
-        MENUITEM "&Style Setting...",           ID_OPTION_SETTING
+        MENUITEM "Filter &Setting...",          ID_OPTION_FILTER
         MENUITEM "&Font...",                    ID_OPTION_FONT
     END
     POPUP "&Window"
@@ -294,7 +294,6 @@ END
 STRINGTABLE
 BEGIN
     ID_SYSTEM_RECEIVE       "Receive Message or Shut it down\nReceive Message or Shut it down"
-    ID_OPTION_SETTING       "Open style setting dialog...\nSetting"
     ID_WINDOW_TILE          "Arrange windows so they overlap\nCascade Windows"
 END
 
@@ -327,6 +326,11 @@ BEGIN
     ID_FILE_SAVEAS          "Save the active document with a new name\nSave As"
     ID_EDIT_CLEARALL        "Clear all view\nClear all"
     ID_OPTION_FONT          "Open font setting dialog\rFont"
+END
+
+STRINGTABLE
+BEGIN
+    ID_OPTION_FILTER        "Open filter script file...\nFilter"
 END
 
 #endif    // Chinese (Simplified, PRC) resources
