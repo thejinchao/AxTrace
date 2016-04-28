@@ -7,7 +7,6 @@ cmake_minimum_required (VERSION 3.0)
 
 set(AXTRACE_SOURCES_CPP
 	AT_AboutDlg.cpp     
-	AT_ColorButton.cpp  
 	AT_Config.cpp       
 	AT_Incoming.cpp     
 	AT_ListCtrlEx.cpp   
@@ -38,7 +37,6 @@ source_group("Source Files\\utf" FILES ${AXTRACE_SOURCES_UTF})
 set(AXTRACE_SOURCES_INC
 	AT_AboutDlg.h    
 	AT_ChildFrame.h  
-	AT_ColorButton.h 
 	AT_Config.h      
 	AT_Global.h      
 	AT_Incoming.h    
