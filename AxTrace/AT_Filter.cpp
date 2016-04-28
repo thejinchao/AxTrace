@@ -36,18 +36,18 @@ void Filter::init(void)
 	//run init lua script
 	static const char* init_script =
 		"function onTraceMessage(msg) \n"
-		" local frontColor=BLACK; \n"
-		" local backColor=WHITE; \n"
+		" local frontColor=COL_BLACK; \n"
+		" local backColor=COL_WHITE; \n"
 		" local msgStyle=msg:get_style(); \n"
-		" if(msgStyle>=4) then \n"
-		"   frontColor=RED; \n"
-		"   if(msgStyle==5) then backColor=YELLOW; end; \n"
+		" if(msgStyle>=AXT_ERROR) then \n"
+		"   frontColor=COL_RED; \n"
+		"   if(msgStyle==AXT_FATAL) then backColor=COL_YELLOW; end; \n"
 		" end; \n"
 		" return true, \"defult\", frontColor, backColor; \n" 
 		"end; \n" 
 		"" 
 		"function onValueMessage(msg) \n" 
-		" return true, \"defult\", BLACK, WHITE; \n" 
+		" return true, \"defult\", COL_BLACK, COL_WHITE; \n" 
 		"end; \n"
 		;
 	if (luaL_dostring(L, init_script)) {
@@ -60,14 +60,23 @@ void Filter::init(void)
 //--------------------------------------------------------------------------------------------
 void Filter::_luaopen(lua_State* L)
 {
-	lua_pushinteger(L, 0x000); 	lua_setglobal(L, "BLACK");
-	lua_pushinteger(L, 0xFFF); 	lua_setglobal(L, "WHITE");
-	lua_pushinteger(L, 0x00F); 	lua_setglobal(L, "RED");
-	lua_pushinteger(L, 0x0F0); 	lua_setglobal(L, "GREEN");
-	lua_pushinteger(L, 0xF00); 	lua_setglobal(L, "BLUE");
-	lua_pushinteger(L, 0x777); 	lua_setglobal(L, "GRAY");
-	lua_pushinteger(L, 0x0FF); 	lua_setglobal(L, "YELLOW");
+	lua_pushinteger(L, 0x000); 	lua_setglobal(L, "COL_BLACK");
+	lua_pushinteger(L, 0xFFF); 	lua_setglobal(L, "COL_WHITE");
+	lua_pushinteger(L, 0x00F); 	lua_setglobal(L, "COL_RED");
+	lua_pushinteger(L, 0x0F0); 	lua_setglobal(L, "COL_GREEN");
+	lua_pushinteger(L, 0xF00); 	lua_setglobal(L, "COL_BLUE");
+	lua_pushinteger(L, 0x777); 	lua_setglobal(L, "COL_GRAY");
+	lua_pushinteger(L, 0x0FF); 	lua_setglobal(L, "COL_YELLOW");
+	lua_pushinteger(L, 0x06F); 	lua_setglobal(L, "COL_ORANGE");
+	lua_pushinteger(L, 0xF0F); 	lua_setglobal(L, "COL_VIOLET");
 
+	lua_pushinteger(L, 0); 	lua_setglobal(L, "AXT_TRACE");
+	lua_pushinteger(L, 1); 	lua_setglobal(L, "AXT_DEBUG");
+	lua_pushinteger(L, 2); 	lua_setglobal(L, "AXT_INFO");
+	lua_pushinteger(L, 3); 	lua_setglobal(L, "AXT_WARN");
+	lua_pushinteger(L, 4); 	lua_setglobal(L, "AXT_ERROR");
+	lua_pushinteger(L, 5); 	lua_setglobal(L, "AXT_FATAL");
+	lua_pushinteger(L, 10); lua_setglobal(L, "AXT_USERDEF");
 }
 
 //--------------------------------------------------------------------------------------------
