@@ -54,8 +54,8 @@ public class MainActivity extends Activity implements OnClickListener
   	
 		//test AxTrace
     	AxTrace.Trace(AxTrace.AXT_TRACE, "-=-=-=-=-=-= Hello,World -=-=-=-=-=-=-=-=-=-");
-    	AxTrace.Trace(AxTrace.AXT_TRACE, "ÖÐÎÄ×Ö·û+Ascii");
-    	AxTrace.Trace(AxTrace.AXT_TRACE, "MultiLineTest\nLine1:µÚÒ»ÐÐ\nLine2:µÚ¶þÐÐ\nLine%d:µÚÈýÐÐ",3);
+    	AxTrace.Trace(AxTrace.AXT_TRACE, "ä¸­æ–‡å­—ç¬¦+Ascii");
+    	AxTrace.Trace(AxTrace.AXT_TRACE, "MultiLineTest\nLine1:ç¬¬ä¸€è¡Œ\nLine2:ç¬¬äºŒè¡Œ\nLine%d:ç¬¬ä¸‰è¡Œ",3);
     	
 		//--------------------------
 		//pressure test
@@ -150,7 +150,7 @@ public class MainActivity extends Activity implements OnClickListener
 			AxTrace.Value(AxTrace.AXT_TRACE, "DOUBLE_MAX_VALUE", (double)Double.MAX_VALUE);
 			AxTrace.Value(AxTrace.AXT_TRACE, "DOUBLE_MIN_VALUE", (double)Double.MIN_VALUE);
 			
-			AxTrace.Value(AxTrace.AXT_TRACE, "String_Test", "String ºº×Ö");
+			AxTrace.Value(AxTrace.AXT_TRACE, "String_Test", "String æ±‰å­—");
 		}
 		
     			
