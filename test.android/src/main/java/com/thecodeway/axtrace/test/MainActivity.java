@@ -17,6 +17,7 @@ public class MainActivity extends Activity implements OnClickListener
 	private Button buttonTest;
 	private TextView editServerIp;
 	private TextView editServerPort;
+	private int currentStep;
 	
 	private ExecutorService threadPool = Executors.newFixedThreadPool(5);
 	
@@ -32,6 +33,8 @@ public class MainActivity extends Activity implements OnClickListener
         
         editServerIp = (TextView)findViewById(R.id.edit_server_ip);
         editServerPort = (TextView)findViewById(R.id.edit_server_port);
+        
+        currentStep = 0;
         
         //set axtrace server address
         //AxTrace.SetTraceServer("127.0.0.1", 1978);
@@ -53,13 +56,22 @@ public class MainActivity extends Activity implements OnClickListener
  
   	
 		//test AxTrace
+		if(currentStep==0) {
     	AxTrace.Trace(AxTrace.AXT_TRACE, "-=-=-=-=-=-= Hello,World -=-=-=-=-=-=-=-=-=-");
     	AxTrace.Trace(AxTrace.AXT_TRACE, "中文字符+Ascii");
     	AxTrace.Trace(AxTrace.AXT_TRACE, "MultiLineTest\nLine1:第一行\nLine2:第二行\nLine%d:第三行",3);
+    	AxTrace.Trace(AxTrace.AXT_WARN, "警告消息");
+    	AxTrace.Trace(AxTrace.AXT_ERROR, "This error message");
+    	AxTrace.Trace(AxTrace.AXT_FATAL, "This fatal message");
+    	
+    	currentStep++;
+    	buttonTest.setText("Pressure Test");
+    	return;
+    }
     	
 		//--------------------------
 		//pressure test
-		{
+		if(currentStep==1) {
 			int blank_Count=0;
 			int step=1;
 			int MAX_BLANK_COUNT=50;
@@ -82,12 +94,16 @@ public class MainActivity extends Activity implements OnClickListener
 				AxTrace.Trace(AxTrace.AXT_TRACE, str);
 			}
 			AxTrace.Trace(AxTrace.AXT_TRACE, "<END>");
+
+    	currentStep++;
+    	buttonTest.setText("Multithread Pressure Test");
+    	return;
 		}
 
     	
 		//--------------------------------------
 		//thread pool press test
-		{
+		if(currentStep==2) {
 			class TraceThread extends Thread {
 				public TraceThread(String str) {
 					strToShow = str;
@@ -119,13 +135,17 @@ public class MainActivity extends Activity implements OnClickListener
 	        }	
 			
 			AxTrace.Trace(AxTrace.AXT_TRACE, "<MULTI THREAD END>");
+
+    	currentStep++;
+    	buttonTest.setText("Value Test");
+    	return;
 		}
 		
     	
     	
 		//--------------------------------------
 		//value test
-		{
+		if(currentStep==3) {
 			//test value
 			AxTrace.Value(AxTrace.AXT_TRACE, "Int_Test", (int)-12345);
 	
@@ -151,10 +171,14 @@ public class MainActivity extends Activity implements OnClickListener
 			AxTrace.Value(AxTrace.AXT_TRACE, "DOUBLE_MIN_VALUE", (double)Double.MIN_VALUE);
 			
 			AxTrace.Value(AxTrace.AXT_TRACE, "String_Test", "String 汉字");
+
+    	currentStep++;
+    	buttonTest.setText("Value Pressure Test");
+    	return;
 		}
 		
     			
-		{
+		if(currentStep==4) {
 
 			//AxValue Pressure Test
 			int start_blank=0;
@@ -189,10 +213,14 @@ public class MainActivity extends Activity implements OnClickListener
 				if(start_blank>=MAX_BLANK_COUNT) start_step=-1; 
 				if(start_blank<=0) start_step=1;
 			}
+
+    	currentStep++;
+    	buttonTest.setText("Value Multithread Pressure Test");
+    	return;
 		}
 		
 		
-		{
+		if(currentStep==5) {
 			class AxValueThread extends Thread {
 				public AxValueThread(String name, String value) {
 					strName = name; strValue = value;
@@ -201,7 +229,7 @@ public class MainActivity extends Activity implements OnClickListener
 				private String strValue;
 				public void run() {
 					AxTrace.Value(AxTrace.AXT_TRACE, strName, strValue);
-                }
+        }
 			}
 			
 			//AxValue Multi Thread Pressure Test
@@ -238,6 +266,10 @@ public class MainActivity extends Activity implements OnClickListener
 				if(start_blank>=MAX_BLANK_COUNT) start_step=-1; 
 				if(start_blank<=0) start_step=1;
 			}			
+
+    	currentStep++;
+    	buttonTest.setText("Done");
+    	return;
 		}
-    }
+	}
 }
