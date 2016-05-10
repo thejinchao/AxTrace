@@ -32,6 +32,7 @@ public:
 	void setFont(LPLOGFONT lf);
 
 	const std::string& getFilterScript(void) const { return m_filterScript; }
+	void setFilterScript(const char* script);
 
 	/*************************************************************************
 		Implementation Methods

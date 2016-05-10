@@ -140,6 +140,7 @@ LRESULT MainFrame::OnAppAbout(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bH
 //--------------------------------------------------------------------------------------------
 LRESULT MainFrame::OnOptionFilter(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
+	System::getSingleton()->getFilter()->editScriptWithNotepad();
 	return 0;
 }
 
@@ -209,7 +210,6 @@ void MainFrame::updateButtons(MDI_STATUS status)
 	UISetCheck(ID_SYSTEM_RECEIVE, System::getSingleton()->getConfig()->getCapture());
 	UISetCheck(ID_SYSTEM_AUTOSCROLL, System::getSingleton()->getConfig()->getAutoScroll());
 	UIEnable(ID_HELP, FALSE); //NOT SUPPORT YET...
-	UIEnable(ID_OPTION_FILTER, FALSE);
 
 	if(status==MS_MDI)
 	{
@@ -334,6 +334,38 @@ LRESULT MainFrame::OnSettingFont(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL&
 	{
 		((IChildFrame*)it_value->second)->redraw();
 	}
+	return 0;
+}
+
+//--------------------------------------------------------------------------------------------
+LRESULT MainFrame::OnReloadFilterScriptMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	const wchar_t* wszScriptFile = (const wchar_t*)wParam;
+
+	SetForegroundWindow(m_hWnd);
+
+	std::string newScript;
+	if (!loadFileToString(wszScriptFile, newScript)) {
+		//open script file error
+		MessageBox(L"Open script file error!", L"LoadScript Error", MB_OK | MB_ICONSTOP);
+		return 0;
+	}
+
+	std::string errorMessage;
+	if (System::getSingleton()->getFilter()->tryReloadScriptFile(newScript.c_str(), errorMessage)) {
+
+		if (IDYES == MessageBox(L"Compile script success, reload now?", L"LoadScript", MB_YESNO | MB_ICONQUESTION)) {
+			bool success = System::getSingleton()->getFilter()->reloadScript(newScript.c_str(), m_hWnd);
+			assert(success);
+
+			//save
+			System::getSingleton()->getConfig()->setFilterScript(newScript.c_str());
+		}
+	}
+	else {
+		MessageBoxA(m_hWnd, errorMessage.c_str(), "LoadScript error", MB_OK | MB_ICONSTOP);
+	}
+
 	return 0;
 }
 

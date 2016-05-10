@@ -46,4 +46,7 @@ public:
 	~AutoSizeBuf();
 };
 
+/** load small text file to string */
+bool loadFileToString(const wchar_t* wszFileName, std::string& fileContent);
+
 }

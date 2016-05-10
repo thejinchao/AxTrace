@@ -50,6 +50,8 @@ public:
 	Config* getConfig(void) { return m_theConfig; }
 	/** get app module */
 	CAppModule& getAppModule(void) { return m_AppModule; }
+	/** get filter */
+	Filter* getFilter(void) { return m_filter; }
 
 	/*************************************************************************
 			Inherit Methods

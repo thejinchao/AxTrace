@@ -181,4 +181,44 @@ void* AutoSizeBuf::request(size_t sizeOfBytes)
 	return (void*)m_pBuf;
 }
 
+//--------------------------------------------------------------------------------------------
+bool loadFileToString(const wchar_t* wszFileName, std::string& fileContent)
+{
+	assert(wszFileName);
+
+	// Open the file
+	HANDLE hFile = CreateFile(wszFileName,
+		GENERIC_READ,
+		FILE_SHARE_READ | FILE_SHARE_WRITE,
+		NULL,
+		OPEN_EXISTING,
+		FILE_ATTRIBUTE_ARCHIVE | FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_SEQUENTIAL_SCAN,
+		NULL);
+
+	if (hFile == INVALID_HANDLE_VALUE)	{
+		return false;
+	}
+
+	DWORD dwFileSize = GetFileSize(hFile, 0);
+
+	//allocate memory
+	char* tempMemory = new char[dwFileSize+1];
+
+	//read file
+	DWORD dwBytesRead;
+	if (!ReadFile(hFile, tempMemory, dwFileSize, &dwBytesRead, NULL) || dwBytesRead != dwFileSize) {
+		CloseHandle(hFile);
+		delete[] tempMemory;
+		return false;
+	}
+	CloseHandle(hFile);
+
+	tempMemory[dwFileSize] = 0;
+
+	fileContent = tempMemory;
+	delete[] tempMemory;
+
+	return true;
+}
+
 }

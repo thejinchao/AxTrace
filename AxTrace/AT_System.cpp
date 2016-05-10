@@ -53,8 +53,8 @@ bool System::init(HINSTANCE hInstance, LPSTR lpCmdLine)
 	m_theConfig->loadSetting();
 
 	// init filter
-	m_filter->init();
-	if (!(m_filter->reloadScript(m_theConfig, ::GetDesktopWindow()))) {
+	m_filter->init(m_theConfig);
+	if (!(m_filter->reloadScript(m_theConfig->getFilterScript().c_str(), ::GetDesktopWindow()))) {
 		return false;
 	}
 

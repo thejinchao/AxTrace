@@ -60,24 +60,31 @@ void Config::_resetDefaultSetting(void)
 	COLORREF colFront = GetSysColor(COLOR_WINDOWTEXT);
 
 	m_filterScript =
-		"function onTraceMessage(msg) \n"
-		" local frontColor=COL_BLACK; \n"
-		" local backColor=COL_WHITE; \n"
-		" local msgStyle=msg:get_style(); \n"
-		" if(msgStyle==AXT_ERROR) then \n"
-		"   frontColor=COL_RED; \n"
-		" end; \n"
-		" if(msgStyle==AXT_FATAL) then \n"
-		"   frontColor=COL_RED; \n"
-		"   backColor=COL_YELLOW; \n"
-		" end; \n"
-		" return true, \"defult\", frontColor, backColor; \n"
-		"end; \n"
-		""
-		"function onValueMessage(msg) \n"
-		" return true, \"defult\", COL_BLACK, COL_WHITE; \n"
-		"end; \n"
+		"function onTraceMessage(msg) \r\n"
+		" local frontColor=COL_BLACK; \r\n"
+		" local backColor=COL_WHITE; \r\n"
+		" local msgStyle=msg:get_style(); \r\n"
+		" if(msgStyle==AXT_ERROR) then \r\n"
+		"   frontColor=COL_RED; \r\n"
+		" end; \r\n"
+		" if(msgStyle==AXT_FATAL) then \r\n"
+		"   frontColor=COL_RED; \r\n"
+		"   backColor=COL_YELLOW; \r\n"
+		" end; \r\n"
+		" return true, \"defult\", frontColor, backColor; \r\n"
+		"end; \r\n"
+		"\r\n"
+		"function onValueMessage(msg) \r\n"
+		" return true, \"defult\", COL_BLACK, COL_WHITE; \r\n"
+		"end; \r\n"
 		;
+}
+
+//--------------------------------------------------------------------------------------------
+void Config::setFilterScript(const char* script)
+{
+	m_filterScript = script;
+	saveSetting();
 }
 
 //--------------------------------------------------------------------------------------------

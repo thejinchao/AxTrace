@@ -23,17 +23,33 @@ public:
 	enum { MAX_SCRIPT_LENGTH_IN_CHAR = 1024*1024*2 };
 
 public:
-	void init(void);
-	bool reloadScript(const Config* cfg, HWND hwnd);
+	void init(Config* cfg);
+	bool reloadScript(const char* script, HWND hwnd);
+	bool tryReloadScriptFile(const char* script, std::string& errorMessage);
 
 	void onTraceMessage(const LogMessage* message, Result& result);
 	void onValueMessage(const ValueMessage* message, Result& result);
+
+	bool editScriptWithNotepad(void);
 
 public:
 	static void _luaopen(lua_State*	L);
 
 private:
 	lua_State* L;
+	Config* m_cfg;
+	std::wstring m_strTempPath;
+	std::wstring m_strTempFile;
+	HANDLE m_hNotepadProcess;
+	HANDLE m_hMonitorThread;
+	DWORD m_dwNotepadProcessID;
+	FILETIME m_timeScriptLastWriteTime;
+
+private:
+	static unsigned int __stdcall _monitor_thread_entry(void* param) {
+		return ((Filter*)param)->_monitor_thread_entry();
+	}
+	unsigned int _monitor_thread_entry(void);
 
 public:
 	Filter();

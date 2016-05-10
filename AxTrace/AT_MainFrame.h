@@ -25,7 +25,10 @@ class MainFrame : public CMDIFrameWindowImpl<MainFrame>, CUpdateUI<MainFrame>,
 	*************************************************************************/
 public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
-	enum { WM_ON_AXTRACE_MESSAGE=WM_USER+100 };
+	enum { 
+		WM_ON_AXTRACE_MESSAGE=WM_USER+100, 
+		WM_ON_RELOADSCRIPT_MESSAGE 
+	};
 
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
 	{
@@ -42,6 +45,7 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
 		MESSAGE_HANDLER(WM_ON_AXTRACE_MESSAGE, OnAxTraceMessage)
+		MESSAGE_HANDLER(WM_ON_RELOADSCRIPT_MESSAGE, OnReloadFilterScriptMessage)
 		
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnAppExit)
 		COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
@@ -98,6 +102,7 @@ public:
 	LRESULT OnWindowCascade(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnWindowTile(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnSettingFont(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnReloadFilterScriptMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 public:
 	enum MDI_STATUS
