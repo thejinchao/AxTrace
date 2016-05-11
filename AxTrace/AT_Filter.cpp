@@ -138,7 +138,7 @@ static BOOL CALLBACK _findCurrentNotepad(HWND hWnd, LPARAM lParam)
 bool Filter::editScriptWithNotepad(void)
 {
 	if (m_hNotepadProcess != 0 && ::WaitForSingleObject(m_hNotepadProcess, 0)!=WAIT_OBJECT_0) {
-		//TODO: set current notepad window to foreground
+		//set current notepad window to foreground
 		EnumWindows(_findCurrentNotepad, (LPARAM)m_dwNotepadProcessID);
 		return true;
 	}
