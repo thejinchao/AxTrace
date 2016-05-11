@@ -342,30 +342,30 @@ LRESULT MainFrame::OnReloadFilterScriptMessage(UINT uMsg, WPARAM wParam, LPARAM 
 {
 	const wchar_t* wszScriptFile = (const wchar_t*)wParam;
 
-	SetForegroundWindow(m_hWnd);
+	::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE|SWP_NOMOVE);
 
 	std::string newScript;
 	if (!loadFileToString(wszScriptFile, newScript)) {
 		//open script file error
 		MessageBox(L"Open script file error!", L"LoadScript Error", MB_OK | MB_ICONSTOP);
-		return 0;
-	}
-
-	std::string errorMessage;
-	if (System::getSingleton()->getFilter()->tryReloadScriptFile(newScript.c_str(), errorMessage)) {
-
-		if (IDYES == MessageBox(L"Compile script success, reload now?", L"LoadScript", MB_YESNO | MB_ICONQUESTION)) {
-			bool success = System::getSingleton()->getFilter()->reloadScript(newScript.c_str(), m_hWnd);
-			assert(success);
-
-			//save
-			System::getSingleton()->getConfig()->setFilterScript(newScript.c_str());
-		}
 	}
 	else {
-		MessageBoxA(m_hWnd, errorMessage.c_str(), "LoadScript error", MB_OK | MB_ICONSTOP);
-	}
+		std::string errorMessage;
+		if (System::getSingleton()->getFilter()->tryReloadScriptFile(newScript.c_str(), errorMessage)) {
 
+			if (IDYES == MessageBox(L"Compile script success, reload now?", L"LoadScript", MB_YESNO | MB_ICONQUESTION)) {
+				bool success = System::getSingleton()->getFilter()->reloadScript(newScript.c_str(), m_hWnd);
+				assert(success);
+
+				//save
+				System::getSingleton()->getConfig()->setFilterScript(newScript.c_str());
+			}
+		}
+		else {
+			MessageBoxA(m_hWnd, errorMessage.c_str(), "LoadScript error", MB_OK | MB_ICONSTOP);
+		}
+	}
+	::SetWindowPos(m_hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
 	return 0;
 }
 
