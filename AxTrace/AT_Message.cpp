@@ -60,7 +60,7 @@ int _lua_get_content(lua_State *L)
 {
 	const Message* msg = (const Message*)lua_touserdata(L, 1);
 
-	if (msg->getTraceType() == AXTRACE_CMD_TYPE_TRACE) {
+	if (msg->getTraceType() == AXTRACE_CMD_TYPE_LOG) {
 		const wchar_t* msg_content = ((LogMessage*)msg)->getLogBuf();
 		size_t msg_char_length = ((LogMessage*)msg)->getLogSizeChar() + 1;
 

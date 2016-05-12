@@ -10,9 +10,9 @@ public class Test
 	
 	public static void main(String[] args){
 		//test AxTrace
-    	AxTrace.Trace(AxTrace.AXT_TRACE, "-=-=-=-=-=-= Hello,World -=-=-=-=-=-=-=-=-=-");
-    	AxTrace.Trace(AxTrace.AXT_TRACE, "中文字符+Ascii");
-    	AxTrace.Trace(AxTrace.AXT_TRACE, "MultiLineTest\nLine1:第一行\nLine2:第二行\nLine%d:第三行",3);
+    	AxTrace.Log	(AxTrace.AXT_TRACE, "-=-=-=-=-=-= Hello,World -=-=-=-=-=-=-=-=-=-");
+    	AxTrace.Log(AxTrace.AXT_TRACE, "中文字符+Ascii");
+    	AxTrace.Log(AxTrace.AXT_TRACE, "MultiLineTest\nLine1:第一行\nLine2:第二行\nLine%d:第三行",3);
     	
 		//--------------------------
 		//pressure test
@@ -21,7 +21,7 @@ public class Test
 			int step=1;
 			int MAX_BLANK_COUNT=50;
 
-			AxTrace.Trace(AxTrace.AXT_TRACE, "<BEGIN>");
+			AxTrace.Log(AxTrace.AXT_TRACE, "<BEGIN>");
 			for(int i=0; i<500; i++)
 			{
 				byte[] szTemp = new byte[blank_Count+1];
@@ -36,9 +36,9 @@ public class Test
 				szTemp[j++] = '*';
 
 				String str = new String(szTemp);
-				AxTrace.Trace(AxTrace.AXT_TRACE, str);
+				AxTrace.Log(AxTrace.AXT_TRACE, str);
 			}
-			AxTrace.Trace(AxTrace.AXT_TRACE, "<END>");
+			AxTrace.Log(AxTrace.AXT_TRACE, "<END>");
 		}
 
 		//--------------------------------------
@@ -50,14 +50,14 @@ public class Test
 				}
 				private String strToShow;
 				public void run() {
-					AxTrace.Trace(AxTrace.AXT_TRACE, strToShow);
+					AxTrace.Log(AxTrace.AXT_TRACE, strToShow);
                 }
 			}
 			
 			int blank_Count=0;
 			int step=1;
 			int MAX_BLANK_COUNT=50;
-			AxTrace.Trace(AxTrace.AXT_TRACE, "<MULTI THREAD BEGIN>");
+			AxTrace.Log(AxTrace.AXT_TRACE, "<MULTI THREAD BEGIN>");
 			for(int i=0 ; i< 100 ; i++) {
 				
 				byte[] szTemp = new byte[blank_Count+1];
@@ -74,7 +74,7 @@ public class Test
 				threadPool.submit(new TraceThread(r));
 	        }	
 			
-			AxTrace.Trace(AxTrace.AXT_TRACE, "<MULTI THREAD END>");
+			AxTrace.Log(AxTrace.AXT_TRACE, "<MULTI THREAD END>");
 		}
 		
     	

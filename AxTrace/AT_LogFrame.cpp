@@ -6,7 +6,7 @@
 ***************************************************/
 
 #include "StdAfx.h"
-#include "AT_TraceFrame.h"
+#include "AT_LogFrame.h"
 #include "AT_Util.h"
 #include "AT_System.h"
 #include "AT_MainFrame.h"
@@ -17,7 +17,7 @@ namespace AT3
 {
 
 //--------------------------------------------------------------------------------------------
-TraceFrameWnd::TraceFrameWnd(CUpdateUIBase* pUpdateUI, const std::string& windowTitle)
+LogFrameWnd::LogFrameWnd(CUpdateUIBase* pUpdateUI, const std::string& windowTitle)
 	: m_pUpdateUI(pUpdateUI)
 	, m_windowTitle(windowTitle)
 	, m_nLogIndex(0)
@@ -26,27 +26,27 @@ TraceFrameWnd::TraceFrameWnd(CUpdateUIBase* pUpdateUI, const std::string& window
 }
 
 //--------------------------------------------------------------------------------------------
-TraceFrameWnd::~TraceFrameWnd()
+LogFrameWnd::~LogFrameWnd()
 {
 
 }
 
 //--------------------------------------------------------------------------------------------
-void TraceFrameWnd::redraw(void)
+void LogFrameWnd::redraw(void)
 {
 	m_wndListView.SetFont(System::getSingleton()->getConfig()->getFont());
 	m_wndListView.InvalidateRect(0);
 }
 
 //--------------------------------------------------------------------------------------------
-LRESULT TraceFrameWnd::OnEditCopy(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+LRESULT LogFrameWnd::OnEditCopy(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	m_wndListView.copyToClipboard();
 	return TRUE;
 }
 
 //--------------------------------------------------------------------------------------------
-LRESULT TraceFrameWnd::OnEditClear(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+LRESULT LogFrameWnd::OnEditClear(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	m_wndListView.DeleteAllItems();
 	m_nLogIndex = 0;
@@ -54,7 +54,7 @@ LRESULT TraceFrameWnd::OnEditClear(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOO
 }
 
 //--------------------------------------------------------------------------------------------
-LRESULT TraceFrameWnd::OnEditSelectAll(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+LRESULT LogFrameWnd::OnEditSelectAll(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	int count=m_wndListView.GetItemCount();
 	for(int i=0; i<count; i++)
@@ -65,7 +65,7 @@ LRESULT TraceFrameWnd::OnEditSelectAll(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 }
 
 //--------------------------------------------------------------------------------------------
-LRESULT TraceFrameWnd::OnCreate(UINT, WPARAM, LPARAM, BOOL& bHandled)
+LRESULT LogFrameWnd::OnCreate(UINT, WPARAM, LPARAM, BOOL& bHandled)
 {
 	m_hWndClient = 
 		m_wndListView.Create(m_hWnd, rcDefault, CListViewCtrl::GetWndClassName(), 
@@ -90,7 +90,7 @@ LRESULT TraceFrameWnd::OnCreate(UINT, WPARAM, LPARAM, BOOL& bHandled)
 }
 
 //--------------------------------------------------------------------------------------------
-LRESULT TraceFrameWnd::OnSize(UINT, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT LogFrameWnd::OnSize(UINT, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	int width = LOWORD(lParam);
 	int height = HIWORD(lParam);
@@ -111,14 +111,14 @@ LRESULT TraceFrameWnd::OnSize(UINT, WPARAM wParam, LPARAM lParam, BOOL& bHandled
 }
 
 //--------------------------------------------------------------------------------------------
-LRESULT TraceFrameWnd::OnSetFocus(UINT, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT LogFrameWnd::OnSetFocus(UINT, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	System::getSingleton()->getMainFrame()->onChildActive(this);
 	return 1;
 }
 
 //--------------------------------------------------------------------------------------------
-void TraceFrameWnd::insertLog(const LogMessage* message, const Filter::Result& filter)
+void LogFrameWnd::insertLog(const LogMessage* message, const Filter::Result& filter)
 {
 	const AXIATRACE_TIME* tTime = message->getTraceTime();
 	unsigned int styleID = message->getStyleID();
@@ -183,7 +183,7 @@ void TraceFrameWnd::insertLog(const LogMessage* message, const Filter::Result& f
 }
 
 //--------------------------------------------------------------------------------------------
-LRESULT TraceFrameWnd::OnClose(UINT, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT LogFrameWnd::OnClose(UINT, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	System::getSingleton()->getMainFrame()->onChildDestroy(this);
 	bHandled=FALSE;
@@ -191,7 +191,7 @@ LRESULT TraceFrameWnd::OnClose(UINT, WPARAM wParam, LPARAM lParam, BOOL& bHandle
 }
 
 //--------------------------------------------------------------------------------------------
-LRESULT TraceFrameWnd::OnFileSaveAs(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+LRESULT LogFrameWnd::OnFileSaveAs(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	m_wndListView.saveToFile();
 	return 1;

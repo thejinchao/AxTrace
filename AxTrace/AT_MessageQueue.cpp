@@ -78,7 +78,7 @@ Message* MessageQueue::_popMessage(void)
 	Message* message = 0;
 	switch(head.type)
 	{
-	case AXTRACE_CMD_TYPE_TRACE:
+	case AXTRACE_CMD_TYPE_LOG:
 		{
 			LogMessage* msg = new LogMessage();
 			msg->build(traceTime, head, m_ring_buf);

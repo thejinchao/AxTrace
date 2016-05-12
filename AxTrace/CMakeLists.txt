@@ -17,7 +17,7 @@ set(AXTRACE_SOURCES_CPP
 	AT_StylePreview.cpp 
 	AT_System.cpp       
 	AT_TickFrame.cpp    
-	AT_TraceFrame.cpp   
+	AT_LogFrame.cpp   
 	AT_Util.cpp         
 	AT_ValueFrame.cpp 
 	AT_Filter.cpp  
@@ -48,7 +48,7 @@ set(AXTRACE_SOURCES_INC
 	AT_StylePreview.h
 	AT_System.h      
 	AT_TickFrame.h   
-	AT_TraceFrame.h  
+	AT_LogFrame.h  
 	AT_Util.h        
 	AT_ValueFrame.h  
 	AT_Filter.h

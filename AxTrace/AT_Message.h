@@ -57,7 +57,7 @@ public:
 	/** build message */
 	virtual void build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
 	/** get trace type*/
-	virtual unsigned int getTraceType(void) const { return AXTRACE_CMD_TYPE_TRACE; }
+	virtual unsigned int getTraceType(void) const { return AXTRACE_CMD_TYPE_LOG; }
 
 	/** get log size*/
 	size_t getLogSizeChar(void) const { return m_pLogBufInChar; }

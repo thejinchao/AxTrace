@@ -133,7 +133,7 @@ static axtrace_contex_s* _axtrace_get_thread_contex(const char* server_ip, unsig
 }
 
 /*---------------------------------------------------------------------------------------------*/
-void axtrace(unsigned int style, const char *format, ...)
+void axlog(unsigned int style, const char *format, ...)
 {
 	axtrace_contex_s* ctx;
 	va_list ptr = 0;

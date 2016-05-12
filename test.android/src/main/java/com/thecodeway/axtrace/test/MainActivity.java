@@ -57,12 +57,12 @@ public class MainActivity extends Activity implements OnClickListener
   	
 		//test AxTrace
 		if(currentStep==0) {
-    	AxTrace.Trace(AxTrace.AXT_TRACE, "-=-=-=-=-=-= Hello,World -=-=-=-=-=-=-=-=-=-");
-    	AxTrace.Trace(AxTrace.AXT_TRACE, "中文字符+Ascii");
-    	AxTrace.Trace(AxTrace.AXT_TRACE, "MultiLineTest\nLine1:第一行\nLine2:第二行\nLine%d:第三行",3);
-    	AxTrace.Trace(AxTrace.AXT_WARN, "警告消息");
-    	AxTrace.Trace(AxTrace.AXT_ERROR, "This error message");
-    	AxTrace.Trace(AxTrace.AXT_FATAL, "This fatal message");
+    	AxTrace.Log(AxTrace.AXT_TRACE, "-=-=-=-=-=-= Hello,World -=-=-=-=-=-=-=-=-=-");
+    	AxTrace.Log(AxTrace.AXT_TRACE, "中文字符+Ascii");
+    	AxTrace.Log(AxTrace.AXT_TRACE, "MultiLineTest\nLine1:第一行\nLine2:第二行\nLine%d:第三行",3);
+    	AxTrace.Log(AxTrace.AXT_WARN, "警告消息");
+    	AxTrace.Log(AxTrace.AXT_ERROR, "This error message");
+    	AxTrace.Log(AxTrace.AXT_FATAL, "This fatal message");
     	
     	currentStep++;
     	buttonTest.setText("Pressure Test");
@@ -76,7 +76,7 @@ public class MainActivity extends Activity implements OnClickListener
 			int step=1;
 			int MAX_BLANK_COUNT=50;
 
-			AxTrace.Trace(AxTrace.AXT_TRACE, "<BEGIN>");
+			AxTrace.Log(AxTrace.AXT_TRACE, "<BEGIN>");
 			for(int i=0; i<500; i++)
 			{
 				byte[] szTemp = new byte[blank_Count+1];
@@ -91,9 +91,9 @@ public class MainActivity extends Activity implements OnClickListener
 				szTemp[j++] = '*';
 
 				String str = new String(szTemp);
-				AxTrace.Trace(AxTrace.AXT_TRACE, str);
+				AxTrace.Log(AxTrace.AXT_TRACE, str);
 			}
-			AxTrace.Trace(AxTrace.AXT_TRACE, "<END>");
+			AxTrace.Log(AxTrace.AXT_TRACE, "<END>");
 
     	currentStep++;
     	buttonTest.setText("Multithread Pressure Test");
@@ -110,14 +110,14 @@ public class MainActivity extends Activity implements OnClickListener
 				}
 				private String strToShow;
 				public void run() {
-					AxTrace.Trace(AxTrace.AXT_TRACE, strToShow);
+					AxTrace.Log(AxTrace.AXT_TRACE, strToShow);
                 }
 			}
 			
 			int blank_Count=0;
 			int step=1;
 			int MAX_BLANK_COUNT=50;
-			AxTrace.Trace(AxTrace.AXT_TRACE, "<MULTI THREAD BEGIN>");
+			AxTrace.Log(AxTrace.AXT_TRACE, "<MULTI THREAD BEGIN>");
 			for(int i=0 ; i< 100 ; i++) {
 				
 				byte[] szTemp = new byte[blank_Count+1];
@@ -134,7 +134,7 @@ public class MainActivity extends Activity implements OnClickListener
 				threadPool.submit(new TraceThread(r));
 	        }	
 			
-			AxTrace.Trace(AxTrace.AXT_TRACE, "<MULTI THREAD END>");
+			AxTrace.Log(AxTrace.AXT_TRACE, "<MULTI THREAD END>");
 
     	currentStep++;
     	buttonTest.setText("Value Test");

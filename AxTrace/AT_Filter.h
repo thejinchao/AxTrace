@@ -27,7 +27,7 @@ public:
 	bool reloadScript(const char* script, HWND hwnd);
 	bool tryReloadScriptFile(const char* script, std::string& errorMessage);
 
-	void onTraceMessage(const LogMessage* message, Result& result);
+	void onLogMessage(const LogMessage* message, Result& result);
 	void onValueMessage(const ValueMessage* message, Result& result);
 
 	bool editScriptWithNotepad(void);

@@ -4,7 +4,7 @@
 #include "AT_MainFrame.h"
 #include "AT_Incoming.h"
 #include "AT_MessageQueue.h"
-#include "AT_TraceFrame.h"
+#include "AT_LogFrame.h"
 #include "AT_ValueFrame.h"
 #include "AT_Filter.h"
 
@@ -126,7 +126,7 @@ void System::_processAxTraceData(const Message* message)
 
 	switch(message->getTraceType())
 	{
-	case AXTRACE_CMD_TYPE_TRACE:	//string log
+	case AXTRACE_CMD_TYPE_LOG:	//string log
 		_insertStringLog((LogMessage*)message);
 		break;
 
@@ -142,11 +142,11 @@ void System::_processAxTraceData(const Message* message)
 void System::_insertStringLog(const LogMessage* message)
 {
 	Filter::Result filterResult;
-	m_filter->onTraceMessage(message, filterResult);
+	m_filter->onLogMessage(message, filterResult);
 
 	if (!filterResult.display) return;
 
-	TraceFrameWnd* logWnd = m_wndMainFrame->getTraceWnd(filterResult.wndTitle);
+	LogFrameWnd* logWnd = m_wndMainFrame->getLogWnd(filterResult.wndTitle);
 	assert(logWnd!=0);
 
 	logWnd->insertLog(message, filterResult);

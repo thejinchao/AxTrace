@@ -18,7 +18,7 @@ class LogMessage;
 
 /** ChildFrame - Trace text
 */
-class TraceFrameWnd : public CMDIChildWindowImpl<TraceFrameWnd>, public IChildFrame
+class LogFrameWnd : public CMDIChildWindowImpl<LogFrameWnd>, public IChildFrame
 {
 public:
 	/** insert a log message */
@@ -43,7 +43,7 @@ public:
 		delete this;
 	}
 
-	BEGIN_MSG_MAP(TraceFrameWnd)
+	BEGIN_MSG_MAP(LogFrameWnd)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
@@ -53,7 +53,7 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_COPY, OnEditCopy)
 		COMMAND_ID_HANDLER(ID_EDIT_SELECTALL, OnEditSelectAll)
 		COMMAND_ID_HANDLER(ID_FILE_SAVEAS, OnFileSaveAs)
-		CHAIN_MSG_MAP(CMDIChildWindowImpl<TraceFrameWnd>)
+		CHAIN_MSG_MAP(CMDIChildWindowImpl<LogFrameWnd>)
 		CHAIN_CLIENT_COMMANDS()
 		CHAIN_MSG_MAP_MEMBER(m_wndListView)
 	END_MSG_MAP()
@@ -81,8 +81,8 @@ private:
 		Construction and Destruction
 	*************************************************************************/
 public:
-	TraceFrameWnd(CUpdateUIBase* pUpdateUI, const std::string& windowTitle);
-	~TraceFrameWnd();
+	LogFrameWnd(CUpdateUIBase* pUpdateUI, const std::string& windowTitle);
+	~LogFrameWnd();
 };
 
 }

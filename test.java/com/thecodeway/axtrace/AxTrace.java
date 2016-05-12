@@ -9,15 +9,15 @@ import java.nio.ByteOrder;
 
 public class AxTrace {
 	public static final int AXT_TRACE = 1;
-    public static final int AXT_DEBUG = 1;
-    public static final int AXT_INFO = 2;
-    public static final int AXT_WARN = 3;
-    public static final int AXT_ERROR = 4;
-    public static final int AXT_FATAL = 5;
-    public static final int AXT_USERDEF = 10;
+	public static final int AXT_DEBUG = 1;
+	public static final int AXT_INFO = 2;
+	public static final int AXT_WARN = 3;
+	public static final int AXT_ERROR = 4;
+	public static final int AXT_FATAL = 5;
+	public static final int AXT_USERDEF = 10;
 	
-    public static final byte AXTRACE_CMD_TYPE_TRACE = 1;
-    public static final byte AXTRACE_CMD_TYPE_VALUE = 2;
+	public static final byte AXTRACE_CMD_TYPE_LOG = 1;
+	public static final byte AXTRACE_CMD_TYPE_VALUE = 2;
     
 	static public final int AXV_INT8 = 0;
 	static public final int AXV_UINT8 = 1;
@@ -49,10 +49,10 @@ public class AxTrace {
 		mServerPort = port;
 	}
     
-	static public void Trace(int style, String param, Object... args) {
+	static public void Log(int style, String param, Object... args) {
 		String finalString = String.format(param, args);
 		
-		_trace(style, finalString);
+		_log(style, finalString);
 	}
 	
 	static public void Value(int style, String name, byte value) {
@@ -167,7 +167,7 @@ public class AxTrace {
 				
 				buf.putShort((short)finalLength);
 				buf.put((byte)'A');
-				buf.put((byte)AXTRACE_CMD_TYPE_TRACE);
+				buf.put((byte)AXTRACE_CMD_TYPE_LOG);
 				buf.putInt(logData.pid);
 				buf.putInt(logData.tid);
 				buf.putInt(logData.style);
@@ -240,7 +240,7 @@ public class AxTrace {
 		return data.mInitSuccessed;
 	}
 	
-	static private void _trace(int style, String finalString){
+	static private void _log(int style, String finalString){
 		InnerLogData logData = new InnerLogData();
 		logData.style = style;
 		logData.pid = (int)getCurrentProcessId();

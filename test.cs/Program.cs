@@ -13,7 +13,7 @@ namespace test.win32.cs
     {
         public static void AxTraceThread(object obj)
         {
-            AxTrace.Trace(AxTrace.AXT_TRACE, (string)obj);
+            AxTrace.Log(AxTrace.AXT_TRACE, (string)obj);
         }
 
         private class AxValueParam
@@ -32,15 +32,15 @@ namespace test.win32.cs
             System.Console.WriteLine("============= AxTrace3 Test(C#) ================\n");
             
             {
-                AxTrace.Trace(AxTrace.AXT_TRACE, "-=-=-=-=-=-= Hello,World -=-=-=-=-=-=-=-=-=-");
-                AxTrace.Trace(AxTrace.AXT_TRACE, "中文字符+Ascii");
-                AxTrace.Trace(AxTrace.AXT_TRACE, "MultiLineTest\nLine{0}:第一行\nLine2:{1}\nLine3:第三行pi={2}", 1, "第二行", 3.14f);
+                AxTrace.Log(AxTrace.AXT_TRACE, "-=-=-=-=-=-= Hello,World -=-=-=-=-=-=-=-=-=-");
+                AxTrace.Log(AxTrace.AXT_TRACE, "中文字符+Ascii");
+                AxTrace.Log(AxTrace.AXT_TRACE, "MultiLineTest\nLine{0}:第一行\nLine2:{1}\nLine3:第三行pi={2}", 1, "第二行", 3.14f);
 
-                AxTrace.Trace(AxTrace.AXT_DEBUG, "DEBUG: This is a debug message");
-                AxTrace.Trace(AxTrace.AXT_INFO, "INFO: This is a info message");
-                AxTrace.Trace(AxTrace.AXT_WARN, "WARN: This is a warning message");
-                AxTrace.Trace(AxTrace.AXT_ERROR, "ERROR: This is a error message");
-                AxTrace.Trace(AxTrace.AXT_FATAL, "FATAL: This is a fatal message");
+                AxTrace.Log(AxTrace.AXT_DEBUG, "DEBUG: This is a debug message");
+                AxTrace.Log(AxTrace.AXT_INFO, "INFO: This is a info message");
+                AxTrace.Log(AxTrace.AXT_WARN, "WARN: This is a warning message");
+                AxTrace.Log(AxTrace.AXT_ERROR, "ERROR: This is a error message");
+                AxTrace.Log(AxTrace.AXT_FATAL, "FATAL: This is a fatal message");
             }
 
 
@@ -52,7 +52,7 @@ namespace test.win32.cs
 		        int step = 1;
 		        int MAX_BLANK_COUNT = 50;
 
-		        AxTrace.Trace(AxTrace.AXT_TRACE, "<BEGIN>");
+		        AxTrace.Log(AxTrace.AXT_TRACE, "<BEGIN>");
 		        for (int i = 0; i<500; i++)
 		        {
                     byte[] szTemp = new byte[blank_Count+1];
@@ -67,9 +67,9 @@ namespace test.win32.cs
 			        szTemp[j++] = (byte)'*';
 
                     string l = System.Text.Encoding.ASCII.GetString(szTemp);
-			        AxTrace.Trace(AxTrace.AXT_TRACE, l);
+			        AxTrace.Log(AxTrace.AXT_TRACE, l);
 		        }
-                AxTrace.Trace(AxTrace.AXT_TRACE, "<END>");
+                AxTrace.Log(AxTrace.AXT_TRACE, "<END>");
             }
            
             {
@@ -82,7 +82,7 @@ namespace test.win32.cs
                 int step = 1;
                 int MAX_BLANK_COUNT = 50;
 
-                AxTrace.Trace(AxTrace.AXT_TRACE, "<BEGIN>");
+                AxTrace.Log(AxTrace.AXT_TRACE, "<BEGIN>");
                 for (int i = 0; i < 500; i++)
                 {
                     byte[] szTemp = new byte[blank_Count + 1];

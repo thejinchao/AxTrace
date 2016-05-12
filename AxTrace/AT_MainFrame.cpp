@@ -9,7 +9,7 @@
 #include "AT_System.h"
 #include "AT_MainFrame.h"
 #include "AT_AboutDlg.h"
-#include "AT_TraceFrame.h"
+#include "AT_LogFrame.h"
 #include "AT_ValueFrame.h"
 #include "AT_TickFrame.h"
 #include "AT_Config.h"
@@ -115,8 +115,8 @@ LRESULT MainFrame::OnActiveWndEditCommand(WORD wNotifyCode, WORD wID, HWND hWndC
 //--------------------------------------------------------------------------------------------
 LRESULT MainFrame::OnAllWndEditCommand(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	TraceWndMap::iterator it_trace, end_trace=m_traceWndMap.end();
-	for(it_trace=m_traceWndMap.begin(); it_trace!=end_trace; it_trace++)
+	LogWndMap::iterator it_trace, end_trace=m_logWndMap.end();
+	for(it_trace=m_logWndMap.begin(); it_trace!=end_trace; it_trace++)
 	{
 		SendMessage(((IChildFrame*)it_trace->second)->getNativeWnd(), WM_COMMAND, MAKELONG(wID, wNotifyCode), (LPARAM)hWndCtl);
 	}
@@ -186,7 +186,7 @@ void MainFrame::onChildDestroy(IChildFrame* child)
 	if(m_currentActiveChild==child) m_currentActiveChild=0;
 	if(child->getChildType()==IChildFrame::CS_TRACE_FRAME)
 	{
-		m_traceWndMap.erase(child->getWindowTitle());
+		m_logWndMap.erase(child->getWindowTitle());
 	}
 	else if(child->getChildType()==IChildFrame::CS_VALUE_FRAME)
 	{
@@ -235,18 +235,18 @@ void MainFrame::updateButtons(MDI_STATUS status)
 }
 
 //--------------------------------------------------------------------------------------------
-TraceFrameWnd* MainFrame::getTraceWnd(const std::string& windowTitle)
+LogFrameWnd* MainFrame::getLogWnd(const std::string& windowTitle)
 {
-	TraceWndMap::iterator it = m_traceWndMap.find(windowTitle);
-	if(it!=m_traceWndMap.end()) return it->second;
+	LogWndMap::iterator it = m_logWndMap.find(windowTitle);
+	if(it!=m_logWndMap.end()) return it->second;
 
 	wchar_t temp[64]={0};
 	StringCchPrintfW(temp, 64, _T("Log:%s"), convertUTF8ToUTF16(windowTitle.c_str(), windowTitle.length()+1));
 
-	TraceFrameWnd* pChild = new TraceFrameWnd((CUpdateUIBase*)this, windowTitle);
+	LogFrameWnd* pChild = new LogFrameWnd((CUpdateUIBase*)this, windowTitle);
 	pChild->CreateEx(m_hWndClient, NULL, temp);
 
-	m_traceWndMap.insert(std::make_pair(windowTitle, pChild));
+	m_logWndMap.insert(std::make_pair(windowTitle, pChild));
 	return pChild;
 }
 
@@ -323,10 +323,10 @@ LRESULT MainFrame::OnSettingFont(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL&
 	System::getSingleton()->getConfig()->saveSetting();
 
 	//redraw all frame
-	TraceWndMap::iterator it_trace, end_trace=m_traceWndMap.end();
-	for(it_trace=m_traceWndMap.begin(); it_trace!=end_trace; it_trace++)
+	LogWndMap::iterator it_log, end_log=m_logWndMap.end();
+	for(it_log=m_logWndMap.begin(); it_log!=end_log; it_log++)
 	{
-		((IChildFrame*)it_trace->second)->redraw();
+		((IChildFrame*)it_log->second)->redraw();
 	}
 
 	ValueWndMap::iterator it_value, end_value=m_valueWndMap.end();

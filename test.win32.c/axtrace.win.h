@@ -67,9 +67,9 @@ AXTRACE_EXTERN_C void axtrace_init(const char* server_ip, unsigned short server_
 * @param style is one of AXT_*** value, 
 * @param format is the message described with system current codec
 *
-*	sample: axtrace(AXT_TRACE, "hello,world! I'm %s", name);
+*	sample: axlog(AXT_TRACE, "hello,world! I'm %s", name);
 */
-AXTRACE_EXTERN_C void axtrace(unsigned int style, const char *format, ...);
+AXTRACE_EXTERN_C void axlog(unsigned int style, const char *format, ...);
 
 /*
 * watch a value

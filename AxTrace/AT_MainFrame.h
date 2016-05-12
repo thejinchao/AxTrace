@@ -10,7 +10,7 @@
 namespace AT3
 {
 //pre-define
-class TraceFrameWnd;
+class LogFrameWnd;
 class ValueFrameWnd;
 class TickFrameWnd;
 class IChildFrame;
@@ -118,7 +118,7 @@ public:
 	void updateButtons(MDI_STATUS status=MS_UNKNOWN);
 
 public:
-	TraceFrameWnd* getTraceWnd(const std::string& windowTitle);
+	LogFrameWnd* getLogWnd(const std::string& windowTitle);
 	ValueFrameWnd* getValueWnd(const std::string& windowTitle);
 	TickFrameWnd* getTickWnd(const std::string& windowTitle);
 
@@ -131,8 +131,8 @@ public:
 private:
 	CMDICommandBarCtrl		m_CmdBar;		//!< Command Bar Control.
 
-	typedef std::map< std::string, TraceFrameWnd* > TraceWndMap;
-	TraceWndMap				m_traceWndMap;
+	typedef std::map< std::string, LogFrameWnd* > LogWndMap;
+	LogWndMap				m_logWndMap;
 
 	typedef std::map< std::string, ValueFrameWnd* > ValueWndMap;
 	ValueWndMap				m_valueWndMap;

@@ -80,7 +80,7 @@ void Filter::_luaopen(lua_State* L)
 }
 
 //--------------------------------------------------------------------------------------------
-void Filter::onTraceMessage(const LogMessage* message, Result& result)
+void Filter::onLogMessage(const LogMessage* message, Result& result)
 {
 	lua_getglobal(L, "onTraceMessage");
 

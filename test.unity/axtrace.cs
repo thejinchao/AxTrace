@@ -36,7 +36,7 @@ namespace com.thecodeway
         public static readonly uint AXV_STR_UTF8 = 11;
         public static readonly uint AXV_STR_UTF16 = 12;
         
-        public static readonly byte AXTRACE_CMD_TYPE_TRACE = 1;
+        public static readonly byte AXTRACE_CMD_TYPE_LOG = 1;
         public static readonly byte AXTRACE_CMD_TYPE_VALUE = 2;
 
         public static readonly int AXTRACE_MAX_TRACE_STRING_LENGTH = 0x8000;
@@ -123,11 +123,11 @@ namespace com.thecodeway
 
         static public void SetServer(string ip, int port)
         {
-			server_addr = ip;
-			server_port = port;
+            server_addr = ip;
+            server_port = port;
         }
         
-        static public void Trace(uint style, string format, params object[] args)
+        static public void Log(uint style, string format, params object[] args)
         {
             Context ctx = _getContext();
             if (!ctx.init_success) return;
@@ -143,7 +143,7 @@ namespace com.thecodeway
             axtrace_trace_s head = new axtrace_trace_s();
             head.head.length = (ushort)(final_length);
             head.head.flag = (byte)'A';
-            head.head.type = AXTRACE_CMD_TYPE_TRACE;
+            head.head.type = AXTRACE_CMD_TYPE_LOG;
             head.head.pid = (uint)Process.GetCurrentProcess().Id;
             head.head.tid = (uint)Thread.CurrentThread.ManagedThreadId;
             head.head.style = style;
