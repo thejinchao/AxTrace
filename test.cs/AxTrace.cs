@@ -82,7 +82,7 @@ namespace com.thecodeway
 
         [Serializable]
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        private struct axtrace_trace_s
+        private struct axtrace_log_s
         {
             public axtrace_head_s head; /* common head */
             public ushort code_page;	/* code page */
@@ -132,15 +132,15 @@ namespace com.thecodeway
             Context ctx = _getContext();
             if (!ctx.init_success) return;
 
-            int headSize = Marshal.SizeOf(typeof(axtrace_trace_s));
+            int headSize = Marshal.SizeOf(typeof(axtrace_log_s));
             byte[] buf = new byte[headSize + AXTRACE_MAX_TRACE_STRING_LENGTH];
 
             string content = System.String.Format(format, args);
             //add '\0'
             int content_length = content.Length + 1;
-            int final_length = Marshal.SizeOf(typeof(axtrace_trace_s)) + content_length;
+            int final_length = Marshal.SizeOf(typeof(axtrace_log_s)) + content_length;
 
-            axtrace_trace_s head = new axtrace_trace_s();
+            axtrace_log_s head = new axtrace_log_s();
             head.head.length = (ushort)(final_length);
             head.head.flag = (byte)'A';
             head.head.type = AXTRACE_CMD_TYPE_LOG;

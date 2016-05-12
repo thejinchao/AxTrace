@@ -48,7 +48,7 @@ typedef struct
 	unsigned int	style;			/* trace style AXT_* */
 } axtrace_head_s;
 
-/* axtrace trace data struct*/
+/* axtrace log data struct*/
 typedef struct
 {
 	axtrace_head_s	head;			/* common head */
@@ -56,7 +56,7 @@ typedef struct
 	unsigned short	length;			/* trace string length */
 
 	/* [trace string data with '\0' ended] */
-} axtrace_trace_s;
+} axtrace_log_s;
 
 typedef struct
 {
@@ -142,9 +142,9 @@ void axlog(unsigned int style, const char *format, ...)
 	int send_len;
 
 	/* buf for send , call send() once*/
-	char buf[sizeof(axtrace_trace_s) + AXTRACE_MAX_TRACE_STRING_LENGTH] = { 0 };
-	axtrace_trace_s* trace_head = (axtrace_trace_s*)(buf);
-	char* trace_string = (char*)(buf + sizeof(axtrace_trace_s));
+	char buf[sizeof(axtrace_log_s) + AXTRACE_MAX_TRACE_STRING_LENGTH] = { 0 };
+	axtrace_log_s* trace_head = (axtrace_log_s*)(buf);
+	char* trace_string = (char*)(buf + sizeof(axtrace_log_s));
 
 	/* is init ok? */
 	ctx = _axtrace_get_thread_contex(0, 0);
@@ -166,7 +166,7 @@ void axlog(unsigned int style, const char *format, ...)
 	contents_byte_size += 1;	
 
 	/* fill the trace head data */
-	final_length = sizeof(axtrace_trace_s)+contents_byte_size;
+	final_length = sizeof(axtrace_log_s)+contents_byte_size;
 
 	trace_head->head.length = (unsigned short)(final_length);
 	trace_head->head.flag = 'A';

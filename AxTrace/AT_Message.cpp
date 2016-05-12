@@ -132,15 +132,15 @@ void LogMessage::build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& he
 	m_nThreadID = head.tid;
 	m_nStyleID = head.style;
 
-	axtrace_trace_s trace_head;
-	size_t len = ringBuf->memcpy_out(&trace_head, sizeof(trace_head));
-	assert(len == sizeof(trace_head));
+	axtrace_log_s log_head;
+	size_t len = ringBuf->memcpy_out(&log_head, sizeof(log_head));
+	assert(len == sizeof(log_head));
 
 	//get codepage
-	int codePage = trace_head.code_page;
+	int codePage = log_head.code_page;
 
 	//get log length
-	int logLength = trace_head.length;
+	int logLength = log_head.length;
 
 	//get log
 	if(m_pLogBuf) delete[] m_pLogBuf; 

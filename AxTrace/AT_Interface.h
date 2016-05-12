@@ -66,7 +66,7 @@ typedef struct
 	unsigned short	length;			/* trace string length */
 
 	/* [trace string data with '\0' ended] */
-} axtrace_trace_s;
+} axtrace_log_s;
 
 typedef struct
 {
