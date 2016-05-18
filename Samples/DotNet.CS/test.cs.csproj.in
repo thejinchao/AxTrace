@@ -41,12 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="@TEST_CS_SOURCE_DIR@\AxTrace.cs" />
-    <Compile Include="@TEST_CS_SOURCE_DIR@\Program.cs" />
-    <Compile Include="@TEST_CS_SOURCE_DIR@\Properties\AssemblyInfo.cs" />
+    <Compile Include="@DOTNET_CS_SOURCE_DIR@\AxTrace.cs" />
+    <Compile Include="@DOTNET_CS_SOURCE_DIR@\Program.cs" />
+    <Compile Include="@DOTNET_CS_SOURCE_DIR@\Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="@TEST_CS_SOURCE_DIR@\App.config" />
+    <None Include="@DOTNET_CS_SOURCE_DIR@\App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
