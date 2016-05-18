@@ -13,7 +13,7 @@ string(REPLACE "/" "\\"
 	DOTNET_CS_SOURCE_DIR 
 	${CMAKE_CURRENT_SOURCE_DIR})
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/test.cs.csproj.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/DotNet.CS.csproj.in
 	${DOTNET_CS_PROJ_FILE}
 )
 
