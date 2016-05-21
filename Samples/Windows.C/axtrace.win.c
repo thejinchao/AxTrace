@@ -22,7 +22,7 @@
 #define AXTRACE_MAX_VALUENAME_LENGTH	(128)
 #define AXTRACE_MAX_VALUE_LENGTH		(1024)
 
-#define AXTRACE_CMD_TYPE_TRACE		(1)
+#define AXTRACE_CMD_TYPE_LOG		(1)
 #define AXTRACE_CMD_TYPE_VALUE		(2)
 
 /*---------------------------------------------------------------------------------------------*/
@@ -170,7 +170,7 @@ void axlog(unsigned int style, const char *format, ...)
 
 	trace_head->head.length = (unsigned short)(final_length);
 	trace_head->head.flag = 'A';
-	trace_head->head.type = AXTRACE_CMD_TYPE_TRACE;
+	trace_head->head.type = AXTRACE_CMD_TYPE_LOG;
 	trace_head->head.pid = GetCurrentProcessId();
 	trace_head->head.tid = GetCurrentThreadId();
 	trace_head->head.style = style;

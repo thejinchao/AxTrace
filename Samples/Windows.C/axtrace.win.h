@@ -55,13 +55,6 @@ Copyright(C) thecodeway.com
 typedef unsigned short wchar_t;
 #endif
 
-/* 
-* set axtrace server address and port, 
-* you don't need to call it if the server is 127.0.0.1:1978
-* if not, you must call it before use any other functions.
-*/
-AXTRACE_EXTERN_C void axtrace_init(const char* server_ip, unsigned short server_port);
-
 /*
 * send a log message to axtrace server
 * @param style is one of AXT_*** value, 
