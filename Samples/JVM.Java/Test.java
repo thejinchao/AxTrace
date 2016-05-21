@@ -1,22 +1,33 @@
-package com.thecodeway.axtrace;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
+import com.thecodeway.axtrace.AxTrace;
 
 public class Test
 {
 	private static ExecutorService threadPool = Executors.newFixedThreadPool(5);
 	
-	public static void main(String[] args){
+	public static void main(String[] args)
+	{
 		//test AxTrace
-    	AxTrace.Log	(AxTrace.AXT_TRACE, "-=-=-=-=-=-= Hello,World -=-=-=-=-=-=-=-=-=-");
-    	AxTrace.Log(AxTrace.AXT_TRACE, "中文字符+Ascii");
-    	AxTrace.Log(AxTrace.AXT_TRACE, "MultiLineTest\nLine1:第一行\nLine2:第二行\nLine%d:第三行",3);
-    	
+		AxTrace.Log	(AxTrace.AXT_TRACE, "-=-=-=-=-=-= Hello,World -=-=-=-=-=-=-=-=-=-");
+		AxTrace.Log(AxTrace.AXT_TRACE, "中文字符+Ascii");
+		AxTrace.Log(AxTrace.AXT_TRACE, "MultiLineTest\nLine1:第一行\nLine2:第二行\nLine%d:第三行",3);
+
+		AxTrace.Log(AxTrace.AXT_DEBUG, "DEBUG: This is a debug message");
+		AxTrace.Log(AxTrace.AXT_INFO, "INFO: This is a info message");
+		AxTrace.Log(AxTrace.AXT_WARN, "WARN: This is a warning message");
+		AxTrace.Log(AxTrace.AXT_ERROR, "ERROR: This is a error message");
+		AxTrace.Log(AxTrace.AXT_FATAL, "FATAL: This is a fatal message");
+   	
 		//--------------------------
 		//pressure test
 		{
+ 			System.out.println("AxLog Pressure test\nPress any key to continue...");
+    	try{
+      	System.in.read();
+      }catch(Exception e)
+      {}  			
+			
 			int blank_Count=0;
 			int step=1;
 			int MAX_BLANK_COUNT=50;
@@ -44,6 +55,12 @@ public class Test
 		//--------------------------------------
 		//thread pool press test
 		{
+ 			System.out.println("AxLog thread pool press test\nPress any key to continue...");
+    	try{
+      	System.in.read();
+      }catch(Exception e)
+      {}  		
+      		
 			class TraceThread extends Thread {
 				public TraceThread(String str) {
 					strToShow = str;
@@ -82,6 +99,12 @@ public class Test
 		//--------------------------------------
 		//value test
 		{
+ 			System.out.println("AxValue test\nPress any key to continue...");
+    	try{
+      	System.in.read();
+      }catch(Exception e)
+      {}  		
+      					
 			//test value
 			AxTrace.Value(AxTrace.AXT_TRACE, "Int_Test", (int)-12345);
 	
@@ -111,7 +134,12 @@ public class Test
 		
     			
 		{
-
+ 			System.out.println("AxValue Pressure test\nPress any key to continue...");
+    	try{
+      	System.in.read();
+      }catch(Exception e)
+      {}  
+      
 			//AxValue Pressure Test
 			int start_blank=0;
 			int start_step=1;
@@ -149,6 +177,12 @@ public class Test
 		
 		
 		{
+ 			System.out.println("AxValue  Multi Thread Pressure test\nPress any key to continue...");
+    	try{
+      	System.in.read();
+      }catch(Exception e)
+      {}  
+      			
 			class AxValueThread extends Thread {
 				public AxValueThread(String name, String value) {
 					strName = name; strValue = value;
@@ -196,5 +230,6 @@ public class Test
 			}			
 		}
 		
+		System.out.println("Done!");
 	}
 }
