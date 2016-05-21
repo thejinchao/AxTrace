@@ -1,5 +1,5 @@
-How to build
-	javac -encoding UTF8 Test.java
+**How to build**  
+```javac -encoding UTF8 Test.java```
 
-How to run
-	java Test
+**How to run**  
+```java Test```
