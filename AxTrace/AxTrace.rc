@@ -279,11 +279,13 @@ IDR_TICK_FRAME_TYPE     ICON                    "res\\AxTrace_TickFrame.ico"
 
 IDR_MAINFRAME ACCELERATORS
 BEGIN
-    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
-    "A",            ID_EDIT_SELECTALL,      VIRTKEY, CONTROL, NOINVERT
     "X",            ID_EDIT_CLEAR,          VIRTKEY, CONTROL, NOINVERT
     "X",            ID_EDIT_CLEARALL,       VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    "A",            ID_EDIT_SELECTALL,      VIRTKEY, CONTROL, NOINVERT
     "S",            ID_FILE_SAVEAS,         VIRTKEY, CONTROL, NOINVERT
+    "R",            ID_SYSTEM_RECEIVE,      VIRTKEY, CONTROL, NOINVERT
+    "U",            ID_SYSTEM_AUTOSCROLL,   VIRTKEY, CONTROL, NOINVERT
 END
 
 
