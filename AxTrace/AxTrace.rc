@@ -82,43 +82,6 @@ BEGIN
     END
 END
 
-IDR_TICKFRAME MENU
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Save as...\tCtrl+S",         ID_FILE_SAVEAS
-        MENUITEM SEPARATOR
-        MENUITEM "&Exit",                       ID_APP_EXIT
-    END
-    POPUP "&Edit"
-    BEGIN
-        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
-        MENUITEM "Select &All\tCtrl+A",         ID_EDIT_SELECTALL
-        MENUITEM SEPARATOR
-        MENUITEM "C&lear\tCtrl+X",              ID_EDIT_CLEAR
-        MENUITEM "Cl&ear All\tCtrl+Shift+X",    ID_EDIT_CLEARALL
-    END
-    POPUP "&Options"
-    BEGIN
-        MENUITEM "&Receive\tCtrl+R",            ID_SYSTEM_RECEIVE
-        MENUITEM "A&uto Scroll\tCtrl+U",        ID_SYSTEM_AUTOSCROLL, INACTIVE
-        MENUITEM "&Hide Toolbar",               ID_OPTION_HIDE_TOOLBAR
-        MENUITEM SEPARATOR
-        MENUITEM "Filter &Setting...",          ID_OPTION_FILTER
-        MENUITEM "&Font...",                    ID_OPTION_FONT
-    END
-    POPUP "&Window"
-    BEGIN
-        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
-        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "Help...\tF1",                 ID_HELP, INACTIVE
-        MENUITEM "&About",                      ID_APP_ABOUT
-    END
-END
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -137,25 +100,6 @@ BEGIN
                     "SysLink",WS_TABSTOP,60,20,162,14
 END
 
-IDD_DIALOG_ADDSTYLE DIALOGEX 0, 0, 249, 50
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Add Style"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,132,29,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,192,29,50,14
-    RTEXT           "Input Style ID(1~255):",IDC_STATIC,7,11,83,14
-    EDITTEXT        IDC_EDIT_STYLEID,97,7,145,16,ES_AUTOHSCROLL | ES_NUMBER
-END
-
-IDD_WND_TICK_FRAME DIALOGEX 0, 0, 392, 239
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_VISIBLE | WS_SYSMENU
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    CONTROL         "",IDC_TREE_NODE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | TVS_CHECKBOXES | TVS_NOHSCROLL | WS_TABSTOP,7,7,110,225
-    CONTROL         "",IDC_CANVAS,"Static",SS_BLACKRECT,125,7,260,225
-END
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -163,8 +107,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 3,0,0,1
- PRODUCTVERSION 3,0,0,1
+ FILEVERSION 3,0,1,0
+ PRODUCTVERSION 3,0,1,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -181,12 +125,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "TheCodeway.com"
             VALUE "FileDescription", "Axia Trace Application"
-            VALUE "FileVersion", "3.0.0.1"
+            VALUE "FileVersion", "3.0.1.0"
             VALUE "InternalName", "AxTrace Receiver"
-            VALUE "LegalCopyright", "Copyright TheCodeway.com(C) 2013"
+            VALUE "LegalCopyright", "Copyright TheCodeway.com(C) 2016"
             VALUE "OriginalFilename", "AxTrace.exe"
             VALUE "ProductName", " AxTrace Application"
-            VALUE "ProductVersion", "3.0.0.1"
+            VALUE "ProductVersion", "3.0.1.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -238,22 +182,6 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 56
     END
-
-    IDD_DIALOG_ADDSTYLE, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 242
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 43
-    END
-
-    IDD_WND_TICK_FRAME, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 385
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 232
-    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -268,8 +196,6 @@ END
 IDR_MAINFRAME           ICON                    "res\\AxTrace.ico"
 
 IDR_TRACE_FRAME_TYPE    ICON                    "res\\AxTrace_TraceFrame.ico"
-
-IDR_TICK_FRAME_TYPE     ICON                    "res\\AxTrace_TickFrame.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////

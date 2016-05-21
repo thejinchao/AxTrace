@@ -12,7 +12,6 @@ namespace AT3
 //pre-define
 class LogFrameWnd;
 class ValueFrameWnd;
-class TickFrameWnd;
 class IChildFrame;
 
 /** Main Frame
@@ -120,7 +119,6 @@ public:
 public:
 	LogFrameWnd* getLogWnd(const std::string& windowTitle);
 	ValueFrameWnd* getValueWnd(const std::string& windowTitle);
-	TickFrameWnd* getTickWnd(const std::string& windowTitle);
 
 	void onChildActive(IChildFrame* child);
 	void onChildDestroy(IChildFrame* child);
@@ -136,9 +134,6 @@ private:
 
 	typedef std::map< std::string, ValueFrameWnd* > ValueWndMap;
 	ValueWndMap				m_valueWndMap;
-
-	typedef std::map< std::string, TickFrameWnd* > TickWndMap;
-	TickWndMap				m_tickWndMap;
 
 	MDI_STATUS				m_mdiStatus;
 	IChildFrame*			m_currentActiveChild;

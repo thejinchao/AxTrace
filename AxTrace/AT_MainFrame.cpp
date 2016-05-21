@@ -11,7 +11,6 @@
 #include "AT_AboutDlg.h"
 #include "AT_LogFrame.h"
 #include "AT_ValueFrame.h"
-#include "AT_TickFrame.h"
 #include "AT_Config.h"
 
 namespace AT3
@@ -192,10 +191,6 @@ void MainFrame::onChildDestroy(IChildFrame* child)
 	{
 		m_valueWndMap.erase(child->getWindowTitle());
 	}
-	else if(child->getChildType()==IChildFrame::CS_TICK_FRAME)
-	{
-		m_tickWndMap.erase(child->getWindowTitle());
-	}
 }
 
 //--------------------------------------------------------------------------------------------
@@ -263,22 +258,6 @@ ValueFrameWnd* MainFrame::getValueWnd(const std::string& windowTitle)
 	pChild->CreateEx(m_hWndClient, NULL, temp);
 
 	m_valueWndMap.insert(std::make_pair(windowTitle, pChild));
-	return pChild;
-}
-
-//--------------------------------------------------------------------------------------------
-TickFrameWnd* MainFrame::getTickWnd(const std::string& windowTitle)
-{
-	TickWndMap::iterator it = m_tickWndMap.find(windowTitle);
-	if(it!=m_tickWndMap.end()) return it->second;
-
-	wchar_t temp[64]={0};
-	StringCchPrintfW(temp, 64, _T("Tick:%s"), windowTitle.c_str());
-
-	TickFrameWnd* pChild = new TickFrameWnd((CUpdateUIBase*)this, windowTitle);
-	pChild->CreateEx(m_hWndClient, NULL, temp);
-
-	m_tickWndMap.insert(std::make_pair(windowTitle, pChild));
 	return pChild;
 }
 

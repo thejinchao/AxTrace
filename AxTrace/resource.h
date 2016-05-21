@@ -5,17 +5,10 @@
 #define IDR_MAINFRAME                   101
 #define IDR_TRACEFRAME                  102
 #define IDD_DIALOG_ABOUT                104
-#define IDD_DIALOG_ADDSTYLE             108
-#define IDR_TICK_FRAME_TYPE             112
-#define IDR_TICKFRAME                   113
-#define IDD_WND_TICK_FRAME              114
-#define IDC_EDIT_STYLEID                1008
 #define IDC_SYSLINK1                    1010
 #define IDC_SYSLINK_CODEWAY             1010
 #define IDC_SYSLINK_HOME                1010
 #define IDC_STATIC_LINK                 1011
-#define IDC_TREE_NODE                   1012
-#define IDC_CANVAS                      1013
 #define IDR_TRACE_FRAME_TYPE            31234
 #define ID_HELP_ABOUT                   40002
 #define ID_SYSTEM_RECEIVE               40003
