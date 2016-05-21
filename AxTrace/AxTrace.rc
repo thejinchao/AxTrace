@@ -131,9 +131,10 @@ CAPTION "About AxTrace"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,175,42,50,14
-    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20
-    LTEXT           "Axia|Trace\n(C)Copyright TheCodeway.com",IDC_STATIC,63,7,162,27
-    LTEXT           "www.thecodeway.com",IDC_STATIC_LINK,65,35,77,10
+    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,21,20
+    LTEXT           "Axia|Trace3",IDC_STATIC,60,7,162,10
+    CONTROL         "(C)Copyright <a href=""http://www.thecodeway.com"">www.thecodeway.com</a>",IDC_SYSLINK_HOME,
+                    "SysLink",WS_TABSTOP,60,20,162,14
 END
 
 IDD_DIALOG_ADDSTYLE DIALOGEX 0, 0, 249, 50
@@ -283,6 +284,17 @@ BEGIN
     "X",            ID_EDIT_CLEAR,          VIRTKEY, CONTROL, NOINVERT
     "X",            ID_EDIT_CLEARALL,       VIRTKEY, SHIFT, CONTROL, NOINVERT
     "S",            ID_FILE_SAVEAS,         VIRTKEY, CONTROL, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_ABOUT AFX_DIALOG_LAYOUT
+BEGIN
+    0
 END
 
 

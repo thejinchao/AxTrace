@@ -19,6 +19,8 @@ public:
 
 	BEGIN_MSG_MAP(AboutDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+		NOTIFY_HANDLER(IDC_SYSLINK_HOME, NM_CLICK, OnSyslinkClick)
+		NOTIFY_HANDLER(IDC_SYSLINK_HOME, NM_RETURN, OnSyslinkClick)
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
 	END_MSG_MAP()
@@ -29,6 +31,8 @@ public:
 	/** On Close
 	*/
 	LRESULT OnCloseCmd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+
+	LRESULT OnSyslinkClick(int id, LPNMHDR pNMHdr, BOOL& bHandled);
 };
 
 }

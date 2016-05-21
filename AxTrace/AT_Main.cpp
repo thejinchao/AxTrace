@@ -14,6 +14,11 @@ AT3::System  g_theSystem;
 //WinMain Function
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR lpCmdLine, int nCmdShow)
 {
+	INITCOMMONCONTROLSEX iccx;
+	iccx.dwSize = sizeof(INITCOMMONCONTROLSEX);
+	iccx.dwICC = ICC_LINK_CLASS;
+	InitCommonControlsEx(&iccx);
+
 	// Init system
 	if(!g_theSystem.init(hInstance, lpCmdLine)) return 1;
 
