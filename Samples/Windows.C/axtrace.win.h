@@ -38,13 +38,6 @@ Copyright(C) thecodeway.com
 #define AXV_STR_UTF16	(12)
 #define AXV_USER_DEF	(100)
 
-/*
-*finds the compiler type and version.
-*/
-#if defined(_MSC_VER)
-/*-------------------------*/
-/* Microsoft Visual Studio */
-/*-------------------------*/
 
 /* for UNICODE Application */
 #if !defined(_WCHAR_T_DEFINED)
@@ -72,17 +65,6 @@ AXTRACE_EXTERN_C void axlog(unsigned int style, const char *format, ...);
 * @param value is the memory address of value, the size of value is decided by value_type
 */
 AXTRACE_EXTERN_C void axvalue(unsigned int style, unsigned int value_type, const char* value_name, const void* value);
-
-
-#elif defined(__GNUC__)
-/*      oops,    -_-!         */
-#pragma error "NOT SUPPORT YET!!"  
-#elif defined(__BORLANDC__)
-/*      oops,    -_-!         */
-#pragma error "NOT SUPPORT YET!!"  
-#else
-#pragma error "No known compiler."
-#endif
 
 
 #endif
