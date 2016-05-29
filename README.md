@@ -3,7 +3,7 @@
 
 ![](http://thecodeway.com/blog/wp-content/uploads/2016/05/axtrace01.gif)
 
-简单来说，AxTrace是给程序员在开发期间使用的一个日志工具，类似于DebugView，比如在程序中添加下面的语句：
+简单来说，AxTrace是给程序员在开发期间使用的一个日志工具，类似于[DebugView](https://technet.microsoft.com/en-us/sysinternals/debugview)，比如在程序中添加下面的语句：
 ```C++
 //日志输出
 axlog(AXT_TRACE, "Hello,World.");
