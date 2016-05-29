@@ -82,7 +82,7 @@ void Filter::_luaopen(lua_State* L)
 //--------------------------------------------------------------------------------------------
 void Filter::onLogMessage(const LogMessage* message, Result& result)
 {
-	lua_getglobal(L, "onTraceMessage");
+	lua_getglobal(L, "onLogMessage");
 
 	lua_pushlightuserdata(L, (void*)message);
 
@@ -295,9 +295,9 @@ bool Filter::tryReloadScriptFile(const char* script, std::string& errorMessage)
 	}
 
 	//check necessary function
-	lua_getglobal(testL, "onTraceMessage");
+	lua_getglobal(testL, "onLogMessage");
 	if (!lua_isfunction(testL, -1)) {
-		errorMessage = "Missing function \"onTraceMessage\"";
+		errorMessage = "Missing function \"onLogMessage\"";
 		lua_close(testL);
 		return false;
 	}

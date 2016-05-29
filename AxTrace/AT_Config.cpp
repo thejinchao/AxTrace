@@ -60,7 +60,7 @@ void Config::_resetDefaultSetting(void)
 	COLORREF colFront = GetSysColor(COLOR_WINDOWTEXT);
 
 	m_filterScript =
-		"function onTraceMessage(msg) \r\n"
+		"function onLogMessage(msg) \r\n"
 		" local frontColor=COL_BLACK; \r\n"
 		" local backColor=COL_WHITE; \r\n"
 		" local msgStyle=msg:get_style(); \r\n"
