@@ -17,7 +17,7 @@ axvalue(AXT_TRACE, AXV_INT32, "TestValue", &v);
 ![](http://thecodeway.com/blog/wp-content/uploads/2016/05/axtrace02.gif)
 
 和DebugView相比，AxTrace是专门为程序研发阶段而设计的日志工具，有一些很有用的特性：
-* 跨平台，输出端支持**Windows**(C/C++)，**Linux**(C/C++)，**.NET**(C#)，**Android**(C#)，**JVM**(JAVA)，**Unity**(C#),后续还会再添加更多平台
+* 跨平台，输出端支持**Windows**(C/C++)、**Linux**(C/C++)、**.NET**(C#)、**Android**(C#)、**JVM**(JAVA)、**Unity**(C#)、**Unreal4**(C++)后续还会再添加更多平台
 * 提供axlog和axvalue两个主要输出函数，其中axlog用于输出日志，axvalue函数用于输出变量值，随时将所需要打印的变量值输出到窗口的固定位置
 * 线程安全，无阻塞，最大程度减少对发送程序的效率影响
 * 使用TCP/IP协议，支持远程接收日志
@@ -60,7 +60,7 @@ local style = msg:get_style();
 -- 获取日志内容
 local content = msg:get_content();
 ```
-后面AxTrace仍会继续开发，比如支持Unreal4和IOS程序，另外还有一个重要的功能，就是ax2d系列函数加入，用来以图像形式显示程序中的位置信息，这在开发MMORPG游戏服务器时非常有用，可以用图像的方式实时监控服务器程序中玩家和NPC的位置信息。
+后面AxTrace仍会继续开发，比如支持IOS程序，另外还有一个重要的功能，就是ax2d系列函数加入，用来以图像形式显示程序中的位置信息，这在开发MMORPG游戏服务器时非常有用，可以用图像的方式实时监控服务器程序中玩家和NPC的位置信息。
 
 ## 如何编译
 ### 编译Cyclone
