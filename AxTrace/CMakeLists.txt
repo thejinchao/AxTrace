@@ -55,7 +55,6 @@ set(AXTRACE_SOURCES_INC
 set(AXTRACE_SOURCES_RC
 	AxTrace.rc
 	res/AxTrace.ico            
-	res/AxTrace_TickFrame.ico  
 	res/AxTrace_TraceFrame.ico 
 	res/MainToolBar.bmp        
 )
