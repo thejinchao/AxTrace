@@ -17,7 +17,7 @@ axvalue(AXT_TRACE, AXV_INT32, "TestValue", &v);
 ![](http://thecodeway.com/blog/wp-content/uploads/2016/05/axtrace02.gif)
 
 和DebugView相比，AxTrace是专门为程序研发阶段而设计的日志工具，有一些很有用的特性：
-* 跨平台，输出端支持**Windows，Linux，.NET，Android，JVM，Unity**,后续还会再添加更多平台
+* 跨平台，输出端支持**Windows**(C/C++)，**Linux**(C/C++)，**.NET**(C#)，**Android**(C#)，**JVM**(JAVA)，**Unity**(C#),后续还会再添加更多平台
 * 提供axlog和axvalue两个主要输出函数，其中axlog用于输出日志，axvalue函数用于输出变量值，随时将所需要打印的变量值输出到窗口的固定位置
 * 线程安全，无阻塞，最大程度减少对发送程序的效率影响
 * 使用TCP/IP协议，支持远程接收日志
@@ -26,6 +26,7 @@ axvalue(AXT_TRACE, AXV_INT32, "TestValue", &v);
 * 发送端不需要链接额外的库，只需要将几个文件添加到工程中即可，使用简单
 
 AxTrace的第一版出现在十几年前，当时我在写一个网络程序，发现用OutputDebugString输出日志很不方便，首先整个系统的日志信息混杂到一个窗口里，另外Filter太简陋，有用和无用的信息混杂到一起，于是就有了第一版AxTrace，当时因为都是在Windows平台上，就直接使用WM_COPYDATA实现跨进程的消息传递，在写《天龙八部》时，写了第二版AxTrace，完善了颜色定义和变量监控功能，但仍然使用WM_COPYDATA传输信息，最近几年在写移动平台程序时，将底层传输改为TCP/IP协议，并且实现了多个平台上的发送端代码。
+
 对于日志程序来说，过滤器是非常关键的功能，AxTrace最初的设计是固定提供几种日志类型，比如TRACE、DEBUG、INFO、WARN、ERROR、FATAL，在程序中设置这几种日志的颜色和是否显示，后来发现在不同场合对过滤器的要求都不一样，比如说下面几种情况
 * 在调试一个C/S程序时，需要把服务器日志和客户端日志输出到一个窗口中
 * 在研发某个功能时，要求把日志信息中含有“foo”字符串的日志高亮显示
