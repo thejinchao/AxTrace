@@ -16,9 +16,8 @@ class IChildFrame
 public:
 	enum CHILD_STYLE
 	{
-		CS_TRACE_FRAME,
+		CS_LOG_FRAME,
 		CS_VALUE_FRAME,
-		CS_TICK_FRAME,
 	};
 
 	/** get child type */

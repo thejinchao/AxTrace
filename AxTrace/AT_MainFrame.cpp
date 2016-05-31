@@ -159,20 +159,15 @@ void MainFrame::onChildActive(IChildFrame* child)
 {
 	m_currentActiveChild = child;
 
-	if(m_currentActiveChild->getChildType()==IChildFrame::CS_TRACE_FRAME)
+	if(m_currentActiveChild->getChildType()==IChildFrame::CS_LOG_FRAME)
 	{
 		m_CmdBar.AttachMenu(m_hChildMenu);
-		updateButtons(MS_TRACE_FRAME);
+		updateButtons(MS_LOG_FRAME);
 	}
 	else if(m_currentActiveChild->getChildType()==IChildFrame::CS_VALUE_FRAME)
 	{
 		m_CmdBar.AttachMenu(m_hChildMenu);
 		updateButtons(MS_VALUE_FRAME);
-	}
-	else if(m_currentActiveChild->getChildType()==IChildFrame::CS_TICK_FRAME)
-	{
-		m_CmdBar.AttachMenu(m_hChildMenu);
-		updateButtons(MS_TICK_FRAME);
 	}
 }
 
@@ -183,7 +178,7 @@ void MainFrame::onChildDestroy(IChildFrame* child)
 	if(child==0) return;
 	
 	if(m_currentActiveChild==child) m_currentActiveChild=0;
-	if(child->getChildType()==IChildFrame::CS_TRACE_FRAME)
+	if(child->getChildType()==IChildFrame::CS_LOG_FRAME)
 	{
 		m_logWndMap.erase(child->getWindowTitle());
 	}
@@ -213,7 +208,7 @@ void MainFrame::updateButtons(MDI_STATUS status)
 		UIEnable(ID_EDIT_CLEAR, FALSE);
 		UIEnable(ID_EDIT_CLEARALL, FALSE);
 	}
-	else if(status==MS_TRACE_FRAME)
+	else if(status==MS_LOG_FRAME)
 	{
 		UIEnable(ID_FILE_SAVEAS, TRUE);
 		UIEnable(ID_SYSTEM_AUTOSCROLL, TRUE);

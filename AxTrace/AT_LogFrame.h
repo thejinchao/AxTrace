@@ -24,7 +24,7 @@ public:
 	/** insert a log message */
 	void insertLog(const LogMessage* message, const Filter::Result& filter);
 	/** get child type */
-	virtual CHILD_STYLE getChildType(void) { return CS_TRACE_FRAME; }
+	virtual CHILD_STYLE getChildType(void) { return CS_LOG_FRAME; }
 	/** get window title*/
 	virtual const std::string& getWindowTitle(void) { return m_windowTitle; }
 	/** redraw */

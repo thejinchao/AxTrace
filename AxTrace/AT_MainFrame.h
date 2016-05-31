@@ -109,9 +109,8 @@ public:
 		MS_UNKNOWN,
 
 		MS_MDI,
-		MS_TRACE_FRAME,
+		MS_LOG_FRAME,
 		MS_VALUE_FRAME,
-		MS_TICK_FRAME,
 	};
 	/** Update ui buttons on menu and toolbar */
 	void updateButtons(MDI_STATUS status=MS_UNKNOWN);
