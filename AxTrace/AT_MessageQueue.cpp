@@ -92,6 +92,14 @@ Message* MessageQueue::_popMessage(void)
 			message = msg;
 		}
 		break;
+
+	case AXTRACE_CMD_TYPE_2D_CLEAN_MAP:
+		{
+			G2DCleanMapMessage* msg = new G2DCleanMapMessage();
+			msg->build(traceTime, head, m_ring_buf);
+			message = msg;
+		}
+		break;
 	default: assert(false); break;
 	}
 
@@ -120,7 +128,6 @@ void MessageQueue::processMessage(MessageVector& msgVector)
 
 		ResetEvent(m_hNotEmptySignal);
 	}
-	//OutputDebugString(L"-----------[3]----------- Receive by main thread!");
 }
 
 }

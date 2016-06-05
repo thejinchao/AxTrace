@@ -103,6 +103,30 @@ public:
 	virtual ~ValueMessage();
 };
 
+/** Graphics2D Message
+*/
+class G2DCleanMapMessage : public Message
+{
+public:
+	/** build message */
+	virtual void build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
+	/** get trace type*/
+	virtual unsigned int getTraceType(void) const { return AXTRACE_CMD_TYPE_2D_CLEAN_MAP; }
+
+	const char* getMapName(void) const { return m_map_name; }
+	double get_x_size(void) const { return x_size; }
+	double get_y_size(void) const { return y_size; }
+
+private:
+	char	m_map_name[AXTRACE_MAX_MAP_NAME_LENGTH];
+	double	x_size;
+	double	y_size;
+
+public:
+	G2DCleanMapMessage();
+	virtual ~G2DCleanMapMessage();
+};
+
 typedef std::vector< Message* > MessageVector;
 
 }

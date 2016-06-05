@@ -11,6 +11,8 @@
 #include "AT_AboutDlg.h"
 #include "AT_LogFrame.h"
 #include "AT_ValueFrame.h"
+#include "AT_2DFrame.h"
+
 #include "AT_Config.h"
 
 namespace AT3
@@ -125,6 +127,13 @@ LRESULT MainFrame::OnAllWndEditCommand(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 	{
 		SendMessage(((IChildFrame*)it_value->second)->getNativeWnd(), WM_COMMAND, MAKELONG(wID, wNotifyCode), (LPARAM)hWndCtl);
 	}
+
+	Graphics2DWndMap::iterator it_2D, end_2D = m_2DWndMap.end();
+	for (it_2D = m_2DWndMap.begin(); it_2D != end_2D; it_2D++)
+	{
+		SendMessage(((IChildFrame*)it_2D->second)->getNativeWnd(), WM_COMMAND, MAKELONG(wID, wNotifyCode), (LPARAM)hWndCtl);
+	}
+
 	return 0;
 }
 
@@ -147,7 +156,6 @@ LRESULT MainFrame::OnOptionFilter(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL
 LRESULT MainFrame::OnMDISetMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	updateButtons(MS_MDI);
-//	SetMenu(m_hMainMenu);
 	m_CmdBar.AttachMenu(m_hMainMenu);
 
 	bHandled = FALSE;
@@ -169,6 +177,11 @@ void MainFrame::onChildActive(IChildFrame* child)
 		m_CmdBar.AttachMenu(m_hChildMenu);
 		updateButtons(MS_VALUE_FRAME);
 	}
+	else if (m_currentActiveChild->getChildType() == IChildFrame::CS_2D_FRAME)
+	{
+		m_CmdBar.AttachMenu(m_hChildMenu);
+		updateButtons(MS_2D_FRAME);
+	}
 }
 
 //--------------------------------------------------------------------------------------------
@@ -185,6 +198,10 @@ void MainFrame::onChildDestroy(IChildFrame* child)
 	else if(child->getChildType()==IChildFrame::CS_VALUE_FRAME)
 	{
 		m_valueWndMap.erase(child->getWindowTitle());
+	}
+	else if (child->getChildType() == IChildFrame::CS_2D_FRAME)
+	{
+		m_2DWndMap.erase(child->getWindowTitle());
 	}
 }
 
@@ -222,6 +239,13 @@ void MainFrame::updateButtons(MDI_STATUS status)
 		UIEnable(ID_EDIT_CLEAR, TRUE);
 		UIEnable(ID_EDIT_CLEARALL, TRUE);
 	}
+	else if (status == MS_2D_FRAME)
+	{
+		UIEnable(ID_FILE_SAVEAS, FALSE);
+		UIEnable(ID_SYSTEM_AUTOSCROLL, FALSE);
+		UIEnable(ID_EDIT_CLEAR, TRUE);
+		UIEnable(ID_EDIT_CLEARALL, TRUE);
+	}
 }
 
 //--------------------------------------------------------------------------------------------
@@ -253,6 +277,22 @@ ValueFrameWnd* MainFrame::getValueWnd(const std::string& windowTitle)
 	pChild->CreateEx(m_hWndClient, NULL, temp);
 
 	m_valueWndMap.insert(std::make_pair(windowTitle, pChild));
+	return pChild;
+}
+
+//--------------------------------------------------------------------------------------------
+Graphics2DFrameWnd* MainFrame::get2DWnd(const std::string& windowTitle)
+{
+	Graphics2DWndMap::iterator it = m_2DWndMap.find(windowTitle);
+	if (it != m_2DWndMap.end()) return it->second;
+
+	wchar_t temp[64] = { 0 };
+	StringCchPrintfW(temp, 64, _T("2D:%s"), convertUTF8ToUTF16(windowTitle.c_str(), windowTitle.length() + 1));
+
+	Graphics2DFrameWnd* pChild = new Graphics2DFrameWnd((CUpdateUIBase*)this, windowTitle);
+	pChild->CreateEx(m_hWndClient, NULL, temp);
+
+	m_2DWndMap.insert(std::make_pair(windowTitle, pChild));
 	return pChild;
 }
 

@@ -19,6 +19,12 @@ set(AXTRACE_SOURCES_CPP
 	AT_Util.cpp         
 	AT_ValueFrame.cpp 
 	AT_Filter.cpp  
+	AT_Math.cpp
+	AT_2DFrame.cpp  
+	AT_2DView.cpp
+	AT_2DScene.cpp
+	AT_2DCamera.cpp
+	AT_Canvas.cpp
 )
 
 set(AXTRACE_SOURCES_CPP_PRECOMPILED 
@@ -48,6 +54,13 @@ set(AXTRACE_SOURCES_INC
 	AT_Util.h        
 	AT_ValueFrame.h  
 	AT_Filter.h
+	AT_Math.h
+	AT_2DFrame.h
+	AT_2DView.h
+	AT_2DScene.h
+	AT_2DCamera.h
+	AT_Canvas.h
+	AtlOpengl.h
 	resource.h       
 	StdAfx.h         
 )

@@ -120,6 +120,13 @@ void Filter::onValueMessage(const ValueMessage* message, Result& result)
 }
 
 //--------------------------------------------------------------------------------------------
+void Filter::on2DCleanMapMessage(const G2DCleanMapMessage* message, Result& result)
+{
+	result.display = true;
+	result.wndTitle = message->getMapName();
+}
+
+//--------------------------------------------------------------------------------------------
 static BOOL CALLBACK _findCurrentNotepad(HWND hWnd, LPARAM lParam)
 {
 	DWORD notepadProcessID = (DWORD)lParam;

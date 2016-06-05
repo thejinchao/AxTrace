@@ -21,9 +21,11 @@
 #define AXTRACE_MAX_TRACE_STRING_LENGTH	(0x8000)
 #define AXTRACE_MAX_VALUENAME_LENGTH	(128)
 #define AXTRACE_MAX_VALUE_LENGTH		(1024)
+#define AXTRACE_MAX_MAP_NAME_LENGTH		(128)
 
-#define AXTRACE_CMD_TYPE_LOG		(1)
-#define AXTRACE_CMD_TYPE_VALUE		(2)
+#define AXTRACE_CMD_TYPE_LOG			(1)
+#define AXTRACE_CMD_TYPE_VALUE			(2)
+#define AXTRACE_CMD_TYPE_2D_CLEAN_MAP	(3)
 
 /*---------------------------------------------------------------------------------------------*/
 /* AxTrace Global data  */
@@ -68,6 +70,29 @@ typedef struct
 	/* [name buf  with '\0' ended]*/
 	/* [value buf] */
 } axtrace_value_s;
+
+
+/*
+            x_size
++----------------------------+
+|                            |
+|                            |
+|                            |y_size
+|                            |
+|                            |
++----------------------------+
+*/
+typedef struct
+{
+	axtrace_head_s	head;			/* common head */
+	double			x_size;			/* map size(x)*/
+	double			y_size;			/* map size(y)*/
+	unsigned short	name_len;		/* length of value name */
+
+									/* [name buf  with '\0' ended]*/
+									/* [value buf] */
+} axtrace_2d_clean_map_s;
+
 
 #pragma pack(pop)
 
@@ -274,4 +299,60 @@ void axvalue(unsigned int style, unsigned int value_type, const char* value_name
 	/*TODO: check result, may be reconnect to server */
 	return;
 
+}
+
+/*---------------------------------------------------------------------------------------------*/
+void ax2d_clean_map(const char* map_name, double x_size, double y_size)
+{
+	axtrace_contex_s* ctx;
+	HRESULT hr;
+	size_t map_name_size, final_length;
+	int send_len;
+
+	/* buf for send , call send() once*/
+	char buf[sizeof(axtrace_2d_clean_map_s) + AXTRACE_MAX_MAP_NAME_LENGTH] = { 0 };
+	axtrace_2d_clean_map_s* trace_head = (axtrace_2d_clean_map_s*)(buf);
+	char* _name = (char*)(buf + sizeof(axtrace_2d_clean_map_s));
+
+	/* is init ok? */
+	ctx = _axtrace_get_thread_contex(0, 0);
+	if (ctx == 0) return;
+
+	/* copy map name */
+	hr = StringCbCopyA(_name, AXTRACE_MAX_MAP_NAME_LENGTH, map_name);
+	/* failed ?*/
+	if (FAILED(hr)) return;
+
+	/** get string length*/
+	hr = StringCbLengthA(_name, AXTRACE_MAX_MAP_NAME_LENGTH - 1, &map_name_size);
+	/* failed ?*/
+	if (FAILED(hr)) return;
+
+	/* add '\0' ended */
+	map_name_size += 1;
+
+	final_length = sizeof(axtrace_2d_clean_map_s) + map_name_size;
+
+	trace_head->head.length = (unsigned short)(final_length);
+	trace_head->head.flag = 'A';
+	trace_head->head.type = AXTRACE_CMD_TYPE_2D_CLEAN_MAP;
+	trace_head->head.pid = GetCurrentProcessId();
+	trace_head->head.tid = GetCurrentThreadId();
+	trace_head->head.style = 0;
+
+	trace_head->x_size = x_size;
+	trace_head->y_size = y_size;
+	trace_head->name_len = (unsigned short)map_name_size;
+
+	/* send to axtrace server*/
+	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
+
+	/*TODO: check result, may be reconnect to server */
+	return;
+}
+
+/*---------------------------------------------------------------------------------------------*/
+void ax2d_actor(const char* map_name, unsigned int actor_type, double x, double y, double dir)
+{
+	//TODO: ...
 }

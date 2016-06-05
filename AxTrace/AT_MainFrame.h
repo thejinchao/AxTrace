@@ -12,6 +12,7 @@ namespace AT3
 //pre-define
 class LogFrameWnd;
 class ValueFrameWnd;
+class Graphics2DFrameWnd;
 class IChildFrame;
 
 /** Main Frame
@@ -56,7 +57,6 @@ public:
 		COMMAND_ID_HANDLER(ID_OPTION_FONT, OnSettingFont)
 		COMMAND_ID_HANDLER(ID_OPTION_HIDE_TOOLBAR, OnOptionHideToolBar)
 		
-
 		COMMAND_ID_HANDLER(ID_EDIT_CLEAR, OnActiveWndEditCommand)
 		COMMAND_ID_HANDLER(ID_EDIT_CLEARALL, OnAllWndEditCommand)
 		COMMAND_ID_HANDLER(ID_EDIT_COPY, OnActiveWndEditCommand)
@@ -111,6 +111,7 @@ public:
 		MS_MDI,
 		MS_LOG_FRAME,
 		MS_VALUE_FRAME,
+		MS_2D_FRAME,
 	};
 	/** Update ui buttons on menu and toolbar */
 	void updateButtons(MDI_STATUS status=MS_UNKNOWN);
@@ -118,6 +119,7 @@ public:
 public:
 	LogFrameWnd* getLogWnd(const std::string& windowTitle);
 	ValueFrameWnd* getValueWnd(const std::string& windowTitle);
+	Graphics2DFrameWnd* get2DWnd(const std::string& windowTitle);
 
 	void onChildActive(IChildFrame* child);
 	void onChildDestroy(IChildFrame* child);
@@ -133,6 +135,9 @@ private:
 
 	typedef std::map< std::string, ValueFrameWnd* > ValueWndMap;
 	ValueWndMap				m_valueWndMap;
+
+	typedef std::map< std::string, Graphics2DFrameWnd* > Graphics2DWndMap;
+	Graphics2DWndMap		m_2DWndMap;
 
 	MDI_STATUS				m_mdiStatus;
 	IChildFrame*			m_currentActiveChild;

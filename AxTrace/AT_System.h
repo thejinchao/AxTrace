@@ -17,6 +17,7 @@ class MessageQueue;
 class Message;
 class LogMessage;
 class ValueMessage;
+class G2DCleanMapMessage;
 class Filter;
 
 /**Global System
@@ -68,6 +69,8 @@ private:
 	void _insertStringLog(const LogMessage* message);
 	/** insert string log*/
 	void _watchValue(const ValueMessage* message);
+	/** insert 2d map*/
+	void _2DCleanMap(const G2DCleanMapMessage* message);
 
 	/*************************************************************************
 		Implementation Data

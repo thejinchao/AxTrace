@@ -331,4 +331,46 @@ void ValueMessage::getValueAsString(std::wstring& value) const
 	value = temp;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+//Graphics2D Message
+//////////////////////////////////////////////////////////////////////////////////////////////
+G2DCleanMapMessage::G2DCleanMapMessage(void)
+	: Message()
+{
+}
+
+//--------------------------------------------------------------------------------------------
+G2DCleanMapMessage::~G2DCleanMapMessage(void)
+{
+
+}
+
+//--------------------------------------------------------------------------------------------
+void G2DCleanMapMessage::build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
+{
+	void* rc = 0;
+	memcpy(&m_traceTime, &traceTime, sizeof(m_traceTime));
+
+	m_nProcessID = head.pid;
+	m_nThreadID = head.tid;
+	m_nStyleID = head.style;
+
+	axtrace_2d_clean_map_s cleanmap_head;
+	size_t len = ringBuf->memcpy_out(&cleanmap_head, sizeof(axtrace_2d_clean_map_s));
+	assert(len == sizeof(axtrace_2d_clean_map_s));
+
+	char tempName[AXTRACE_MAX_MAP_NAME_LENGTH];
+	int name_length = cleanmap_head.name_len;
+
+	//TODO: check name length
+	len = ringBuf->memcpy_out(tempName, name_length);
+	assert(len == name_length);
+	tempName[name_length - 1] = 0; //make sure last char is '\0'
+
+	StringCbCopyA(m_map_name, AXTRACE_MAX_MAP_NAME_LENGTH, tempName);
+	x_size = cleanmap_head.x_size;
+	y_size = cleanmap_head.y_size;
+}
+
+
 }

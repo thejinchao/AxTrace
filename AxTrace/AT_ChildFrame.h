@@ -18,6 +18,7 @@ public:
 	{
 		CS_LOG_FRAME,
 		CS_VALUE_FRAME,
+		CS_2D_FRAME,
 	};
 
 	/** get child type */

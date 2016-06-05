@@ -7,6 +7,7 @@
 #include "AT_LogFrame.h"
 #include "AT_ValueFrame.h"
 #include "AT_Filter.h"
+#include "AT_2DFrame.h"
 
 namespace AT3
 {
@@ -134,6 +135,10 @@ void System::_processAxTraceData(const Message* message)
 		_watchValue((ValueMessage*)message);
 		break;
 
+	case AXTRACE_CMD_TYPE_2D_CLEAN_MAP:  //graphics 2d
+		_2DCleanMap((G2DCleanMapMessage*)message);
+		break;
+
 	default: break;
 	}
 }
@@ -166,6 +171,18 @@ void System::_watchValue(const ValueMessage* message)
 	std::wstring value;
 	message->getValueAsString(value);
 	valueWnd->watchValue(message->getStyleID(), message->getTraceTime(), message->getValueName(), value.c_str(), filterResult);
+}
+
+//--------------------------------------------------------------------------------------------
+void System::_2DCleanMap(const G2DCleanMapMessage* message)
+{
+	Filter::Result filterResult;
+	m_filter->on2DCleanMapMessage(message, filterResult);
+
+	Graphics2DFrameWnd* _2dWnd = m_wndMainFrame->get2DWnd(filterResult.wndTitle);
+	assert(_2dWnd != 0);
+
+	_2dWnd->cleanMap(message->get_x_size(), message->get_y_size());
 }
 
 }

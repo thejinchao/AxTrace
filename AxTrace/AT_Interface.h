@@ -39,10 +39,12 @@ namespace AT3
 
 #define AXTRACE_CMD_TYPE_LOG		(1)
 #define AXTRACE_CMD_TYPE_VALUE		(2)
+#define AXTRACE_CMD_TYPE_2D_CLEAN_MAP	(3)
 
 #define AXTRACE_MAX_LOG_STRING_LENGTH	(0x8000)
 #define AXTRACE_MAX_VALUENAME_LENGTH	(128)
 #define AXTRACE_MAX_VALUE_LENGTH		(1024)
+#define AXTRACE_MAX_MAP_NAME_LENGTH		(128)
 
 /*---------------------------------------------------------------------------------------------*/
 #pragma pack(push)
@@ -58,7 +60,7 @@ typedef struct
 	unsigned int	style;			/* trace style AXT_* */
 } axtrace_head_s;
 
-/* axtrace trace data struct*/
+/* axtrace log data struct*/
 typedef struct
 {
 	axtrace_head_s	head;			/* common head */
@@ -78,6 +80,17 @@ typedef struct
 	/* [name buf  with '\0' ended]*/
 	/* [value buf] */
 } axtrace_value_s;
+
+typedef struct
+{
+	axtrace_head_s	head;			/* common head */
+	double			x_size;			/* map size(x)*/
+	double			y_size;			/* map size(y)*/
+	unsigned short	name_len;		/* length of value name */
+
+									/* [name buf  with '\0' ended]*/
+									/* [value buf] */
+} axtrace_2d_clean_map_s;
 
 typedef struct
 {
