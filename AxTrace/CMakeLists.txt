@@ -25,6 +25,7 @@ set(AXTRACE_SOURCES_CPP
 	AT_2DScene.cpp
 	AT_2DCamera.cpp
 	AT_Canvas.cpp
+	AT_Color.cpp
 )
 
 set(AXTRACE_SOURCES_CPP_PRECOMPILED 
@@ -60,6 +61,7 @@ set(AXTRACE_SOURCES_INC
 	AT_2DScene.h
 	AT_2DCamera.h
 	AT_Canvas.h
+	AT_Color.h
 	AtlOpengl.h
 	resource.h       
 	StdAfx.h         

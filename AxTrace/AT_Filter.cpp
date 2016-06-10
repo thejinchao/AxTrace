@@ -123,6 +123,29 @@ void Filter::onValueMessage(const ValueMessage* message, Result& result)
 void Filter::on2DCleanMapMessage(const G2DCleanMapMessage* message, Result& result)
 {
 	result.display = true;
+
+	lua_getglobal(L, "on2DCleanMapMessage");
+
+	lua_pushlightuserdata(L, (void*)message);
+
+	luaL_getmetatable(L, Message::MESSAGE_META_NAME);
+	lua_setmetatable(L, -2);
+	lua_pcall(L, 1, 4, 0);
+
+	result.display = (lua_toboolean(L, -4) != 0);
+	if (result.display) {
+		result.wndTitle = lua_tostring(L, -3);
+		result.fontColor = (uint16_t)(lua_tointeger(L, -2) & 0xFFF);
+		result.backColor = (uint16_t)(lua_tointeger(L, -1) & 0xFFF);
+	}
+
+	lua_pop(L, 4);
+}
+
+//--------------------------------------------------------------------------------------------
+void Filter::on2DActorMessage(const G2DActorMessage* message, Result& result)
+{
+	result.display = true;
 	result.wndTitle = message->getMapName();
 }
 
@@ -233,7 +256,7 @@ bool Filter::editScriptWithNotepad(void)
 unsigned int Filter::_monitor_thread_entry(void)
 {
 	HANDLE hChangeEvent = FindFirstChangeNotification(m_strTempPath.c_str(), FALSE, 
-		FILE_NOTIFY_CHANGE_SIZE|FILE_NOTIFY_CHANGE_ATTRIBUTES);
+		FILE_NOTIFY_CHANGE_SIZE|FILE_NOTIFY_CHANGE_ATTRIBUTES|FILE_NOTIFY_CHANGE_LAST_WRITE);
 	if (hChangeEvent == INVALID_HANDLE_VALUE) {
 		return 1;
 	}

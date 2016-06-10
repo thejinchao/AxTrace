@@ -100,6 +100,14 @@ Message* MessageQueue::_popMessage(void)
 			message = msg;
 		}
 		break;
+
+	case AXTRACE_CMD_TYPE_2D_ACTOR:
+		{
+			G2DActorMessage* msg = new G2DActorMessage();
+			msg->build(traceTime, head, m_ring_buf);
+			message = msg;
+		}
+		break;
 	default: assert(false); break;
 	}
 

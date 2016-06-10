@@ -33,10 +33,12 @@ public:
 
 	virtual HWND getNativeWnd(void) { return m_hWnd; }
 	Graphics2DCamera* getCamera(void) { return m_camera; }
-	void cleanMap(double x_size, double y_size);
 
 	void initGL(int screen_x, int screen_y);
 	void render(void);
+
+	void cleanMap(const G2DCleanMapMessage* message, const Filter::Result& filter);
+	void updateActor(const G2DActorMessage* message);
 
 	/*************************************************************************
 	Inherit Methods

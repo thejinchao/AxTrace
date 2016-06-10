@@ -18,6 +18,7 @@ class Message;
 class LogMessage;
 class ValueMessage;
 class G2DCleanMapMessage;
+class G2DActorMessage;
 class Filter;
 
 /**Global System
@@ -71,6 +72,8 @@ private:
 	void _watchValue(const ValueMessage* message);
 	/** insert 2d map*/
 	void _2DCleanMap(const G2DCleanMapMessage* message);
+	/** update 2d actor */
+	void _2DUpdateActor(const G2DActorMessage* message);
 
 	/*************************************************************************
 		Implementation Data

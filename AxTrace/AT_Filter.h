@@ -7,6 +7,7 @@ namespace AT3
 class LogMessage;
 class ValueMessage;
 class G2DCleanMapMessage;
+class G2DActorMessage;
 class Config;
 
 class Filter
@@ -31,6 +32,7 @@ public:
 	void onLogMessage(const LogMessage* message, Result& result);
 	void onValueMessage(const ValueMessage* message, Result& result);
 	void on2DCleanMapMessage(const G2DCleanMapMessage* message, Result& result);
+	void on2DActorMessage(const G2DActorMessage* message, Result& result);
 
 	bool editScriptWithNotepad(void);
 

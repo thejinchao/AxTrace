@@ -37,7 +37,6 @@ void Graphics2DFrameWnd::initGL(int screen_x, int screen_y)
 {
 	m_camera = new Graphics2DCamera(_onCameraAdjust, this);
 	m_scene = new Graphics2DScene(this);
-	m_scene->cleanScene(64.0, 64.0);
 
 	//init opengl status
 	glShadeModel(GL_SMOOTH);							// Enable Smooth Shading
@@ -139,9 +138,21 @@ LRESULT Graphics2DFrameWnd::OnClose(UINT, WPARAM wParam, LPARAM lParam, BOOL& bH
 }
 
 //--------------------------------------------------------------------------------------------
-void Graphics2DFrameWnd::cleanMap(double x_size, double y_size)
+void Graphics2DFrameWnd::cleanMap(const G2DCleanMapMessage* message, const Filter::Result& filter)
 {
-	m_scene->cleanScene((Real)x_size, (Real)y_size);
+	double x_size = message->get_x_size();
+	double y_size = message->get_y_size();
+	fColor borderColor(fColor::convert_RGB555_to_RGB888(filter.fontColor));
+	fColor backgroundColor(fColor::convert_RGB555_to_RGB888(filter.backColor));
+
+	m_scene->cleanScene((Real)x_size, (Real)y_size, borderColor, backgroundColor);
 }
+
+//--------------------------------------------------------------------------------------------
+void Graphics2DFrameWnd::updateActor(const G2DActorMessage* message)
+{
+	m_scene->updateActor(message->get_id(), message->get_x(), message->get_y(), message->get_dir());
+}
+
 
 }

@@ -82,8 +82,9 @@ AXTRACE_EXTERN_C void axvalue(unsigned int style, unsigned int value_type, const
 @param map_name the name of map(id)
 @param x_size map size(x)
 @param y_size map size(y)
+@param map_style map style
 */
-AXTRACE_EXTERN_C void ax2d_clean_map(const char* map_name, double x_size, double y_size);
+AXTRACE_EXTERN_C void ax2d_clean_map(const char* map_name, double x_size, double y_size, unsigned int map_style);
 
 /*
 create/update a actor in the map
@@ -98,11 +99,12 @@ create/update a actor in the map
 +----------------------------+
 
 @param map_name the name of map(id)
+@param actor_id actor id
 @param x actor position(x)
 @param y actor position(y)
 @param dir actor direction(0~2pi)
 */
-AXTRACE_EXTERN_C void ax2d_actor(const char* map_name, unsigned int actor_type, double x, double y, double dir);
+AXTRACE_EXTERN_C void ax2d_actor(const char* map_name, unsigned int actor_id, double x, double y, double dir);
 
 
 #endif

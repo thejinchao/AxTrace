@@ -80,6 +80,22 @@ int _lua_get_content(lua_State *L)
 	return 0;
 }
 
+//-------------------------------------------------------------------------------------
+int _lua_get_mapname(lua_State *L)
+{
+	const Message* msg = (const Message*)lua_touserdata(L, 1);
+
+	if (msg->getTraceType() == AXTRACE_CMD_TYPE_2D_CLEAN_MAP) {
+		lua_pushstring(L, ((G2DCleanMapMessage*)msg)->getMapName());
+		return 1;
+	}else if(msg->getTraceType() == AXTRACE_CMD_TYPE_2D_ACTOR) {
+		lua_pushstring(L, ((G2DActorMessage*)msg)->getMapName());
+		return 1;
+	}
+	
+	return 0;
+}
+
 //--------------------------------------------------------------------------------------------
 void Message::_luaopen(lua_State *L)
 {
@@ -90,6 +106,10 @@ void Message::_luaopen(lua_State *L)
 		{ "get_thread_id", _lua_get_thread_id },
 		{ "get_style", _lua_get_style },
 		{ "get_content", _lua_get_content },
+
+		//for 2d messages
+		{ "get_mapname", _lua_get_mapname },
+
 		{ 0, 0 }
 	};
 
@@ -332,7 +352,7 @@ void ValueMessage::getValueAsString(std::wstring& value) const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//Graphics2D Message
+//Graphics2D Clean Map Message
 //////////////////////////////////////////////////////////////////////////////////////////////
 G2DCleanMapMessage::G2DCleanMapMessage(void)
 	: Message()
@@ -372,5 +392,46 @@ void G2DCleanMapMessage::build(const AXIATRACE_TIME& traceTime, const axtrace_he
 	y_size = cleanmap_head.y_size;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+//Graphics2D Actor Message
+//////////////////////////////////////////////////////////////////////////////////////////////
+G2DActorMessage::G2DActorMessage(void)
+	: Message()
+{
+}
 
+//--------------------------------------------------------------------------------------------
+G2DActorMessage::~G2DActorMessage(void)
+{
+
+}
+
+//--------------------------------------------------------------------------------------------
+void G2DActorMessage::build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
+{
+	void* rc = 0;
+	memcpy(&m_traceTime, &traceTime, sizeof(m_traceTime));
+
+	m_nProcessID = head.pid;
+	m_nThreadID = head.tid;
+	m_nStyleID = head.style;
+
+	axtrace_2d_actor_s actor_head;
+	size_t len = ringBuf->memcpy_out(&actor_head, sizeof(axtrace_2d_actor_s));
+	assert(len == sizeof(axtrace_2d_actor_s));
+
+	char tempName[AXTRACE_MAX_MAP_NAME_LENGTH];
+	int name_length = actor_head.name_len;
+
+	//TODO: check name length
+	len = ringBuf->memcpy_out(tempName, name_length);
+	assert(len == name_length);
+	tempName[name_length - 1] = 0; //make sure last char is '\0'
+
+	StringCbCopyA(m_map_name, AXTRACE_MAX_MAP_NAME_LENGTH, tempName);
+	actor_id = actor_head.actor_id;
+	x_pos = actor_head.x;
+	y_pos = actor_head.y;
+	dir = actor_head.dir;
+}
 }

@@ -9,6 +9,7 @@
 #include "AT_ListCtrlEx.h"
 #include "AT_Config.h"
 #include "AT_System.h"
+#include "AT_Color.h"
 
 namespace AT3
 {
@@ -57,20 +58,6 @@ DWORD CListCtrlEx::OnPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/)
 }
 
 //--------------------------------------------------------------------------------------------
-uint32_t convert_RGB555_to_RGB888(uint16_t rgb)
-{
-	// 0bbb bbgg gggr rrrr
-	//          |
-	//          v
-	// 0000 0000 bbbb b000 gggg g000 rrrr r000
-	uint32_t r = (rgb & 0x000F) * 0xFF / 0xF;
-	uint32_t g = ((rgb & 0x00F0) >> 4)*0xFF/0xF;
-	uint32_t b = ((rgb & 0x0F00) >> 8) * 0xFF / 0xF;
-
-	return RGB(r, g, b);
-}
-
-//--------------------------------------------------------------------------------------------
 DWORD CListCtrlEx::OnItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW pCD)
 {
 	NMLVCUSTOMDRAW* pLVCD = reinterpret_cast<NMLVCUSTOMDRAW*>(pCD);
@@ -79,8 +66,8 @@ DWORD CListCtrlEx::OnItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW pCD)
 
 	uint32_t color = (uint32_t)(pCD->lItemlParam);
 
-	pLVCD->clrText = convert_RGB555_to_RGB888((uint16_t)(color>>16));
-	pLVCD->clrTextBk = convert_RGB555_to_RGB888((uint16_t)color);
+	pLVCD->clrText = fColor::convert_RGB555_to_RGB888((uint16_t)(color>>16), 0);
+	pLVCD->clrTextBk = fColor::convert_RGB555_to_RGB888((uint16_t)color, 0);
 	return CDRF_DODEFAULT;
 } 
 

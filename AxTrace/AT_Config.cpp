@@ -77,6 +77,9 @@ void Config::_resetDefaultSetting(void)
 		"function onValueMessage(msg) \r\n"
 		" return true, \"defult\", COL_BLACK, COL_WHITE; \r\n"
 		"end; \r\n"
+		"function on2DCleanMapMessage(msg) \r\n"
+		"return true, msg:get_mapname(), COL_WHITE, 0xf93;\r\n"
+		"end;\r\n"
 		;
 }
 

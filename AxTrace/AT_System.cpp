@@ -139,6 +139,9 @@ void System::_processAxTraceData(const Message* message)
 		_2DCleanMap((G2DCleanMapMessage*)message);
 		break;
 
+	case AXTRACE_CMD_TYPE_2D_ACTOR:
+		_2DUpdateActor((G2DActorMessage*)message);
+		break;
 	default: break;
 	}
 }
@@ -179,10 +182,26 @@ void System::_2DCleanMap(const G2DCleanMapMessage* message)
 	Filter::Result filterResult;
 	m_filter->on2DCleanMapMessage(message, filterResult);
 
+	if (!filterResult.display) return;
+
 	Graphics2DFrameWnd* _2dWnd = m_wndMainFrame->get2DWnd(filterResult.wndTitle);
 	assert(_2dWnd != 0);
 
-	_2dWnd->cleanMap(message->get_x_size(), message->get_y_size());
+	_2dWnd->cleanMap(message, filterResult);
+}
+
+//--------------------------------------------------------------------------------------------
+void System::_2DUpdateActor(const G2DActorMessage* message)
+{
+	Filter::Result filterResult;
+	m_filter->on2DActorMessage(message, filterResult);
+
+	if (!filterResult.display) return;
+
+	Graphics2DFrameWnd* _2dWnd = m_wndMainFrame->get2DWnd(filterResult.wndTitle);
+	assert(_2dWnd != 0);
+
+	_2dWnd->updateActor(message);
 }
 
 }

@@ -103,7 +103,7 @@ public:
 	virtual ~ValueMessage();
 };
 
-/** Graphics2D Message
+/** Graphics2D Init/Clean Map Message
 */
 class G2DCleanMapMessage : public Message
 {
@@ -125,6 +125,35 @@ private:
 public:
 	G2DCleanMapMessage();
 	virtual ~G2DCleanMapMessage();
+};
+
+
+/** Graphics2D Create/Update Actor Message
+*/
+class G2DActorMessage : public Message
+{
+public:
+	/** build message */
+	virtual void build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
+	/** get trace type*/
+	virtual unsigned int getTraceType(void) const { return AXTRACE_CMD_TYPE_2D_ACTOR; }
+
+	const char* getMapName(void) const { return m_map_name; }
+	unsigned int get_id(void) const { return actor_id; }
+	double get_x(void) const { return x_pos; }
+	double get_y(void) const { return y_pos; }
+	double get_dir(void) const { return dir; }
+
+private:
+	char	m_map_name[AXTRACE_MAX_MAP_NAME_LENGTH];
+	unsigned int actor_id;
+	double	x_pos;
+	double	y_pos;
+	double	dir;
+
+public:
+	G2DActorMessage();
+	virtual ~G2DActorMessage();
 };
 
 typedef std::vector< Message* > MessageVector;

@@ -40,6 +40,7 @@ namespace AT3
 #define AXTRACE_CMD_TYPE_LOG		(1)
 #define AXTRACE_CMD_TYPE_VALUE		(2)
 #define AXTRACE_CMD_TYPE_2D_CLEAN_MAP	(3)
+#define AXTRACE_CMD_TYPE_2D_ACTOR	(4)
 
 #define AXTRACE_MAX_LOG_STRING_LENGTH	(0x8000)
 #define AXTRACE_MAX_VALUENAME_LENGTH	(128)
@@ -88,9 +89,20 @@ typedef struct
 	double			y_size;			/* map size(y)*/
 	unsigned short	name_len;		/* length of value name */
 
-									/* [name buf  with '\0' ended]*/
-									/* [value buf] */
+									/* [map name buf  with '\0' ended]*/
 } axtrace_2d_clean_map_s;
+
+typedef struct
+{
+	axtrace_head_s	head;			/* common head */
+	unsigned int	actor_id;		/* id of actor */
+	double			x;				/* position (x)*/
+	double			y;				/* position (y)*/
+	double			dir;			/* direction */
+	unsigned short	name_len;		/* length of map name */
+
+									/* [map name buf  with '\0' ended]*/
+} axtrace_2d_actor_s;
 
 typedef struct
 {
