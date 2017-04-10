@@ -31,11 +31,12 @@ public:
 private:
 	cyclone::TcpServer* m_server;
 
-	virtual void on_connection_callback(cyclone::TcpServer* server, int32_t thread_index, cyclone::Connection* conn);
-	virtual void on_message_callback(cyclone::TcpServer* server, int32_t thread_index, cyclone::Connection* conn);
-	virtual void on_close_callback(cyclone::TcpServer* server, int32_t thread_index, cyclone::Connection* conn);
-	virtual void on_extra_workthread_msg(cyclone::TcpServer* server, int32_t thread_index, cyclone::Packet* msg);
+	virtual void on_workthread_start(cyclone::TcpServer* server, int32_t thread_index, cyclone::Looper* looper);
+	virtual void on_workthread_cmd(cyclone::TcpServer* server, int32_t thread_index, cyclone::Packet* cmd);
 
+	virtual void on_connected(cyclone::TcpServer* server, int32_t thread_index, cyclone::ConnectionPtr conn);
+	virtual void on_message(cyclone::TcpServer* server, int32_t thread_index, cyclone::ConnectionPtr conn);
+	virtual void on_close(cyclone::TcpServer* server, int32_t thread_index, cyclone::ConnectionPtr conn);
 public:
 	Incoming();
 	virtual ~Incoming();

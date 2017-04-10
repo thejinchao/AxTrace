@@ -42,13 +42,13 @@ bool Incoming::init(void)
 }
 
 //--------------------------------------------------------------------------------------------
-void Incoming::on_connection_callback(cyclone::TcpServer* server, int32_t thread_index, cyclone::Connection* conn)
+void Incoming::on_connected(cyclone::TcpServer* server, int32_t thread_index, cyclone::ConnectionPtr conn)
 {
 
 }
 
 //--------------------------------------------------------------------------------------------
-void Incoming::on_message_callback(cyclone::TcpServer* server, int32_t thread_index, cyclone::Connection* conn)
+void Incoming::on_message(cyclone::TcpServer* server, int32_t thread_index, cyclone::ConnectionPtr conn)
 {
 	cyclone::RingBuf& input_buf = conn->get_input_buf();
 
@@ -84,13 +84,19 @@ void Incoming::on_message_callback(cyclone::TcpServer* server, int32_t thread_in
 }
 
 //--------------------------------------------------------------------------------------------
-void Incoming::on_close_callback(cyclone::TcpServer* server, int32_t thread_index, cyclone::Connection* conn)
+void Incoming::on_close(cyclone::TcpServer* server, int32_t thread_index, cyclone::ConnectionPtr conn)
 {
 
 }
 
 //--------------------------------------------------------------------------------------------
-void Incoming::on_extra_workthread_msg(cyclone::TcpServer* server, int32_t thread_index, cyclone::Packet* msg)
+void Incoming::on_workthread_start(cyclone::TcpServer* server, int32_t thread_index, cyclone::Looper* looper)
+{
+
+}
+
+//--------------------------------------------------------------------------------------------
+void Incoming::on_workthread_cmd(cyclone::TcpServer* server, int32_t thread_index, cyclone::Packet* msg)
 {
 
 }
