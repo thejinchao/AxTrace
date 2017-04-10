@@ -106,6 +106,7 @@ void Incoming::closeListen(void)
 {
 	//wait cyclone quit...
 	m_server->stop();
+	m_server->join();
 }
 
 }
