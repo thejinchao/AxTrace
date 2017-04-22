@@ -108,11 +108,18 @@ ADD_EXECUTABLE(AxTrace WIN32
 	${AXTRACE_SOURCES_INC}
 )
 
+if(CMAKE_CL_64)
 target_link_libraries(AxTrace
 	ws2_32
 	cyclone
-	libluajit
 	winmm
+	${CMAKE_CURRENT_SOURCE_DIR}/../luajit/lua51_x64.lib
 )
-
-set_target_properties(AxTrace PROPERTIES LINK_FLAGS "/link ${CMAKE_CURRENT_SOURCE_DIR}/../luajit/lj_vm_x86.obj")
+else()
+target_link_libraries(AxTrace
+	ws2_32
+	cyclone
+	winmm
+	${CMAKE_CURRENT_SOURCE_DIR}/../luajit/lua51_x86.lib
+)
+endif()
