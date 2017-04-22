@@ -207,7 +207,7 @@ void LogMessage::build(const AXIATRACE_TIME& traceTime, const axtrace_head_s& he
 
 		m_pLogBufInChar = logLength;
 		m_pLogBuf=new wchar_t[m_pLogBufInChar+1];
-		::MultiByteToWideChar(CP_ACP, 0, tempBuf, logLength+1, m_pLogBuf, m_pLogBufInChar+1);
+		::MultiByteToWideChar(CP_ACP, 0, tempBuf, logLength+1, m_pLogBuf, (int)m_pLogBufInChar+1);
 
 		delete[] tempBuf; tempBuf=0;
 
@@ -337,7 +337,7 @@ void ValueMessage::getValueAsString(std::wstring& value) const
 	case AXV_STR_ACP:
 		{
 			wchar_t* wszBuf = new wchar_t[m_valueSize];
-			::MultiByteToWideChar(CP_ACP, 0, (const char*)m_valueBuf, m_valueSize, wszBuf, m_valueSize);
+			::MultiByteToWideChar(CP_ACP, 0, (const char*)m_valueBuf, (int)m_valueSize, wszBuf, (int)m_valueSize);
 			value = wszBuf;
 			delete[] wszBuf;
 		}

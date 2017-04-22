@@ -201,7 +201,7 @@ bool Filter::editScriptWithNotepad(void)
 
 	//write script to file
 	DWORD dwBytesWrite;
-	if (!::WriteFile(hTempFile, m_cfg->getFilterScript().c_str(), m_cfg->getFilterScript().length(), &dwBytesWrite, 0) ||
+	if (!::WriteFile(hTempFile, m_cfg->getFilterScript().c_str(), (DWORD)m_cfg->getFilterScript().length(), &dwBytesWrite, 0) ||
 		dwBytesWrite != m_cfg->getFilterScript().length())
 	{
 		CloseHandle(hTempFile);
