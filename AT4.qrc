@@ -1,0 +1,17 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+  <file>images/AxTrace.ico</file>
+  <file>images/capture.png</file>
+  <file>images/save.png</file>
+
+  <file>images/auto-scroll.png</file>
+  <file>images/copy.png</file>
+  <file>images/clean.png</file>
+  <file>images/clean-all.png</file>
+
+  <file>images/grid.png</file>
+  <file>images/setting.png</file>
+  
+  <file>images/about.png</file>
+</qresource>
+</RCC>
