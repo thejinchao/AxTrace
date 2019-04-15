@@ -10,7 +10,7 @@ axlog(AXT_TRACE, "Hello,World.");
 axlog(AXT_ERROR, "This is error message!");
 //变量输出
 int v = 9527;
-axvalue(AXT_TRACE, AXV_INT32, "TestValue", &v);
+axvalue(AXV_INT32, "TestValue", &v);
 ```
 那么在AxTrace程序中就会显示出这条日志和变量值。
 
@@ -60,7 +60,7 @@ local style = msg:get_style();
 -- 获取日志内容
 local content = msg:get_content();
 ```
-后面AxTrace仍会继续开发，比如支持IOS程序，另外还有一个重要的功能，就是ax2d系列函数加入，用来以图像形式显示程序中的位置信息，这在开发MMORPG游戏服务器时非常有用，可以用图像的方式实时监控服务器程序中玩家和NPC的位置信息。
+在最近的一次更新中，AxTrace重新设计了UI系统，使用QT作为UI框架，这次改进几乎重构了所有代码。并且这次更新也加入了ax2d系列函数，可以将游戏中的场景数据以可视化的方式输出，这在开发MMORPG游戏服务器时非常有用，可以用图像的方式实时监控服务器程序中玩家和NPC的位置信息。
 
 ## 如何编译
 ### 编译Cyclone
@@ -70,13 +70,16 @@ AxTrace使用了我的另外一个开源工程cyclone作为网络底层，使用
 2.  将cyclone源码clone到该目录下的一个子目录中，例如"d:/cyclone/src"，使用命令行为
 ``` git clone https://github.com/thejinchao/cyclone.git src ```
 3.  在根目录下创建一个工程目录用来作为编译使用，例如"d:/cyclone/_sln"，在该目录中使用cmake生成工程文件，例如下面的命令行
-``` cmake -G "Visual Studio 14 2015" ../src  ```
+``` cmake -G "Visual Studio 15 2017 Win64" ../src  ```
 4.  打开生成的工程文件，编译cyclone，并执行其中的install工程，则"d:/cyclone/sdk"目录则会安装编译之后的cyclone，设置环境变量**CYCLONE_SDK_ROOT**到该目录
+
+### 安装QT5 SDK
+1. 下载Qt5 SDK，安装后设置环境变量**QT5_SDK_ROOT**指向安装路径
 
 ### 编译AxTrace
 1. 创建一个空目录作为AxTrace的根目录，例如"d:/AxTrace"
 2. 将AxTrace源码clone到该目录下的一个子目录中，例如"d:/AxTrace/src"
 3. 在AxTrace根目录下创建一个子目录作为工程目录，例如"d:/AxTrace/_sln"
-4. 在工程目录中使用cmake生成工程文件，命令行为```cmake -G "Visual Studio 14 2015" ../src ```
+4. 在工程目录中使用cmake生成工程文件，命令行为```cmake -G "Visual Studio 15 2017 Win64" ../src ```
 5. 打开工程文件并编译
 
