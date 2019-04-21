@@ -50,7 +50,7 @@ void LogDataModel::insertLog(const LogMessage* logMessage, const Filter::ListRes
 //--------------------------------------------------------------------------------------------
 void LogDataModel::clearAllLog(void)
 {
-	beginRemoveRows(QModelIndex(), 0, rowCount());
+	beginRemoveRows(QModelIndex(), 0, rowCount()-1);
 	m_logVector.clear();
 	endRemoveRows();
 }

@@ -73,7 +73,7 @@ void ValueDataModel::insertValue(const ValueMessage* valueMessage, const Filter:
 //--------------------------------------------------------------------------------------------
 void ValueDataModel::clearAllValue(void)
 {
-	beginRemoveRows(QModelIndex(), 0, rowCount());
+	beginRemoveRows(QModelIndex(), 0, rowCount()-1);
 	m_valueVector.clear();
 	m_valueHashMap.clear();
 	endRemoveRows();
