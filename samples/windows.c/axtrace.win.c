@@ -359,7 +359,7 @@ void ax2d_begin_scene(const char* scene_name, double left, double top, double ri
 		hr = StringCbLengthA(_name, AXTRACE_MAX_SCENE_DEFINE_LENGTH - 1, &scene_define_size);
 		/* failed ?*/
 		if (FAILED(hr)) return;
-		if (scene_name_size >= AXTRACE_MAX_SCENE_DEFINE_LENGTH) return;
+		if (scene_define_size >= AXTRACE_MAX_SCENE_DEFINE_LENGTH) return;
 
 		/* add '\0' ended */
 		scene_define_size += 1;
@@ -416,6 +416,7 @@ void ax2d_actor(const char* scene_name, __int64 actor_id, double x, double y, do
 	hr = StringCbLengthA(_name, AXTRACE_MAX_SCENE_NAME_LENGTH - 1, &scene_name_size);
 	/* failed ?*/
 	if (FAILED(hr)) return;
+	if (scene_name_size <= 0 || scene_name_size >= AXTRACE_MAX_SCENE_NAME_LENGTH) return;
 
 	/* add '\0' ended */
 	scene_name_size += 1;
