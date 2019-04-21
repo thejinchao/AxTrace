@@ -1,3 +1,9 @@
+/***************************************************
+
+				AXIA|Trace4
+
+	(C) Copyright thecodeway.com 2019
+***************************************************/
 #include "stdafx.h"
 #include "AT4_System.h"
 #include "AT4_MainWindow.h"

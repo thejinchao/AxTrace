@@ -1,7 +1,9 @@
-/*
-axia|trace4
-Copyright(C) thecodeway.com
-*/
+/***************************************************
+
+				AXIA|Trace4
+
+	(C) Copyright thecodeway.com 2019
+***************************************************/
 #ifndef __AXIA_TRACE_WINDOWS_INCLUDE__
 #define __AXIA_TRACE_WINDOWS_INCLUDE__
 
@@ -37,16 +39,6 @@ Copyright(C) thecodeway.com
 #define AXV_STR_UTF8	(11)
 #define AXV_STR_UTF16	(12)
 #define AXV_USER_DEF	(100)
-
-
-/* for UNICODE Application */
-#if !defined(_WCHAR_T_DEFINED)
-/*
-*Typically, wchar_t is defined when you use /Zc:wchar_t or
-*when typedef unsigned short wchar_t; is executed in code.
-*/
-typedef unsigned short wchar_t;
-#endif
 
 /*
 * send a log message to axtrace server

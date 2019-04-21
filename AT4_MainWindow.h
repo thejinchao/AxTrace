@@ -1,5 +1,10 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+/***************************************************
+
+				AXIA|Trace4
+
+	(C) Copyright thecodeway.com 2019
+***************************************************/
+#pragma once
 
 #include <QMainWindow>
 #include <QEvent>
@@ -122,5 +127,3 @@ private:
 
     QAction *m_windowMenuSeparatorAct;
 };
-
-#endif

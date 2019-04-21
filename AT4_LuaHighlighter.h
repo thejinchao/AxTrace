@@ -1,3 +1,9 @@
+/***************************************************
+
+				AXIA|Trace4
+
+	(C) Copyright thecodeway.com 2019
+***************************************************/
 #pragma once
 
 #include <QSyntaxHighlighter>

@@ -1,3 +1,9 @@
+/***************************************************
+
+				AXIA|Trace4
+
+	(C) Copyright thecodeway.com 2019
+***************************************************/
 #include "stdafx.h"
 
 #include "AT4_MainWindow.h"
@@ -20,10 +26,6 @@ MainWindow::MainWindow()
 {
 	m_mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	m_mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-	//m_mdiArea->setViewMode(QMdiArea::TabbedView);
-	//m_mdiArea->setTabsClosable(true);
-	//m_mdiArea->setTabsMovable(true);
-	//m_mdiArea->setOption(QMdiArea::DontMaximizeSubWindowOnActivation);
 
     setCentralWidget(m_mdiArea);
     connect(m_mdiArea, &QMdiArea::subWindowActivated,

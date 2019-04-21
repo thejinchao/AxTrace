@@ -1,8 +1,8 @@
 /***************************************************
 
-				AXIA|Trace3
+				AXIA|Trace4
 
-	(C) Copyright  Jean(www.thecodeway.com). 2013
+	(C) Copyright thecodeway.com 2019
 ***************************************************/
 
 #include "axtrace.win.h"
