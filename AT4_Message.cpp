@@ -215,6 +215,13 @@ void ValueMessage::build(const axtrace_time_s& traceTime, const axtrace_head_s& 
 		((char*)m_valueBuf)[m_valueSize - 1] = 0;
 		((char*)m_valueBuf)[m_valueSize - 2] = 0;
 	}
+	else if (m_valueType == AXV_STR_UTF32)
+	{
+		((char*)m_valueBuf)[m_valueSize - 1] = 0;
+		((char*)m_valueBuf)[m_valueSize - 2] = 0;
+		((char*)m_valueBuf)[m_valueSize - 3] = 0;
+		((char*)m_valueBuf)[m_valueSize - 4] = 0;
+	}
 }
 
 //--------------------------------------------------------------------------------------------
@@ -262,6 +269,10 @@ void ValueMessage::getValueAsString(QString& value) const
 
 	case AXV_FLOAT64:
 		value = QString::number(*((double*)m_valueBuf));
+		break;
+
+	case AXV_STR_UTF32:
+		value = QString::fromUcs4((const uint*)m_valueBuf);
 		break;
 
 	case AXV_STR_UTF16:

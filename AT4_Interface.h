@@ -32,6 +32,7 @@
 #define AXV_STR_ACP		(10)
 #define AXV_STR_UTF8	(11)
 #define AXV_STR_UTF16	(12)
+#define AXV_STR_UTF32	(13)
 #define AXV_USER_DEF	(100)
 
 #define AXTRACE_CMD_TYPE_LOG			(1)
