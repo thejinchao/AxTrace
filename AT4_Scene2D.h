@@ -26,6 +26,7 @@ public:
 		quint16 borderColor;
 		quint16 fillColor;
 		qreal size;
+		QString info;
 	};
 
 public:

@@ -363,9 +363,10 @@ void Map2DChild::_getMouseTips(const QTransform& localMove, const Scene2D::Actor
 	default: return;
 	}
 
-	QString tips = QString("-------------\nID:%1\nPos:%2,%3\n")
+	QString tips = QString("-------------\nID:%1\nPos:%2,%3\n%4\n")
 		.arg(actor.actorID)
-		.arg(actor.pos.x()).arg(actor.pos.y());
+		.arg(actor.pos.x()).arg(actor.pos.y())
+		.arg(actor.info);
 
 	mouseTips += tips;
 }

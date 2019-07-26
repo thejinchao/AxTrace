@@ -52,6 +52,7 @@ void Scene2D::updateActor(const Update2DActorMessage* msg, const Filter::Actor2D
 		actor.size = filterResult.size;
 		actor.fillColor = filterResult.fillColor;
 		actor.borderColor = filterResult.borderColor;
+		actor.info = msg->getActorInfo();
 
 		updatingActorsMap.insert(msg->getActorID(), actor);
 	}

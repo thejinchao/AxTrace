@@ -46,6 +46,7 @@
 #define AXTRACE_MAX_VALUE_LENGTH		(1024)
 #define AXTRACE_MAX_SCENE_NAME_LENGTH	(128)
 #define AXTRACE_MAX_SCENE_DEFINE_LENGTH	(2048)
+#define AXTRACE_MAX_ACTOR_INFO_LENGTH	(2048)
 
 /*---------------------------------------------------------------------------------------------*/
 #pragma pack(push)
@@ -104,9 +105,11 @@ typedef struct
 	double			y;				/* position (y)*/
 	double			dir;			/* direction */
 	unsigned int	style;			/* user define style */
-	unsigned short	name_len;		/* length of scene name */
+	unsigned short	name_len;		/* length of actor name */
+	unsigned short	info_len;		/* length of actor information */
 
-									/* [scene name buf  with '\0' ended]*/
+									/* [actor name buf  with '\0' ended]*/
+									/* [actor information buf  with '\0' ended]*/
 } axtrace_2d_actor_s;
 
 typedef struct

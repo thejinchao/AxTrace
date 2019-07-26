@@ -330,7 +330,7 @@ int main(int argc, char* argv[])
 			{
 				Actor& actor = allActors[j];
 
-				ax2d_actor("test", 100 + j, actor.x, actor.y, actor.dir, 0);
+				ax2d_actor("test", 100 + j, actor.x, actor.y, actor.dir, 0, nullptr);
 
 				if (actor.remain_distance() <= MOVE_STEP) {
 					_selectNextTarget(actor);
@@ -359,7 +359,7 @@ int main(int argc, char* argv[])
 			for (int j = 0; j < ACTOR_COUNTS-i; j++)
 			{
 				Actor& actor = allActors[j];
-				ax2d_actor("test", 100 + j, actor.x, actor.y, actor.dir, 0);
+				ax2d_actor("test", 100 + j, actor.x, actor.y, actor.dir, 0, nullptr);
 			}
 			ax2d_end_scene("test");
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));

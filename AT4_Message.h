@@ -164,6 +164,7 @@ public:
 	const QPointF& getActorPosition(void) const { return m_position; }
 	qreal getActorDir(void) const { return m_dir; }
 	quint32 getActorStyle(void) const { return m_style; }
+	const QString& getActorInfo(void) const { return m_actorInfo; }
 
 private:
 	QString			m_sceneName;
@@ -171,12 +172,14 @@ private:
 	QPointF			m_position;
 	qreal			m_dir;
 	quint32			m_style;
+	QString			m_actorInfo;
 
 protected:
 	static int _lua_get_actor_id(lua_State *L);
 	static int _lua_get_actor_position(lua_State *L);
 	static int _lua_get_actor_dir(lua_State *L);
 	static int _lua_get_actor_style(lua_State *L);
+	static int _lua_get_actor_info(lua_State *L);
 
 public:
 	Update2DActorMessage();

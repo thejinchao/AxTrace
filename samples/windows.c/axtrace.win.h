@@ -42,7 +42,7 @@
 
 /*
 * send a log message to axtrace server
-* @param log_type is one of AXT_*** value, 
+* @param log_type is one of AXT_*** value,
 * @param format is the message described with system current codec
 *
 *	sample: axlog(AXT_TRACE, "hello,world! I'm %s", name);
@@ -61,7 +61,7 @@ AXTRACE_EXTERN_C void axvalue(unsigned int value_type, const char* value_name, c
 /**
 * begin draw a 2d scene
 
-left                         right            
+left                         right
 +----------------------------+  top
 |                            |
 |                            |
@@ -71,7 +71,7 @@ left                         right
 +----------------------------+  bottom
 
 @param scene_name the name of scene(id)
-@param x_min left of scene 
+@param x_min left of scene
 @param y_min top of scene
 @param x_max right of scene
 @param y_max bottom of scene
@@ -97,8 +97,9 @@ create/update a actor in the scene
 @param y actor position(y)
 @param dir actor direction(0~2pi)
 @param actor_style user define style
+@param actor_info extra information of actor
 */
-AXTRACE_EXTERN_C void ax2d_actor(const char* scene_name, __int64 actor_id, double x, double y, double dir, unsigned int actor_style);
+AXTRACE_EXTERN_C void ax2d_actor(const char* scene_name, __int64 actor_id, double x, double y, double dir, unsigned int actor_style, const char* actor_info);
 
 /*
 draw all acotrs between ax2d_begin_scene and ax2d_end_scene

@@ -448,6 +448,15 @@ void Update2DActorMessage::build(const axtrace_time_s& traceTime, const axtrace_
 	assert(len == name_length);
 	tempName[name_length - 1] = 0; //make sure last char is '\0'
 	m_sceneName = QString::fromUtf8(tempName);
+
+	//copy info
+	char tempInfo[AXTRACE_MAX_ACTOR_INFO_LENGTH];
+	int info_length = value_head.info_len;
+	//TODO: check name length
+	len = ringBuf->memcpy_out(tempInfo, info_length);
+	assert(len == info_length);
+	tempInfo[info_length - 1] = 0; //make sure last char is '\0'
+	m_actorInfo = QString::fromUtf8(tempInfo);
 }
 
 //-------------------------------------------------------------------------------------
@@ -488,6 +497,18 @@ int Update2DActorMessage::_lua_get_actor_style(lua_State *L)
 	return 1;
 }
 
+//-------------------------------------------------------------------------------------
+int Update2DActorMessage::_lua_get_actor_info(lua_State *L)
+{
+	const Update2DActorMessage* msg = (const Update2DActorMessage*)lua_touserdata(L, 1);
+
+	QString actorInfo = msg->getActorInfo();
+
+	QByteArray msgUtf8 = actorInfo.toUtf8();
+	lua_pushstring(L, msgUtf8.data());
+	return 1;
+}
+
 //--------------------------------------------------------------------------------------------
 const char* Update2DActorMessage::MetaName = "AxTrace.Actor2DMessage";
 
@@ -503,6 +524,7 @@ void Update2DActorMessage::_luaopen(lua_State *L)
 		{ "get_actor_position", Update2DActorMessage::_lua_get_actor_position },
 		{ "get_actor_dir", Update2DActorMessage::_lua_get_actor_dir },
 		{ "get_actor_style", Update2DActorMessage::_lua_get_actor_style },
+		{ "get_actor_info", Update2DActorMessage::_lua_get_actor_info },
 
 		{ 0, 0 }
 	};
