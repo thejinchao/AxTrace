@@ -96,7 +96,7 @@ create/update a actor in the scene
 @param actor_style user define style
 @param actor_info extra information of actor
 */
-AXTRACE_EXTERN_C void ax2d_actor(const char* scene_name, __int64 actor_id, double x, double y, double dir, unsigned int actor_style, const char* actor_info);
+AXTRACE_EXTERN_C void ax2d_actor(const char* scene_name, long long actor_id, double x, double y, double dir, unsigned int actor_style, const char* actor_info);
 
 /*
 draw all acotrs between ax2d_begin_scene and ax2d_end_scene

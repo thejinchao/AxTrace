@@ -367,7 +367,7 @@ void ax2d_begin_scene(const char* scene_name, double left, double top, double ri
 void ax2d_actor(const char* scene_name, long long actor_id, double x, double y, double dir, unsigned int actor_style, const char* actor_info)
 {
     axtrace_contex_s* ctx;
-	size_t actor_name_size, actor_info_size, final_length;
+	size_t scene_name_size, actor_info_size, final_length;
 	int send_len;
 
 	/* buf for send , call send() once*/
@@ -389,7 +389,7 @@ void ax2d_actor(const char* scene_name, long long actor_id, double x, double y, 
     
 	/* to scene define point */
 	if (actor_info != 0) {
-		_name = (char*)(buf + sizeof(axtrace_2d_actor_s) + actor_name_size);
+		_name = (char*)(buf + sizeof(axtrace_2d_actor_s) + scene_name_size);
         
         /** get actor info length */
         actor_info_size = strnlen(actor_info, AXTRACE_MAX_ACTOR_INFO_LENGTH - 1);
