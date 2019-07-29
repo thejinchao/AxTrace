@@ -156,7 +156,7 @@ void Map2DChild::mousePressEvent(QMouseEvent *e)
 {
 	if (!m_camera) return;
 
-	if (e->button() == Qt::LeftButton) {
+	if (e->button() == Qt::RightButton) {
 		grabMouse();
 		m_camera->beginDrag(e);
 	}
@@ -180,7 +180,7 @@ void Map2DChild::mouseReleaseEvent(QMouseEvent *e)
 {
 	if (!m_camera) return;
 
-	if (e->button() == Qt::LeftButton) {
+	if (e->button() == Qt::RightButton) {
 		releaseMouse();
 		m_camera->endDrag(e);
 	}
