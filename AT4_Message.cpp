@@ -464,7 +464,8 @@ int Update2DActorMessage::_lua_get_actor_id(lua_State *L)
 {
 	const Update2DActorMessage* msg = (const Update2DActorMessage*)lua_touserdata(L, 1);
 
-	lua_pushinteger(L, msg->getActorID());
+	QString id = QString("%1").arg(msg->getActorID());
+	lua_pushstring(L, id.toUtf8().toStdString().c_str());
 	return 1;
 }
 
