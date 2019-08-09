@@ -16,7 +16,7 @@
 #endif
 
 /*---------------------------------------------------------------------------------------------*/
-#define DEFAULT_AXTRACE_SERVER_IP		"10.53.3.45"
+#define DEFAULT_AXTRACE_SERVER_IP		"127.0.0.1"
 #define DEFAULT_AXTRACE_SERVER_PORT		(1978)
 #define AXTRACE_MAX_TRACE_STRING_LENGTH	(0x8000)
 #define AXTRACE_MAX_VALUENAME_LENGTH	(128)
