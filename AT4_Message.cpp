@@ -360,23 +360,25 @@ void Begin2DSceneMessage::build(const axtrace_time_s& traceTime, const axtrace_h
 	m_sceneRect = QRectF(value_head.left, value_head.top, value_head.right-value_head.left, value_head.bottom-value_head.top);
 
 	//copy name 
-	char tempBuf[AXTRACE_MAX_SCENE_DEFINE_LENGTH];
+	char tempBuf[AXTRACE_MAX_SCENE_DEFINE_LENGTH] = { 0 };
 	int name_length = value_head.name_len;
-	//TODO: check name length
-	len = ringBuf->memcpy_out(tempBuf, name_length);
-	assert(len == name_length);
-	tempBuf[name_length - 1] = 0; //make sure last char is '\0'
-	m_sceneName = QString::fromUtf8(tempBuf);
+	if (name_length > AXTRACE_MAX_SCENE_NAME_LENGTH) name_length = AXTRACE_MAX_SCENE_NAME_LENGTH;
+	if (name_length > 0) {
+		len = ringBuf->memcpy_out(tempBuf, name_length);
+		assert(len == name_length);
+		tempBuf[name_length - 1] = 0; //make sure last char is '\0'
+		m_sceneName = QString::fromUtf8(tempBuf);
+	}
 
 	//copy define 
 	int define_length = value_head.define_len;
-	len = ringBuf->memcpy_out(tempBuf, define_length);
-	assert(len == define_length);
-	tempBuf[define_length] = 0;
+	if (define_length > AXTRACE_MAX_SCENE_DEFINE_LENGTH) define_length = AXTRACE_MAX_SCENE_DEFINE_LENGTH;
+	if (define_length > 0) {
+		len = ringBuf->memcpy_out(tempBuf, define_length);
+		assert(len == define_length);
+		tempBuf[define_length - 1] = 0;
 	
-	//make json object
-	if (define_length > 0) 
-	{
+		//make json object
 		QJsonParseError jerror;
 		QJsonDocument jsonDocument = QJsonDocument::fromJson(tempBuf, &jerror);
 		if (jerror.error == QJsonParseError::NoError)
@@ -441,22 +443,26 @@ void Update2DActorMessage::build(const axtrace_time_s& traceTime, const axtrace_
 	m_style = (quint32)value_head.style;
 
 	//copy name 
-	char tempName[AXTRACE_MAX_SCENE_NAME_LENGTH];
+	char tempName[AXTRACE_MAX_SCENE_NAME_LENGTH] = { 0 };
 	int name_length = value_head.name_len;
-	//TODO: check name length
-	len = ringBuf->memcpy_out(tempName, name_length);
-	assert(len == name_length);
-	tempName[name_length - 1] = 0; //make sure last char is '\0'
-	m_sceneName = QString::fromUtf8(tempName);
+	if (name_length > AXTRACE_MAX_SCENE_NAME_LENGTH) name_length = AXTRACE_MAX_SCENE_NAME_LENGTH;
+	if (name_length > 0) {
+		len = ringBuf->memcpy_out(tempName, name_length);
+		assert(len == name_length);
+		tempName[name_length - 1] = 0; //make sure last char is '\0'
+		m_sceneName = QString::fromUtf8(tempName);
+	}
 
 	//copy info
-	char tempInfo[AXTRACE_MAX_ACTOR_INFO_LENGTH];
+	char tempInfo[AXTRACE_MAX_ACTOR_INFO_LENGTH] = { 0 };
 	int info_length = value_head.info_len;
-	//TODO: check name length
-	len = ringBuf->memcpy_out(tempInfo, info_length);
-	assert(len == info_length);
-	tempInfo[info_length - 1] = 0; //make sure last char is '\0'
-	m_actorInfo = QString::fromUtf8(tempInfo);
+	if (info_length > AXTRACE_MAX_ACTOR_INFO_LENGTH) info_length = AXTRACE_MAX_ACTOR_INFO_LENGTH;
+	if (info_length > 0) {
+		len = ringBuf->memcpy_out(tempInfo, info_length);
+		assert(len == info_length);
+		tempInfo[info_length - 1] = 0; //make sure last char is '\0'
+		m_actorInfo = QString::fromUtf8(tempInfo);
+	}
 }
 
 //-------------------------------------------------------------------------------------
@@ -564,15 +570,16 @@ void End2DSceneMessage::build(const axtrace_time_s& traceTime, const axtrace_hea
 	axtrace_2d_end_scene_s value_head;
 	size_t len = ringBuf->memcpy_out(&value_head, sizeof(value_head));
 	assert(len == sizeof(value_head));
-
 	//copy name 
-	char tempName[AXTRACE_MAX_SCENE_NAME_LENGTH];
+	char tempName[AXTRACE_MAX_SCENE_NAME_LENGTH] = { 0 };
 	int name_length = value_head.name_len;
-	//TODO: check name length
-	len = ringBuf->memcpy_out(tempName, name_length);
-	assert(len == name_length);
-	tempName[name_length - 1] = 0; //make sure last char is '\0'
-	m_sceneName = QString::fromUtf8(tempName);
+	if (name_length > AXTRACE_MAX_SCENE_NAME_LENGTH) name_length = AXTRACE_MAX_SCENE_NAME_LENGTH;
+	if (name_length > 0) {
+		len = ringBuf->memcpy_out(tempName, name_length);
+		assert(len == name_length);
+		tempName[name_length - 1] = 0; //make sure last char is '\0'
+		m_sceneName = QString::fromUtf8(tempName);
+	}
 }
 
 //--------------------------------------------------------------------------------------------
