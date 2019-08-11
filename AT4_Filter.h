@@ -27,6 +27,7 @@ public:
 	{
 		AT_CIRCLE,
 		AT_QUAD,
+		AT_TRIANGLE,
 	};
 
 	struct Actor2DResult

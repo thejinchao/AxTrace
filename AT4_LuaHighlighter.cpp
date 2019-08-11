@@ -84,7 +84,8 @@ LuaHighlighter::LuaHighlighter(QTextDocument *parent)
 		<< "\\bAXT_FATAL\\b"
 		<< "\\bAXT_USERDEF\\b"
 		<< "\\bACTOR_CIRCLE\\b"
-		<< "\\bACTOR_QUAD\\b";
+		<< "\\bACTOR_QUAD\\b"
+		<< "\\bACTOR_TRIANGLE\\b";
 	foreach(const QString &pattern, keyEnums) {
 		rule.pattern = QRegularExpression(pattern);
 		rule.format = keyEnumFormat;

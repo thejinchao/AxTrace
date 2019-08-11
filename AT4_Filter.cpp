@@ -107,6 +107,7 @@ void Filter::_luaopen(lua_State* L)
 
 	lua_pushinteger(L, 0); 	lua_setglobal(L, "ACTOR_CIRCLE");
 	lua_pushinteger(L, 1); 	lua_setglobal(L, "ACTOR_QUAD");
+	lua_pushinteger(L, 2); 	lua_setglobal(L, "ACTOR_TRIANGLE");
 }
 
 //--------------------------------------------------------------------------------------------

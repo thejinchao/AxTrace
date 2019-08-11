@@ -268,6 +268,19 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 				painter.drawLine(QPointF(0.0, 0.0), QPointF(actor.size*1.2, 0.0));
 			}
 			break;
+
+			case Filter::AT_TRIANGLE:
+			{
+				float l = -0.866025*actor.size; // sqrt(0.75)
+				float t = 0.5*actor.size;
+				QPointF triangles[3] = { 
+					QPointF(actor.size, 0),
+					QPointF(l, -t),
+					QPointF(l,  t)
+				};
+				painter.drawConvexPolygon(triangles, 3);
+			}
+			break;
 			}
 
 			painter.restore();
@@ -357,6 +370,21 @@ void Map2DChild::_getMouseTips(const QTransform& localMove, const Scene2D::Actor
 	case Filter::AT_QUAD:
 	{
 		if (pos.x() < -actor.size || pos.x() > actor.size || pos.y() < -actor.size || pos.y() > actor.size) return;
+	}
+	break;
+
+	case Filter::AT_TRIANGLE:
+	{
+		const float sqrt_0_75 = 0.866025f; //sqrt(0.75)
+		const float s1_len = 1.93185165258f; //sqrt(2+2*sqrt(0.75)) 
+
+		if (pos.x() < -sqrt_0_75 * actor.size) return;
+
+		QPointF s1 = QPointF(-(1+ sqrt_0_75 )*actor.size, -0.5*actor.size); // -(1+sqrt(0.75)), -0.5
+		QPointF p = QPointF(pos.x() - actor.size, pos.y());
+		const float p_len = sqrt(QPointF::dotProduct(p, p));
+
+		if (QPointF::dotProduct(p, s1) < sqrt_0_75*p_len*s1_len*actor.size) return;
 	}
 	break;
 	
