@@ -391,7 +391,6 @@ void MainWindow::updateWindowMenu()
 void MainWindow::createActions()
 {
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
-    QToolBar *mainToolBar = addToolBar(tr("Main"));
 
     const QIcon saveAsIcon = QIcon::fromTheme("document-save-as", QIcon(":/images/save.png"));
     m_saveAsAct = new QAction(saveAsIcon, tr("Save &As..."), this);
@@ -399,7 +398,6 @@ void MainWindow::createActions()
     m_saveAsAct->setStatusTip(tr("Save the document under a new name"));
     connect(m_saveAsAct, &QAction::triggered, this, &MainWindow::_onSaveAs);
     fileMenu->addAction(m_saveAsAct);
-	mainToolBar->addAction(m_saveAsAct);
 
 	const QIcon captureIcon = QIcon(":/images/capture.png");
 	m_captureAct = new QAction(captureIcon, tr("&Capture"), this);
@@ -407,7 +405,6 @@ void MainWindow::createActions()
 	m_captureAct->setCheckable(true);
 	connect(m_captureAct, &QAction::triggered, this, &MainWindow::_onCapture);
 	fileMenu->addAction(m_captureAct);
-	mainToolBar->addAction(m_captureAct);
 
     fileMenu->addSeparator();
 
@@ -417,7 +414,6 @@ void MainWindow::createActions()
     exitAct->setStatusTip(tr("Exit the application"));
     fileMenu->addAction(exitAct);
 	
-	mainToolBar->addSeparator();
 
 	//----------------------------
     QMenu *editMenu = menuBar()->addMenu(tr("&Edit"));
@@ -428,7 +424,6 @@ void MainWindow::createActions()
 	m_autoScrollAct->setCheckable(true);
 	connect(m_autoScrollAct, &QAction::triggered, this, &MainWindow::_onAutoScroll);
 	editMenu->addAction(m_autoScrollAct);
-	mainToolBar->addAction(m_autoScrollAct);
 
 	const QIcon showGridIcon = QIcon(":/images/grid.png");
 	m_showGridAct = new QAction(showGridIcon, tr("Show &Grid"), this);
@@ -436,7 +431,6 @@ void MainWindow::createActions()
 	m_showGridAct->setCheckable(true);
 	connect(m_showGridAct, &QAction::triggered, this, &MainWindow::_onShowGrid);
 	editMenu->addAction(m_showGridAct);
-	mainToolBar->addAction(m_showGridAct);
 
 
     const QIcon copyIcon = QIcon::fromTheme("edit-copy", QIcon(":/images/copy.png"));
@@ -445,24 +439,20 @@ void MainWindow::createActions()
     m_copyAct->setStatusTip(tr("Copy the current selection's contents to the clipboard"));
     connect(m_copyAct, &QAction::triggered, this, &MainWindow::_onCopy);
     editMenu->addAction(m_copyAct);
-	mainToolBar->addAction(m_copyAct);
 
 	const QIcon cleanIcon = QIcon(":/images/clean.png");
 	m_cleanAct = new QAction(cleanIcon, tr("C&lean"), this);
 	m_cleanAct->setStatusTip(tr("Clean current window"));
 	connect(m_cleanAct, &QAction::triggered, this, &MainWindow::_onClean);
 	editMenu->addAction(m_cleanAct);
-	mainToolBar->addAction(m_cleanAct);
 
 	const QIcon cleanAllIcon = QIcon(":/images/clean-all.png");
 	m_cleanAllAct = new QAction(cleanAllIcon, tr("Clean &All"), this);
 	m_cleanAllAct->setStatusTip(tr("Clean all windows"));
 	connect(m_cleanAllAct, &QAction::triggered, this, &MainWindow::_onCleanAll);
 	editMenu->addAction(m_cleanAllAct);
-	mainToolBar->addAction(m_cleanAllAct);
 
 	editMenu->addSeparator();
-	mainToolBar->addSeparator();
 
 	const QIcon settingIcon = QIcon(":/images/setting.png");
 	m_settingAct = new QAction(settingIcon, tr("S&etting..."), this);
@@ -470,19 +460,20 @@ void MainWindow::createActions()
 	m_settingAct->setEnabled(true);
 	connect(m_settingAct, &QAction::triggered, this, &MainWindow::_onSetting);
 	editMenu->addAction(m_settingAct);
-	mainToolBar->addAction(m_settingAct);
 
 	//----------------------------
 
     m_windowMenu = menuBar()->addMenu(tr("&Window"));
     connect(m_windowMenu, &QMenu::aboutToShow, this, &MainWindow::updateWindowMenu);
 
-	m_closeAct = new QAction(tr("Cl&ose"), this);
+	const QIcon closeIcon = QIcon(":/images/close.png");
+	m_closeAct = new QAction(closeIcon, tr("Cl&ose"), this);
 	m_closeAct->setStatusTip(tr("Close the active window"));
     connect(m_closeAct, &QAction::triggered,
             m_mdiArea, &QMdiArea::closeActiveSubWindow);
 
-	m_closeAllAct = new QAction(tr("Close &All"), this);
+	const QIcon closeAllIcon = QIcon(":/images/close-all.png");
+	m_closeAllAct = new QAction(closeAllIcon, tr("Close &All"), this);
 	m_closeAllAct->setStatusTip(tr("Close all the windows"));
     connect(m_closeAllAct, &QAction::triggered, m_mdiArea, &QMdiArea::closeAllSubWindows);
 
@@ -509,12 +500,24 @@ void MainWindow::createActions()
 
     updateWindowMenu();
 
-    menuBar()->addSeparator();
-
     QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
 
     QAction *aboutAct = helpMenu->addAction(QIcon(":/images/about.png"), tr("&About"), this, &MainWindow::_onAbout);
     aboutAct->setStatusTip(tr("Show the application's About box"));
+
+	//Main Toolbar
+	QToolBar *mainToolBar = addToolBar(tr("Main"));
+	mainToolBar->addAction(m_saveAsAct);
+	mainToolBar->addAction(m_captureAct);
+	mainToolBar->addSeparator();
+	mainToolBar->addAction(m_autoScrollAct);
+	mainToolBar->addAction(m_showGridAct);
+	mainToolBar->addAction(m_copyAct);
+	mainToolBar->addAction(m_cleanAct);
+	mainToolBar->addAction(m_cleanAllAct);
+	mainToolBar->addAction(m_closeAllAct);
+	mainToolBar->addSeparator();
+	mainToolBar->addAction(m_settingAct);
 }
 
 //--------------------------------------------------------------------------------------------
