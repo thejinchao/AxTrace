@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -30,7 +30,7 @@ Incoming::~Incoming()
 bool Incoming::init(void)
 {
 	//disable cyclone log
-	cyclone::set_log_threshold(cyclone::L_ERROR);
+	cyclone::setLogThreshold(cyclone::L_ERROR);
 
 	cyclone::Address address(DEFAULT_PORT, false);
 	m_server = new cyclone::TcpServer("axtrace", nullptr);
