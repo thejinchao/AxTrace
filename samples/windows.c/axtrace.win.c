@@ -282,8 +282,6 @@ void axlog(unsigned int log_type, const char *format, ...)
 	/* send to axtrace server*/
 	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
 
-	_send_handshake_message(ctx);
-
 	/*TODO: check result, may be reconnect to server */
 	return;
 }
