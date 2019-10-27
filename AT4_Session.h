@@ -6,6 +6,8 @@
 ***************************************************/
 #pragma once
 
+#include <cy_network.h>
+#include <QMutex>
 #include "AT4_Interface.h"
 
 class ShakehandMessage;
@@ -16,10 +18,10 @@ public:
 	const QString& getSessionName(void) const { return m_sessionName; }
 	uint32_t getProcessID(void) const { return m_processID; }
 	uint32_t getThreadID(void) const { return m_threadID; }
-	cyclone::ConnectionPtr getConnection(void) { return m_connection; }
 	bool isHandshaked(void) const { return m_bShakehand; }
 
 	bool onSessionShakehand(const ShakehandMessage* message);
+	void closeConnect(void);
 
 private:
 	bool					m_bShakehand;

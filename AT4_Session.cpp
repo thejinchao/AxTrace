@@ -7,6 +7,8 @@
 #include "stdafx.h"
 #include "AT4_Session.h"
 #include "AT4_Message.h"
+#include "AT4_System.h"
+#include "AT4_Incoming.h"
 
 //--------------------------------------------------------------------------------------------
 Session::Session(cyclone::ConnectionPtr connPtr)
@@ -34,6 +36,12 @@ bool Session::onSessionShakehand(const ShakehandMessage* message)
 	m_sessionName = message->geetSessionName();
 	m_bShakehand = true;
 	return true;
+}
+
+//--------------------------------------------------------------------------------------------
+void Session::closeConnection(void)
+{
+	System::getSingleton()->getIncoming()->kickConnection(m_connection);
 }
 
 //--------------------------------------------------------------------------------------------
