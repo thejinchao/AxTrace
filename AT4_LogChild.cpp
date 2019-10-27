@@ -36,8 +36,8 @@ void LogDataModel::insertLog(const LogMessage* logMessage, const Filter::ListRes
 	LogData logData;
 	logData.logIndex = m_currentIndex++;
 	logData.logTime = logMessage->getTime();
-	logData.pid = logMessage->getProcessID();
-	logData.tid = logMessage->getThreadID();
+	logData.pid = logMessage->getSession()->getProcessID();
+	logData.tid = logMessage->getSession()->getThreadID();
 	logData.logContent = logMessage->getLog();
 	logData.backColor = Filter::toQColor(filterResult.backColor);
 	logData.frontColor = Filter::toQColor(filterResult.fontColor);

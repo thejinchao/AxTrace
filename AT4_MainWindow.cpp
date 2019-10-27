@@ -18,7 +18,7 @@
 #include "AT4_Map2DChild.h"
 #include "AT4_Scene2D.h"
 #include "AT4_SettingDialog.h"
-
+#include "AT4_Session.h"
 
 //--------------------------------------------------------------------------------------------
 MainWindow::MainWindow()
@@ -80,6 +80,10 @@ void MainWindow::_processAxTraceData(Message* msg)
 {
 	switch (msg->getType())
 	{
+	case AXTRACE_CMD_TYPE_SHAKEHAND:
+		_onShakeHand((ShakehandMessage*)msg);
+		break;
+
 	case AXTRACE_CMD_TYPE_LOG:
 		_insertLog((LogMessage*)msg);
 		break;
@@ -102,6 +106,12 @@ void MainWindow::_processAxTraceData(Message* msg)
 
 	default: break;
 	}
+}
+
+//--------------------------------------------------------------------------------------------
+void MainWindow::_onShakeHand(ShakehandMessage* msg)
+{
+
 }
 
 //--------------------------------------------------------------------------------------------

@@ -32,7 +32,8 @@ set(AT4_CPP_SOURCES
 	AT4_Scene2D.cpp
 	AT4_Camera2D.cpp
 	AT4_SettingDialog.cpp
-	AT4_LuaHighlighter.cpp)
+	AT4_LuaHighlighter.cpp
+	AT4_Session.cpp)
 
 set(AT4_H_SOURCES
     stdafx.h
@@ -51,7 +52,8 @@ set(AT4_H_SOURCES
 	AT4_Scene2D.h
 	AT4_Camera2D.h
 	AT4_SettingDialog.h
-	AT4_LuaHighlighter.h)
+	AT4_LuaHighlighter.h
+	AT4_Session.h)
 
 set(AT4_RC_SOURCES
     AT4.qrc

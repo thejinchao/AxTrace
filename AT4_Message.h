@@ -7,20 +7,20 @@
 #pragma once
 
 #include "AT4_Interface.h"
+#include "AT4_Session.h"
 
 class Message
 {
 public:
-	virtual void build(const axtrace_time_s& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf) = 0;
+	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf) = 0;
 	virtual unsigned int getType(void) const = 0;
 
-	unsigned int getProcessID(void) const { return m_processID; }
-	unsigned int getThreadID(void) const { return m_threadID; }
+	SessionPtr getSession(void) { return m_session; }
+	const SessionPtr getSession(void) const { return m_session; }
 	const axtrace_time_s& getTime(void) const { return m_time; }
 
 protected:
-	unsigned int	m_processID;
-	unsigned int	m_threadID;
+	SessionPtr		m_session;
 	axtrace_time_s	m_time;
 
 protected:
@@ -29,7 +29,7 @@ protected:
 	static int _lua_get_thread_id(lua_State *L);
 
 public:
-	Message();
+	Message(SessionPtr session, const axtrace_time_s& traceTime);
 	virtual ~Message();
 
 public:
@@ -41,19 +41,22 @@ typedef QVector< Message* > MessageVector;
 #define DEFINE_POOL(Name) \
 public: \
 	static int debugCounts(void) { return (int)s_messagePool.size(); } \
-	static Name* allocMessage(void) \
+	static Name* allocMessage(SessionPtr session, const axtrace_time_s& traceTime) \
 	{ \
 		if (s_messagePool.empty()) { \
-			return new Name(); \
+			return new Name(session, traceTime); \
 		} \
 		else { \
 			Name* msg = s_messagePool.front(); \
 			s_messagePool.pop_front(); \
+			msg->m_session = session; \
+			memcpy(&(msg->m_time), &traceTime, sizeof(axtrace_time_s)); \
 			return msg; \
 		} \
 	} \
 	virtual void reccycleMessage() \
 	{ \
+		m_session = nullptr; \
 		s_messagePool.push_back(this); \
 	} \
 	static void deletePool(void) \
@@ -66,13 +69,38 @@ public: \
 private: \
 	static QQueue<Name*> s_messagePool;
 
+
+class ShakehandMessage : public Message 
+{
+public:
+	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
+	virtual unsigned int getType(void) const { return AXTRACE_CMD_TYPE_SHAKEHAND; }
+
+	int32_t getVersion(void) const { return m_version; }
+	unsigned int getProcessID(void) const { return m_processID; }
+	unsigned int getThreadID(void) const { return m_threadID; }
+	const QString& geetSessionName(void) const { return m_sessionName; }
+
+private:
+	int32_t m_version;
+	uint32_t m_processID;
+	uint32_t m_threadID;
+	QString m_sessionName;
+
+public:
+	ShakehandMessage(SessionPtr session, const axtrace_time_s& traceTime);
+	virtual ~ShakehandMessage();
+
+	DEFINE_POOL(ShakehandMessage);
+};
+
 class LogMessage : public Message
 {
 public:
 	static const char* MetaName;
 	static void _luaopen(lua_State *L);
 
-	virtual void build(const axtrace_time_s& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
+	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
 	virtual unsigned int getType(void) const { return AXTRACE_CMD_TYPE_LOG; }
 
 	unsigned int getLogType(void) const { return m_logType; }
@@ -87,7 +115,7 @@ protected:
 	static int _lua_get_log(lua_State *L);
 
 public:
-	LogMessage();
+	LogMessage(SessionPtr session, const axtrace_time_s& traceTime);
 	virtual ~LogMessage();
 
 	DEFINE_POOL(LogMessage);
@@ -99,7 +127,7 @@ public:
 	static const char* MetaName;
 	static void _luaopen(lua_State *L);
 
-	virtual void build(const axtrace_time_s& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
+	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
 	virtual unsigned int getType(void) const { return AXTRACE_CMD_TYPE_VALUE; }
 
 	const QString& getName(void) const { return m_name; }
@@ -119,7 +147,7 @@ protected:
 	static int _lua_get_value(lua_State *L);
 
 public:
-	ValueMessage();
+	ValueMessage(SessionPtr session, const axtrace_time_s& traceTime);
 	virtual ~ValueMessage();
 
 	DEFINE_POOL(ValueMessage);
@@ -131,7 +159,7 @@ public:
 	static const char* MetaName;
 	static void _luaopen(lua_State *L);
 
-	virtual void build(const axtrace_time_s& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
+	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
 	virtual unsigned int getType(void) const { return AXTRACE_CMD_TYPE_2D_BEGIN_SCENE; }
 
 	const QString& getSceneName(void) const { return m_sceneName; }
@@ -144,7 +172,7 @@ private:
 	QJsonObject		m_sceneDefine;
 
 public:
-	Begin2DSceneMessage();
+	Begin2DSceneMessage(SessionPtr session, const axtrace_time_s& traceTime);
 	virtual ~Begin2DSceneMessage();
 
 	DEFINE_POOL(Begin2DSceneMessage);
@@ -156,7 +184,7 @@ public:
 	static const char* MetaName;
 	static void _luaopen(lua_State *L);
 
-	virtual void build(const axtrace_time_s& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
+	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
 	virtual unsigned int getType(void) const { return AXTRACE_CMD_TYPE_2D_ACTOR; }
 
 	const QString& getSceneName(void) const { return m_sceneName; }
@@ -182,7 +210,7 @@ protected:
 	static int _lua_get_actor_info(lua_State *L);
 
 public:
-	Update2DActorMessage();
+	Update2DActorMessage(SessionPtr session, const axtrace_time_s& traceTime);
 	virtual ~Update2DActorMessage();
 
 	DEFINE_POOL(Update2DActorMessage);
@@ -195,7 +223,7 @@ public:
 	static const char* MetaName;
 	static void _luaopen(lua_State *L);
 
-	virtual void build(const axtrace_time_s& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
+	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
 	virtual unsigned int getType(void) const { return AXTRACE_CMD_TYPE_2D_END_SCENE; }
 
 	const QString& getSceneName(void) const { return m_sceneName; }
@@ -207,7 +235,7 @@ protected:
 	static int _lua_get_actor_id(lua_State *L);
 
 public:
-	End2DSceneMessage();
+	End2DSceneMessage(SessionPtr session, const axtrace_time_s& traceTime);
 	virtual ~End2DSceneMessage();
 
 	DEFINE_POOL(End2DSceneMessage);

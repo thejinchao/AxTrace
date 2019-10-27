@@ -11,6 +11,7 @@ class Incoming;
 class Config;
 class MessageQueue;
 class Filter;
+class SessionManager;
 
 class System
 {
@@ -23,6 +24,8 @@ public:
 	MainWindow* getMainWindow(void) { return m_mainWindow; }
 	MessageQueue* getMessageQueue(void) { return m_messageQueue; }
 	Filter*	getFilter(void) { return m_filter; }
+	SessionManager* getSessionManager(void) { return m_sessionManager; }
+	Incoming* getIncoming(void) { return m_incoming; }
 
 private:
 	QApplication*	m_theApplication;
@@ -31,6 +34,7 @@ private:
 	MainWindow*		m_mainWindow;
 	MessageQueue*	m_messageQueue;
 	Filter*			m_filter;
+	SessionManager* m_sessionManager;
 
 public:
 	System();

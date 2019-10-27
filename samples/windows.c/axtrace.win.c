@@ -12,12 +12,15 @@
 #include <Ws2tcpip.h>
 #include <Windows.h>
 #include <strsafe.h>
+#include <Shlwapi.h>
 #pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "shlwapi.lib")
 #endif
 
 /*---------------------------------------------------------------------------------------------*/
 #define DEFAULT_AXTRACE_SERVER_IP		"127.0.0.1"
 #define DEFAULT_AXTRACE_SERVER_PORT		(1978)
+#define AXTRACE_MAX_PROCESSNAME_LENGTH	(512)
 #define AXTRACE_MAX_TRACE_STRING_LENGTH	(0x8000)
 #define AXTRACE_MAX_VALUENAME_LENGTH	(128)
 #define AXTRACE_MAX_VALUE_LENGTH		(1024)
@@ -25,6 +28,9 @@
 #define AXTRACE_MAX_SCENE_DEFINE_LENGTH	(2048)
 #define AXTRACE_MAX_ACTOR_INFO_LENGTH	(2048)
 
+#define AXTRACE_PROTO_VERSION			(4)
+
+#define AXTRACE_CMD_TYPE_SHAKEHAND		(0)
 #define AXTRACE_CMD_TYPE_LOG			(1)
 #define AXTRACE_CMD_TYPE_VALUE			(2)
 #define AXTRACE_CMD_TYPE_2D_BEGIN_SCENE	(3)
@@ -49,9 +55,18 @@ typedef struct
 	unsigned short	length;			/* length */
 	unsigned char	flag;			/* magic flag, always 'A' */
 	unsigned char	type;			/* command type AXTRACE_CMD_TYPE_* */
+} axtrace_head_s;
+
+typedef struct  
+{
+	axtrace_head_s	head;			/* common head */
+	unsigned short	ver;			/* proto ver */
+	unsigned short	sname_len;		/* length of session name */
 	unsigned int	pid;			/* process id*/
 	unsigned int	tid;			/* thread id*/
-} axtrace_head_s;
+
+									/* [session name buf  with '\0' ended]*/
+} axtrace_shakehand_s;
 
 /* axtrace log data struct*/
 typedef struct
@@ -71,8 +86,8 @@ typedef struct
 	unsigned short	name_len;		/* length of value name */
 	unsigned short	value_len;		/* length of value */
 
-	/* [name buf  with '\0' ended]*/
-	/* [value buf] */
+									/* [name buf  with '\0' ended]*/
+									/* [value buf] */
 } axtrace_value_s;
 
 typedef struct
@@ -115,6 +130,49 @@ typedef struct
 #pragma pack(pop)
 
 /*---------------------------------------------------------------------------------------------*/
+static void _send_handshake_message(axtrace_contex_s* ctx)
+{
+	/* buf for send , call send() once*/
+	char buf[sizeof(axtrace_shakehand_s) + AXTRACE_MAX_PROCESSNAME_LENGTH] = { 0 };
+	wchar_t wszProcessModuleName[MAX_PATH] = { 0 };
+	axtrace_shakehand_s* shakehand_head = (axtrace_shakehand_s*)(buf);
+	char* pname_string = (char*)(buf + sizeof(axtrace_shakehand_s));
+	int pname_length = 0;
+	int send_len;
+	size_t final_length = 0;
+
+	DWORD dwPNameLengthAsChar = GetModuleFileNameW(NULL, wszProcessModuleName, MAX_PATH-1);
+	if (dwPNameLengthAsChar > 0)
+	{
+		pname_length = WideCharToMultiByte(CP_UTF8, 0, PathFindFileNameW(wszProcessModuleName), dwPNameLengthAsChar, pname_string, AXTRACE_MAX_PROCESSNAME_LENGTH - 1, NULL, NULL);
+	}
+	if (pname_length == 0)
+	{
+		pname_string[0] = 0; /* fill '\0' as empty process name */
+	}
+	
+	/* add '\0' ended */
+	pname_length += 1;
+
+	/*calc final length*/
+	final_length = sizeof(axtrace_shakehand_s) + pname_length;
+
+	shakehand_head->head.length = (unsigned short)(final_length);
+	shakehand_head->head.flag = 'A';
+	shakehand_head->head.type = AXTRACE_CMD_TYPE_SHAKEHAND;
+
+	shakehand_head->ver = AXTRACE_PROTO_VERSION;
+	shakehand_head->sname_len = pname_length;
+	shakehand_head->pid = GetCurrentProcessId();
+	shakehand_head->tid = GetCurrentThreadId();
+
+	/* send to axtrace server*/
+	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
+
+	return;
+}
+
+/*---------------------------------------------------------------------------------------------*/
 static axtrace_contex_s* _axtrace_try_init(const char* server_ip, unsigned short server_port)
 {
 	axtrace_contex_s* ctx = (axtrace_contex_s*)LocalAlloc(LPTR, sizeof(axtrace_contex_s));
@@ -154,6 +212,8 @@ static axtrace_contex_s* _axtrace_try_init(const char* server_ip, unsigned short
 		closesocket(ctx->sfd);
 		return ctx;
 	}
+	/* send hand shake message */
+	_send_handshake_message(ctx);
 
 	/* init success */
 	ctx->is_init_succ = 1;
@@ -214,8 +274,6 @@ void axlog(unsigned int log_type, const char *format, ...)
 	trace_head->head.length = (unsigned short)(final_length);
 	trace_head->head.flag = 'A';
 	trace_head->head.type = AXTRACE_CMD_TYPE_LOG;
-	trace_head->head.pid = GetCurrentProcessId();
-	trace_head->head.tid = GetCurrentThreadId();
 
 	trace_head->log_type = log_type;
 	trace_head->code_page = ATC_ACP;
@@ -223,6 +281,8 @@ void axlog(unsigned int log_type, const char *format, ...)
 
 	/* send to axtrace server*/
 	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
+
+	_send_handshake_message(ctx);
 
 	/*TODO: check result, may be reconnect to server */
 	return;
@@ -299,8 +359,6 @@ void axvalue(unsigned int value_type, const char* value_name, const void* value)
 	trace_head->head.length = (unsigned short)(final_length);
 	trace_head->head.flag = 'A';
 	trace_head->head.type = AXTRACE_CMD_TYPE_VALUE;
-	trace_head->head.pid = GetCurrentProcessId();
-	trace_head->head.tid = GetCurrentThreadId();
 
 	trace_head->value_type = value_type;
 	trace_head->name_len = (unsigned short)value_name_length;
@@ -376,8 +434,6 @@ void ax2d_begin_scene(const char* scene_name, double left, double top, double ri
 	trace_head->head.length = (unsigned short)(final_length);
 	trace_head->head.flag = 'A';
 	trace_head->head.type = AXTRACE_CMD_TYPE_2D_BEGIN_SCENE;
-	trace_head->head.pid = GetCurrentProcessId();
-	trace_head->head.tid = GetCurrentThreadId();
 
 	trace_head->left = left;
 	trace_head->top = top;
@@ -451,8 +507,6 @@ void ax2d_actor(const char* scene_name, __int64 actor_id, double x, double y, do
 	trace_head->head.length = (unsigned short)(final_length);
 	trace_head->head.flag = 'A';
 	trace_head->head.type = AXTRACE_CMD_TYPE_2D_ACTOR;
-	trace_head->head.pid = GetCurrentProcessId();
-	trace_head->head.tid = GetCurrentThreadId();
 
 	trace_head->actor_id = actor_id;
 	trace_head->x = x;
@@ -504,8 +558,6 @@ void ax2d_end_scene(const char* scene_name)
 	trace_head->head.length = (unsigned short)(final_length);
 	trace_head->head.flag = 'A';
 	trace_head->head.type = AXTRACE_CMD_TYPE_2D_END_SCENE;
-	trace_head->head.pid = GetCurrentProcessId();
-	trace_head->head.tid = GetCurrentThreadId();
 
 	trace_head->name_len = (unsigned short)scene_name_size;
 

@@ -8,11 +8,10 @@
 #include "AT4_Message.h"
 
 //--------------------------------------------------------------------------------------------
-Message::Message()
-	: m_processID(0)
-	, m_threadID(0)
+Message::Message(SessionPtr session, const axtrace_time_s& traceTime)
+	: m_session(session)
 {
-
+	memcpy(&m_time, &traceTime, sizeof(axtrace_time_s));
 }
 
 //--------------------------------------------------------------------------------------------
@@ -33,7 +32,7 @@ int Message::_lua_get_type(lua_State *L)
 int Message::_lua_get_process_id(lua_State *L)
 {
 	const Message* msg = (const Message*)lua_touserdata(L, 1);
-	lua_pushinteger(L, msg->getProcessID());
+	lua_pushinteger(L, msg->getSession()->getProcessID());
 	return 1;
 }
 
@@ -41,15 +40,65 @@ int Message::_lua_get_process_id(lua_State *L)
 int Message::_lua_get_thread_id(lua_State *L)
 {
 	const Message* msg = (const Message*)lua_touserdata(L, 1);
-	lua_pushinteger(L, msg->getThreadID());
+	lua_pushinteger(L, msg->getSession()->getThreadID());
 	return 1;
+}
+
+//--------------------------------------------------------------------------------------------
+QQueue<ShakehandMessage*> ShakehandMessage::s_messagePool;
+
+//--------------------------------------------------------------------------------------------
+ShakehandMessage::ShakehandMessage(SessionPtr session, const axtrace_time_s& traceTime)
+	: Message(session, traceTime)
+{
+
+}
+
+//--------------------------------------------------------------------------------------------
+ShakehandMessage::~ShakehandMessage()
+{
+
+}
+
+//--------------------------------------------------------------------------------------------
+bool ShakehandMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
+{
+	axtrace_shakehand_s shakehand;
+	size_t len = ringBuf->peek(0, &shakehand, sizeof(axtrace_shakehand_s));
+	assert(len == sizeof(axtrace_shakehand_s));
+
+	//check version
+	if (shakehand.ver != AXTRACE_PROTO_VERSION) return false;
+	//check name length
+	if (shakehand.sname_len > AXTRACE_MAX_PROCESSNAME_LENGTH) return false;
+
+	//receive session name
+	char sessionName[AXTRACE_MAX_PROCESSNAME_LENGTH] = { 0 };
+	len = ringBuf->peek(sizeof(axtrace_shakehand_s), sessionName, shakehand.sname_len);
+	assert(len == shakehand.sname_len);
+
+	sessionName[shakehand.sname_len - 1] = 0; //make sure last char is '\0'
+	m_sessionName = QString::fromUtf8(sessionName);
+
+	m_version = shakehand.ver;
+	m_processID = shakehand.pid;
+	m_threadID = shakehand.tid;
+
+	//shakehand
+	if (!(m_session->onSessionShakehand(this))) return false;
+
+	//ok!
+	ringBuf->discard(shakehand.head.length);
+
+	return true;
 }
 
 //--------------------------------------------------------------------------------------------
 QQueue<LogMessage*> LogMessage::s_messagePool;
 
 //--------------------------------------------------------------------------------------------
-LogMessage::LogMessage()
+LogMessage::LogMessage(SessionPtr session, const axtrace_time_s& traceTime)
+	: Message(session, traceTime)
 {
 
 }
@@ -61,13 +110,11 @@ LogMessage::~LogMessage()
 }
 
 //--------------------------------------------------------------------------------------------
-void LogMessage::build(const axtrace_time_s& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
+bool LogMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
 {
 	static QThreadStorage<QByteArray> memoryCache;
 
-	memcpy(&m_time, &traceTime, sizeof(axtrace_time_s));
-	m_processID = head.pid;
-	m_threadID = head.tid;
+	if (!(m_session->isHandshaked())) return false;
 
 	axtrace_log_s logHead;
 	size_t len = ringBuf->memcpy_out(&logHead, sizeof(axtrace_log_s));
@@ -99,6 +146,7 @@ void LogMessage::build(const axtrace_time_s& traceTime, const axtrace_head_s& he
 		m_log = QString::fromLocal8Bit(cache);
 		break;
 	}
+	return true;
 }
 
 
@@ -151,8 +199,9 @@ void LogMessage::_luaopen(lua_State *L)
 QQueue<ValueMessage*> ValueMessage::s_messagePool;
 
 //--------------------------------------------------------------------------------------------
-ValueMessage::ValueMessage()
-	: m_valueBuf(nullptr)
+ValueMessage::ValueMessage(SessionPtr session, const axtrace_time_s& traceTime)
+	: Message(session, traceTime)
+	, m_valueBuf(nullptr)
 {
 
 }
@@ -167,14 +216,12 @@ ValueMessage::~ValueMessage()
 }
 
 //--------------------------------------------------------------------------------------------
-void ValueMessage::build(const axtrace_time_s& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
+bool ValueMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
 {
-	memcpy(&m_time, &traceTime, sizeof(axtrace_time_s));
-	m_processID = head.pid;
-	m_threadID = head.tid;
+	if (!(m_session->isHandshaked())) return false;
 
 	axtrace_value_s value_head;
-	size_t len = ringBuf->memcpy_out(&value_head, sizeof(value_head));
+	size_t len = ringBuf->peek(0, &value_head, sizeof(axtrace_value_s));
 	assert(len == sizeof(value_head));
 
 	m_valueType = value_head.value_type;
@@ -183,7 +230,12 @@ void ValueMessage::build(const axtrace_time_s& traceTime, const axtrace_head_s& 
 	//copy name 
 	char tempName[AXTRACE_MAX_VALUENAME_LENGTH];
 	int name_length = value_head.name_len;
-	//TODO: check name length
+	//check name length
+	if (name_length > AXTRACE_MAX_VALUENAME_LENGTH) return false;
+
+	//ok
+	ringBuf->discard(sizeof(axtrace_value_s));
+
 	len = ringBuf->memcpy_out(tempName, name_length);
 	assert(len == name_length);
 	tempName[name_length - 1] = 0; //make sure last char is '\0'
@@ -222,6 +274,7 @@ void ValueMessage::build(const axtrace_time_s& traceTime, const axtrace_head_s& 
 		((char*)m_valueBuf)[m_valueSize - 3] = 0;
 		((char*)m_valueBuf)[m_valueSize - 4] = 0;
 	}
+	return true;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -335,7 +388,8 @@ void ValueMessage::_luaopen(lua_State *L)
 QQueue<Begin2DSceneMessage*> Begin2DSceneMessage::s_messagePool;
 
 //--------------------------------------------------------------------------------------------
-Begin2DSceneMessage::Begin2DSceneMessage()
+Begin2DSceneMessage::Begin2DSceneMessage(SessionPtr session, const axtrace_time_s& traceTime)
+	: Message(session, traceTime)
 {
 
 }
@@ -347,11 +401,9 @@ Begin2DSceneMessage::~Begin2DSceneMessage()
 }
 
 //--------------------------------------------------------------------------------------------
-void Begin2DSceneMessage::build(const axtrace_time_s& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
+bool Begin2DSceneMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
 {
-	memcpy(&m_time, &traceTime, sizeof(axtrace_time_s));
-	m_processID = head.pid;
-	m_threadID = head.tid;
+	if (!(m_session->isHandshaked())) return false;
 
 	axtrace_2d_begin_scene_s value_head;
 	size_t len = ringBuf->memcpy_out(&value_head, sizeof(value_head));
@@ -386,6 +438,7 @@ void Begin2DSceneMessage::build(const axtrace_time_s& traceTime, const axtrace_h
 			m_sceneDefine = jsonDocument.object();
 		}
 	}
+	return true;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -415,7 +468,8 @@ void Begin2DSceneMessage::_luaopen(lua_State *L)
 QQueue<Update2DActorMessage*> Update2DActorMessage::s_messagePool;
 
 //--------------------------------------------------------------------------------------------
-Update2DActorMessage::Update2DActorMessage()
+Update2DActorMessage::Update2DActorMessage(SessionPtr session, const axtrace_time_s& traceTime)
+	: Message(session, traceTime)
 {
 
 }
@@ -427,11 +481,9 @@ Update2DActorMessage::~Update2DActorMessage()
 }
 
 //--------------------------------------------------------------------------------------------
-void Update2DActorMessage::build(const axtrace_time_s& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
+bool Update2DActorMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
 {
-	memcpy(&m_time, &traceTime, sizeof(axtrace_time_s));
-	m_processID = head.pid;
-	m_threadID = head.tid;
+	if (!(m_session->isHandshaked())) return false;
 
 	axtrace_2d_actor_s value_head;
 	size_t len = ringBuf->memcpy_out(&value_head, sizeof(value_head));
@@ -463,6 +515,7 @@ void Update2DActorMessage::build(const axtrace_time_s& traceTime, const axtrace_
 		tempInfo[info_length - 1] = 0; //make sure last char is '\0'
 		m_actorInfo = QString::fromUtf8(tempInfo);
 	}
+	return true;
 }
 
 //-------------------------------------------------------------------------------------
@@ -549,7 +602,8 @@ void Update2DActorMessage::_luaopen(lua_State *L)
 QQueue<End2DSceneMessage*> End2DSceneMessage::s_messagePool;
 
 //--------------------------------------------------------------------------------------------
-End2DSceneMessage::End2DSceneMessage()
+End2DSceneMessage::End2DSceneMessage(SessionPtr session, const axtrace_time_s& traceTime)
+	: Message(session, traceTime)
 {
 
 }
@@ -561,11 +615,9 @@ End2DSceneMessage::~End2DSceneMessage()
 }
 
 //--------------------------------------------------------------------------------------------
-void End2DSceneMessage::build(const axtrace_time_s& traceTime, const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
+bool End2DSceneMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
 {
-	memcpy(&m_time, &traceTime, sizeof(axtrace_time_s));
-	m_processID = head.pid;
-	m_threadID = head.tid;
+	if (!(m_session->isHandshaked())) return false;
 
 	axtrace_2d_end_scene_s value_head;
 	size_t len = ringBuf->memcpy_out(&value_head, sizeof(value_head));
@@ -580,6 +632,7 @@ void End2DSceneMessage::build(const axtrace_time_s& traceTime, const axtrace_hea
 		tempName[name_length - 1] = 0; //make sure last char is '\0'
 		m_sceneName = QString::fromUtf8(tempName);
 	}
+	return true;
 }
 
 //--------------------------------------------------------------------------------------------

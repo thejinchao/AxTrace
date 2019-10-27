@@ -13,6 +13,7 @@
 #include "AT4_Filter.h"
 #include "AT4_Scene2D.h"
 #include "AT4_Map2DChild.h"
+#include "AT4_Session.h"
 
 //--------------------------------------------------------------------------------------------
 System* System::s_singleton = nullptr;
@@ -25,6 +26,7 @@ System::System()
 	, m_mainWindow(nullptr)
 	, m_messageQueue(nullptr)
 	, m_filter(nullptr)
+	, m_sessionManager(nullptr)
 {
 	s_singleton = this;
 }
@@ -39,6 +41,7 @@ System::~System()
 	Update2DActorMessage::deletePool();
 	End2DSceneMessage::deletePool();
 
+	delete m_sessionManager;
 	delete m_filter;
 	delete m_messageQueue;
 	delete m_mainWindow;
@@ -67,6 +70,7 @@ bool System::init(int argc, char *argv[])
 	m_incoming = new Incoming();
 	m_messageQueue = new MessageQueue();
 	m_filter = new Filter();
+	m_sessionManager = new SessionManager();
 
 	Map2DChild::initCachedObject();
 

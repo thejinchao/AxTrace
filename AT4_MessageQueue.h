@@ -12,7 +12,7 @@ class MessageQueue
 {
 public:
 	/** insert message to queue(should call by incoming thread)*/
-	void insertMessage(cyclone::RingBuf* buf, size_t msg_length, const QTime& tTime);
+	void insertMessage(cyclone::RingBuf* buf, size_t msg_length, const QTime& tTime, int32_t sessionID);
 	/** pop message to queue(should call by main thread)*/
 	void popMessage(MessageVector& message);
 	/** clean all message directorly */

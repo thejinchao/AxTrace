@@ -11,6 +11,7 @@
 #include "AT4_System.h"
 #include "AT4_Config.h"
 #include "AT4_MessageQueue.h"
+#include "AT4_Session.h"
 
 //--------------------------------------------------------------------------------------------
 Incoming::Incoming()
@@ -34,10 +35,34 @@ bool Incoming::init(void)
 
 	cyclone::Address address(DEFAULT_PORT, false);
 	m_server = new cyclone::TcpServer("axtrace", nullptr);
+	m_server->m_listener.onConnected = std::bind(&Incoming::on_connected, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	m_server->m_listener.onMessage = std::bind(&Incoming::on_message, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+	m_server->m_listener.onClose = std::bind(&Incoming::on_close, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 
 	if (!(m_server->bind(address, false))) return false;
 	return m_server->start(cyclone::sys_api::get_cpu_counts());
+}
+
+//--------------------------------------------------------------------------------------------
+void Incoming::kickConnection(cyclone::ConnectionPtr conn)
+{
+	m_server->shutdown_connection(conn);
+}
+
+//--------------------------------------------------------------------------------------------
+void Incoming::on_connected(cyclone::TcpServer* server, int32_t thread_index, cyclone::ConnectionPtr conn)
+{
+	SessionManager* sessionManager = System::getSingleton()->getSessionManager();
+
+	sessionManager->onSessionConnected(conn);
+}
+
+//--------------------------------------------------------------------------------------------
+void Incoming::on_close(cyclone::TcpServer* server, int32_t thread_index, cyclone::ConnectionPtr conn)
+{
+	SessionManager* sessionManager = System::getSingleton()->getSessionManager();
+
+	sessionManager->onSessionClose(conn);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -69,7 +94,7 @@ void Incoming::on_message(cyclone::TcpServer* server, int32_t thread_index, cycl
 				return;
 			}
 
-			System::getSingleton()->getMessageQueue()->insertMessage(&input, head.length, timeNow.time());
+			System::getSingleton()->getMessageQueue()->insertMessage(&input, head.length, timeNow.time(), conn->get_id());
 		} while (true);
 	}
 

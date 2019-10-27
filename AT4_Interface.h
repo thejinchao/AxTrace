@@ -7,6 +7,8 @@
 #pragma once
 
 /*---------------------------------------------------------------------------------------------*/
+#define AXTRACE_PROTO_VERSION	(4)
+
 #define AXT_TRACE	(0)
 #define AXT_DEBUG	(1)
 #define AXT_INFO	(2)
@@ -35,12 +37,14 @@
 #define AXV_STR_UTF32	(13)
 #define AXV_USER_DEF	(100)
 
+#define AXTRACE_CMD_TYPE_SHAKEHAND		(0)
 #define AXTRACE_CMD_TYPE_LOG			(1)
 #define AXTRACE_CMD_TYPE_VALUE			(2)
 #define AXTRACE_CMD_TYPE_2D_BEGIN_SCENE	(3)
 #define AXTRACE_CMD_TYPE_2D_ACTOR		(4)
 #define AXTRACE_CMD_TYPE_2D_END_SCENE	(5)
 
+#define AXTRACE_MAX_PROCESSNAME_LENGTH	(512)
 #define AXTRACE_MAX_LOG_STRING_LENGTH	(0x8000)
 #define AXTRACE_MAX_VALUENAME_LENGTH	(128)
 #define AXTRACE_MAX_VALUE_LENGTH		(1024)
@@ -57,9 +61,18 @@ typedef struct
 	unsigned short	length;			/* length */
 	unsigned char	flag;			/* magic flag, always 'A' */
 	unsigned char	type;			/* command type AXTRACE_CMD_TYPE_* */
+} axtrace_head_s;
+
+typedef struct
+{
+	axtrace_head_s	head;			/* common head */
+	unsigned short	ver;			/* proto ver */
+	unsigned short	sname_len;		/* length of session name */
 	unsigned int	pid;			/* process id*/
 	unsigned int	tid;			/* thread id*/
-} axtrace_head_s;
+
+									/* [session name buf  with '\0' ended]*/
+} axtrace_shakehand_s;
 
 /* axtrace log data struct*/
 typedef struct
@@ -69,7 +82,7 @@ typedef struct
 	unsigned short	code_page;		/* code page */
 	unsigned short	length;			/* trace string length */
 
-	/* [trace string data with '\0' ended] */
+									/* [trace string data with '\0' ended] */
 } axtrace_log_s;
 
 typedef struct
@@ -79,8 +92,8 @@ typedef struct
 	unsigned short	name_len;		/* length of value name */
 	unsigned short	value_len;		/* length of value */
 
-	/* [name buf  with '\0' ended]*/
-	/* [value buf] */
+									/* [name buf  with '\0' ended]*/
+									/* [value buf] */
 } axtrace_value_s;
 
 typedef struct
@@ -122,10 +135,11 @@ typedef struct
 
 typedef struct
 {
-	unsigned short hour;
-	unsigned short minute;
-	unsigned short second;
-	unsigned short milliseconds;
+	int				sessionID;
+	unsigned short	hour;
+	unsigned short	minute;
+	unsigned short	second;
+	unsigned short	milliseconds;
 } axtrace_time_s;
 
 #pragma pack(pop)

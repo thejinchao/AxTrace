@@ -9,6 +9,7 @@
 #include "AT4_Interface.h"
 #include "AT4_System.h"
 #include "AT4_MainWindow.h"
+#include "AT4_Incoming.h"
 
 //--------------------------------------------------------------------------------------------
 MessageQueue::MessageQueue()
@@ -24,9 +25,10 @@ MessageQueue::~MessageQueue()
 }
 
 //--------------------------------------------------------------------------------------------
-void MessageQueue::insertMessage(cyclone::RingBuf* buf, size_t msg_length, const QTime& timeNow)
+void MessageQueue::insertMessage(cyclone::RingBuf* buf, size_t msg_length, const QTime& timeNow, int32_t sessionID)
 {
 	axtrace_time_s t;
+	t.sessionID = sessionID;
 	t.hour = timeNow.hour();
 	t.minute = timeNow.minute();
 	t.second = timeNow.second();
@@ -49,6 +51,7 @@ Message* MessageQueue::_popMessage(void)
 {
 	axtrace_time_s traceTime;
 
+	//pop time and session id
 	size_t len = m_ring_buf->memcpy_out(&traceTime, sizeof(axtrace_time_s));
 	assert(len == sizeof(axtrace_time_s));
 
@@ -56,36 +59,51 @@ Message* MessageQueue::_popMessage(void)
 	len = m_ring_buf->peek(0, &head, sizeof(head));
 	assert(len == sizeof(axtrace_head_s));
 
+	//find session
+	SessionPtr session = System::getSingleton()->getSessionManager()->findSession(traceTime.sessionID);
+	if (session == nullptr)
+	{
+		//discard message
+		m_ring_buf->discard(head.length);
+		return nullptr;
+	}
+
 	Message* message = nullptr;
 	switch (head.type)
 	{
+	case AXTRACE_CMD_TYPE_SHAKEHAND:
+	{
+		message = ShakehandMessage::allocMessage(session, traceTime);
+	}
+	break;
+
 	case AXTRACE_CMD_TYPE_LOG:
 	{
-		message = LogMessage::allocMessage();
+		message = LogMessage::allocMessage(session, traceTime);
 	}
 	break;
 
 	case AXTRACE_CMD_TYPE_VALUE:
 	{
-		message = ValueMessage::allocMessage();
+		message = ValueMessage::allocMessage(session, traceTime);
 	}
 	break;
 
 	case AXTRACE_CMD_TYPE_2D_BEGIN_SCENE:
 	{
-		message = Begin2DSceneMessage::allocMessage();
+		message = Begin2DSceneMessage::allocMessage(session, traceTime);
 	}
 	break;
 
 	case AXTRACE_CMD_TYPE_2D_ACTOR:
 	{
-		message = Update2DActorMessage::allocMessage();
+		message = Update2DActorMessage::allocMessage(session, traceTime);
 	}
 	break;
 
 	case AXTRACE_CMD_TYPE_2D_END_SCENE:
 	{
-		message = End2DSceneMessage::allocMessage();
+		message = End2DSceneMessage::allocMessage(session, traceTime);
 	}
 	break;
 
@@ -93,7 +111,16 @@ Message* MessageQueue::_popMessage(void)
 		return message;
 	}
 
-	message->build(traceTime, head, m_ring_buf);
+	if (!(message->build(head, m_ring_buf)))
+	{
+		//discard message
+		m_ring_buf->discard(head.length);
+
+		//Close Net Connection 
+		System::getSingleton()->getIncoming()->kickConnection(session->getConnection());
+
+		return nullptr;
+	}
 	return message;
 }
 
@@ -111,7 +138,6 @@ void MessageQueue::popMessage(MessageVector& msgVector)
 			if (m_ring_buf->empty()) break;
 
 			Message* msg = _popMessage();
-			assert(msg != 0);
 			if (msg == nullptr) continue;
 
 			msgVector.push_back(msg);

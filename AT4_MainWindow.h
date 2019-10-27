@@ -15,6 +15,7 @@ class LogChild;
 class ValueChild;
 class Map2DChild;
 class Message;
+class ShakehandMessage;
 class LogMessage;
 class ValueMessage;
 class Begin2DSceneMessage;
@@ -61,6 +62,7 @@ public:
 
 private:
 	void _processAxTraceData(Message* msg);
+	void _onShakeHand(ShakehandMessage* msg);
 	void _insertLog(LogMessage* msg);
 	void _insertValue(ValueMessage* msg);
 	void _begin2DScene(Begin2DSceneMessage* msg);
