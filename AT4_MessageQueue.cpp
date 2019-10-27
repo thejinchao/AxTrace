@@ -117,7 +117,7 @@ Message* MessageQueue::_popMessage(void)
 		m_ring_buf->discard(head.length);
 
 		//Close Net Connection 
-		session->closeConnect();
+		session->closeConnection();
 
 		return nullptr;
 	}
