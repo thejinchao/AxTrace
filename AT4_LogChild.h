@@ -11,6 +11,7 @@
 #include <QQueue>
 #include "AT4_Filter.h"
 #include "AT4_Interface.h"
+#include "AT4_Session.h"
 
 class LogMessage;
 
@@ -48,8 +49,7 @@ private:
 	{
 		quint32 logIndex;
 		axtrace_time_s logTime;
-		quint32 pid;
-		quint32 tid;
+		SessionPtr session;
 		QString logContent;
 		QColor backColor;
 		QColor frontColor;
