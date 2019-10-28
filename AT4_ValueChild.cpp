@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -58,7 +58,7 @@ void ValueDataModel::insertValue(const ValueMessage* valueMessage, const Filter:
 		.arg(t.hour, 2, 10, QLatin1Char('0'))
 		.arg(t.minute, 2, 10, QLatin1Char('0'))
 		.arg(t.second, 2, 10, QLatin1Char('0'))
-		.arg(t.milliseconds);
+		.arg(t.milliseconds, 3, 10, QLatin1Char('0'));
 
 	QString valueData;
 	valueMessage->getValueAsString(valueData);

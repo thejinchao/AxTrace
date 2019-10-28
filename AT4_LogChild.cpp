@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -29,6 +29,20 @@ LogDataModel::~LogDataModel()
 }
 
 //--------------------------------------------------------------------------------------------
+void LogDataModel::initDefaultColumn(void)
+{
+	qint32 index = 0;
+
+	m_logColumnVector.push_back(new LogColumn_Index(index++));
+	m_logColumnVector.push_back(new LogColumn_Time(index++));
+//	m_logColumnVector.push_back(new LogColumn_LogType(index++));
+//	m_logColumnVector.push_back(new LogColumn_SessionName(index++));
+	m_logColumnVector.push_back(new LogColumn_ProcessID(index++));
+	m_logColumnVector.push_back(new LogColumn_ThreadID(index++));
+	m_logColumnVector.push_back(new LogColumn_LogContent(index++));
+}
+
+//--------------------------------------------------------------------------------------------
 void LogDataModel::insertLog(const LogMessage* logMessage, const Filter::ListResult& filterResult)
 {
 	beginInsertRows(QModelIndex(), rowCount(), rowCount()+1);
@@ -37,6 +51,7 @@ void LogDataModel::insertLog(const LogMessage* logMessage, const Filter::ListRes
 	logData.logIndex = m_currentIndex++;
 	logData.logTime = logMessage->getTime();
 	logData.session = logMessage->getSession();
+	logData.logType = logMessage->getLogType();
 	logData.logContent = logMessage->getLog();
 	logData.backColor = Filter::toQColor(filterResult.backColor);
 	logData.frontColor = Filter::toQColor(filterResult.fontColor);
@@ -71,7 +86,7 @@ void LogDataModel::autoCheckOverflow(void)
 //--------------------------------------------------------------------------------------------
 QVariant LogDataModel::data(const QModelIndex &index, int role) const
 {
-	if (!index.isValid() || index.row() >= m_logVector.size() || index.column() >= COLUMN_COUNTS)
+	if (!index.isValid() || index.row() >= m_logVector.size() || index.column() >= this->columnCount())
 		return QVariant();
 
 	const LogData& logData = m_logVector[index.row()];
@@ -89,26 +104,15 @@ QVariant LogDataModel::data(const QModelIndex &index, int role) const
 //--------------------------------------------------------------------------------------------
 QString LogDataModel::data(int row, int column) const
 {
-	if (row >= m_logVector.size() || column >= COLUMN_COUNTS)
+	if (row >= m_logVector.size() || column >= this->columnCount())
 		return QString();
 
 	const LogData& logData = m_logVector[row];
-	switch (column)
+	if (column >= 0 && column < m_logColumnVector.size())
 	{
-	case 0: return tr("%1").arg(logData.logIndex);
-	case 1: {
-		const axtrace_time_s& t = logData.logTime;
-		return  tr("%1:%2 %3.%4")
-			.arg(t.hour, 2, 10, QLatin1Char('0'))
-			.arg(t.minute, 2, 10, QLatin1Char('0'))
-			.arg(t.second, 2, 10, QLatin1Char('0'))
-			.arg(t.milliseconds);
+		return m_logColumnVector[column]->getString(logData);
 	}
-	case 2: return tr("%1").arg(logData.session->getProcessID());
-	case 3: return tr("%1").arg(logData.session->getThreadID());
-	case 4: return logData.logContent;
-	default: return QString();
-	}
+	return QString();
 }
 
 //--------------------------------------------------------------------------------------------
@@ -125,15 +129,11 @@ QVariant LogDataModel::headerData(int section, Qt::Orientation orientation, int 
 {
 	if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
 	{
-		switch (section)
+		if (section >= 0 && section < m_logColumnVector.size())
 		{
-		case 0: return tr("#");
-		case 1: return tr("Time");
-		case 2: return tr("PID");
-		case 3: return tr("TID");
-		case 4: return tr("Log");
-		default: return QString();
+			return m_logColumnVector[section]->getTitle();
 		}
+		return QString();
 	}
 
 	return QVariant();
@@ -164,8 +164,10 @@ public:
 	virtual void onCopy(void) const
 	{
 		LogDataModel* model = (LogDataModel*)(m_proxy->model());
+		const LogColumnVector& columnVector = model->getColumns();
 
 		QModelIndexList rows = m_proxy->selectionModel()->selectedRows();
+	
 		//sort by id
 		qSort(rows.begin(), rows.end(), [model](const QModelIndex &s1, const QModelIndex &s2){ 
 			return s1.row() < s2.row();
@@ -175,12 +177,15 @@ public:
 		foreach(auto row, rows)
 		{
 			int rowIndex = row.row();
-			QString line = QString("%1\t%2\t%3\t%4\t%5\n").arg(
-				model->data(rowIndex, 0),
-				model->data(rowIndex, 1),
-				model->data(rowIndex, 2),
-				model->data(rowIndex, 3),
-				model->data(rowIndex, 4));
+
+			QString line;
+			foreach(auto column, columnVector)
+			{
+				line += model->data(rowIndex, column->getIndex());
+
+				if (column->getIndex() == columnVector.size() - 1) line += "\n";
+				else line += "\t";
+			}
 
 			lines += line;
 		}
@@ -206,19 +211,22 @@ public:
 		if (fileName.isEmpty()) return;
 
 		LogDataModel* model = (LogDataModel*)(m_proxy->model());
-		
+		const LogColumnVector& columnVector = model->getColumns();
+
 		QFile file(fileName);
 		if (file.open(QFile::WriteOnly))
 		{
 			QTextStream stream(&file);
 			for (int rowIndex = 0; rowIndex < model->rowCount(); rowIndex++)
 			{
-				QString line = QString("%1\t%2\t%3\t%4\t%5\n").arg(
-					model->data(rowIndex, 0),
-					model->data(rowIndex, 1),
-					model->data(rowIndex, 2),
-					model->data(rowIndex, 3),
-					model->data(rowIndex, 4));
+				QString line;
+				foreach(auto column, columnVector)
+				{
+					line += model->data(rowIndex, column->getIndex());
+
+					if (column->getIndex() == columnVector.size() - 1) line += "\n";
+					else line += "\t";
+				}
 				stream << line;
 			}
 			file.close();
@@ -264,12 +272,15 @@ LogChild::~LogChild()
 void LogChild::init(void)
 {
 	LogDataModel* model = new LogDataModel();
-
+	model->initDefaultColumn();
 	this->setModel(model);
-	this->header()->resizeSection(0, 40);
-	this->header()->resizeSection(0, 90);
-	this->header()->resizeSection(0, 50);
-	this->header()->resizeSection(0, 50);
+
+	for (LogColumn* column : model->getColumns())
+	{
+		if(column->getWidth()>0)
+			this->header()->resizeSection(column->getIndex(), column->getWidth());
+	}
+
 	this->setSortingEnabled(false);
 	this->setRootIsDecorated(false);
 	this->setSelectionMode(MultiSelection);

@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -10,8 +10,8 @@
 #include <QItemDelegate>
 #include <QQueue>
 #include "AT4_Filter.h"
-#include "AT4_Interface.h"
-#include "AT4_Session.h"
+#include "AT4_LogData.h"
+#include "AT4_LogColumn.h"
 
 class LogMessage;
 
@@ -23,6 +23,7 @@ public:
 	explicit LogDataModel(QObject *parent = 0);
 	~LogDataModel();
 
+	void initDefaultColumn(void);
 	void insertLog(const LogMessage* logMessage, const Filter::ListResult& filterResult);
 	void clearAllLog(void);
 	void autoCheckOverflow(void);
@@ -38,26 +39,19 @@ public:
 	int rowCount(const QModelIndex &parent = QModelIndex()) const override {
 		return m_logVector.size();
 	}
+
+	LogColumnVector& getColumns(void) {
+		return m_logColumnVector;
+	}
 	int columnCount(const QModelIndex &parent = QModelIndex()) const override {
-		return COLUMN_COUNTS;
+		return m_logColumnVector.size();
 	}
 
 private:
-	enum { COLUMN_COUNTS = 5, DEFAULT_MAX_OVERFLOW_COUNTS=10 };
+	enum { DEFAULT_MAX_OVERFLOW_COUNTS=10 };
 
-	struct LogData
-	{
-		quint32 logIndex;
-		axtrace_time_s logTime;
-		SessionPtr session;
-		QString logContent;
-		QColor backColor;
-		QColor frontColor;
-	};
-
-	typedef QQueue<LogData> LogVector;
-
-	LogVector m_logVector;
+	LogColumnVector m_logColumnVector;
+	LogDataVector m_logVector;
 	quint32 m_currentIndex;
 	qint32 m_maxLogCounts;
 	qint32 m_maxOverflowCounts;
