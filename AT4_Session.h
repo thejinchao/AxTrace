@@ -21,7 +21,7 @@ public:
 	bool isHandshaked(void) const { return m_bShakehand; }
 
 	bool onSessionShakehand(const ShakehandMessage* message);
-	void closeConnect(void);
+	void closeConnection(void);
 
 private:
 	bool					m_bShakehand;
