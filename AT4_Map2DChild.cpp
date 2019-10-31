@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -433,6 +433,8 @@ QBrush& Map2DChild::getCachedBrush(uint16_t color)
 	QBrush* brush = m_cachedBrush[color & 0xFFF];
 	if (brush != nullptr) return *brush;
 
-	brush = m_cachedBrush[color & 0xFFF] = new QBrush(Filter::toQColor(color));
+	QColor brushColor = Filter::toQColor(color);
+	brushColor.setAlpha(128);
+	brush = m_cachedBrush[color & 0xFFF] = new QBrush(brushColor);
 	return *brush;
 }
