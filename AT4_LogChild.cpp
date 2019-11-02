@@ -185,9 +185,9 @@ public:
 
 			QString line;
 			model->getColumns().walk(true, [&](const LogColumn* column) {
-				line += model->data(rowIndex, column->getIndex());
+				line += model->data(rowIndex, column->getActiveIndex());
 
-				if (column->getIndex() == columnGroup.getActiveCounts() - 1) line += "\n";
+				if (column->getActiveIndex() == columnGroup.getActiveCounts() - 1) line += "\n";
 				else line += "\t";
 			});
 
@@ -225,9 +225,9 @@ public:
 			{
 				QString line;
 				model->getColumns().walk(true, [&](const LogColumn* column) {
-					line += model->data(rowIndex, column->getIndex());
+					line += model->data(rowIndex, column->getActiveIndex());
 
-					if (column->getIndex() == columnGroup.getActiveCounts() - 1) line += "\n";
+					if (column->getActiveIndex() == columnGroup.getActiveCounts() - 1) line += "\n";
 					else line += "\t";
 				});
 
@@ -367,5 +367,6 @@ void LogChild::onHeadContextMenu(const QPoint & pos)
 	qint32 index = selectedItem->property("context").toInt();
 	Q_ASSERT(index >= 0 && index < columnGroup.getCounts());
 
+	this->selectionModel()->clearSelection();
 	model->switchColumn(index);
 }
