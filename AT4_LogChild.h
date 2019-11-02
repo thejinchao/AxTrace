@@ -23,10 +23,10 @@ public:
 	explicit LogDataModel(QObject *parent = 0);
 	~LogDataModel();
 
-	void initDefaultColumn(void);
 	void insertLog(const LogMessage* logMessage, const Filter::ListResult& filterResult);
 	void clearAllLog(void);
 	void autoCheckOverflow(void);
+	void switchColumn(qint32 index);
 
 	QVariant data(const QModelIndex &index, int role) const override;
 	QString data(int row, int column) const;
@@ -40,17 +40,21 @@ public:
 		return m_logVector.size();
 	}
 
-	LogColumnVector& getColumns(void) {
-		return m_logColumnVector;
+	const LogColumnGroup& getColumns(void) const {
+		return m_logColumnGroup;
 	}
+	LogColumnGroup& getColumns(void) {
+		return m_logColumnGroup;
+	}
+
 	int columnCount(const QModelIndex &parent = QModelIndex()) const override {
-		return m_logColumnVector.size();
+		return m_logColumnGroup.getActiveCounts();
 	}
 
 private:
 	enum { DEFAULT_MAX_OVERFLOW_COUNTS=10 };
 
-	LogColumnVector m_logColumnVector;
+	LogColumnGroup m_logColumnGroup;
 	LogDataVector m_logVector;
 	quint32 m_currentIndex;
 	qint32 m_maxLogCounts;
@@ -66,8 +70,11 @@ public:
 	void insertLog(const LogMessage* logMessage, const Filter::ListResult& filterResult);
 
 protected:
-    void closeEvent(QCloseEvent *event) override;
+	bool eventFilter(QObject *target, QEvent *event);
+	void closeEvent(QCloseEvent *event) override;
 	void timerEvent(QTimerEvent *event) override;
+	
+	void onHeadContextMenu(const QPoint & pos);
 
 private:
 	QString m_title;

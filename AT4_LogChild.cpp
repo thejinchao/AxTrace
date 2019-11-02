@@ -20,26 +20,13 @@ LogDataModel::LogDataModel(QObject *parent)
 	, m_maxOverflowCounts(DEFAULT_MAX_OVERFLOW_COUNTS)
 {
 	m_maxLogCounts = System::getSingleton()->getConfig()->getMaxLogCounts();
+	m_logColumnGroup.initDefaulGroup();
 }
 
 //--------------------------------------------------------------------------------------------
 LogDataModel::~LogDataModel()
 {
 
-}
-
-//--------------------------------------------------------------------------------------------
-void LogDataModel::initDefaultColumn(void)
-{
-	qint32 index = 0;
-
-	m_logColumnVector.push_back(new LogColumn_Index(index++));
-	m_logColumnVector.push_back(new LogColumn_Time(index++));
-//	m_logColumnVector.push_back(new LogColumn_LogType(index++));
-//	m_logColumnVector.push_back(new LogColumn_SessionName(index++));
-	m_logColumnVector.push_back(new LogColumn_ProcessID(index++));
-	m_logColumnVector.push_back(new LogColumn_ThreadID(index++));
-	m_logColumnVector.push_back(new LogColumn_LogContent(index++));
 }
 
 //--------------------------------------------------------------------------------------------
@@ -108,9 +95,9 @@ QString LogDataModel::data(int row, int column) const
 		return QString();
 
 	const LogData& logData = m_logVector[row];
-	if (column >= 0 && column < m_logColumnVector.size())
+	if (column >= 0 && column < m_logColumnGroup.getActiveCounts())
 	{
-		return m_logColumnVector[column]->getString(logData);
+		return m_logColumnGroup.getActiveColumn(column)->getString(logData);
 	}
 	return QString();
 }
@@ -129,9 +116,9 @@ QVariant LogDataModel::headerData(int section, Qt::Orientation orientation, int 
 {
 	if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
 	{
-		if (section >= 0 && section < m_logColumnVector.size())
+		if (section >= 0 && section < m_logColumnGroup.getActiveCounts())
 		{
-			return m_logColumnVector[section]->getTitle();
+			return m_logColumnGroup.getActiveColumn(section)->getTitle();
 		}
 		return QString();
 	}
@@ -152,6 +139,24 @@ QModelIndex LogDataModel::index(int row, int column, const QModelIndex &parent) 
 }
 
 //--------------------------------------------------------------------------------------------
+void LogDataModel::switchColumn(qint32 index)
+{
+	const LogColumn* column = m_logColumnGroup.getColumn(index);
+	if (column->isActive())
+	{
+		this->beginRemoveColumns(QModelIndex(), column->getActiveIndex(), column->getActiveIndex());
+		m_logColumnGroup.activeColumn(index, !(column->isActive()));
+		this->endRemoveColumns();
+	}
+	else
+	{
+		this->beginInsertColumns(QModelIndex(), column->getActiveIndex(), column->getActiveIndex());
+		m_logColumnGroup.activeColumn(index, !(column->isActive()));
+		this->endInsertColumns();
+	}
+}
+
+//--------------------------------------------------------------------------------------------
 class LogChildInterface : public IChild
 {
 public:
@@ -164,7 +169,7 @@ public:
 	virtual void onCopy(void) const
 	{
 		LogDataModel* model = (LogDataModel*)(m_proxy->model());
-		const LogColumnVector& columnVector = model->getColumns();
+		const LogColumnGroup& columnGroup = model->getColumns();
 
 		QModelIndexList rows = m_proxy->selectionModel()->selectedRows();
 	
@@ -179,13 +184,12 @@ public:
 			int rowIndex = row.row();
 
 			QString line;
-			foreach(auto column, columnVector)
-			{
+			model->getColumns().walk(true, [&](const LogColumn* column) {
 				line += model->data(rowIndex, column->getIndex());
 
-				if (column->getIndex() == columnVector.size() - 1) line += "\n";
+				if (column->getIndex() == columnGroup.getActiveCounts() - 1) line += "\n";
 				else line += "\t";
-			}
+			});
 
 			lines += line;
 		}
@@ -211,7 +215,7 @@ public:
 		if (fileName.isEmpty()) return;
 
 		LogDataModel* model = (LogDataModel*)(m_proxy->model());
-		const LogColumnVector& columnVector = model->getColumns();
+		const LogColumnGroup& columnGroup = model->getColumns();
 
 		QFile file(fileName);
 		if (file.open(QFile::WriteOnly))
@@ -220,13 +224,13 @@ public:
 			for (int rowIndex = 0; rowIndex < model->rowCount(); rowIndex++)
 			{
 				QString line;
-				foreach(auto column, columnVector)
-				{
+				model->getColumns().walk(true, [&](const LogColumn* column) {
 					line += model->data(rowIndex, column->getIndex());
 
-					if (column->getIndex() == columnVector.size() - 1) line += "\n";
+					if (column->getIndex() == columnGroup.getActiveCounts() - 1) line += "\n";
 					else line += "\t";
-				}
+				});
+
 				stream << line;
 			}
 			file.close();
@@ -272,14 +276,15 @@ LogChild::~LogChild()
 void LogChild::init(void)
 {
 	LogDataModel* model = new LogDataModel();
-	model->initDefaultColumn();
 	this->setModel(model);
 
-	for (LogColumn* column : model->getColumns())
-	{
-		if(column->getWidth()>0)
+	model->getColumns().walk(true, [&](const LogColumn* column) {
+		if (column->getWidth() > 0)
 			this->header()->resizeSection(column->getIndex(), column->getWidth());
-	}
+	});
+
+
+	this->header()->installEventFilter(this);
 
 	this->setSortingEnabled(false);
 	this->setRootIsDecorated(false);
@@ -323,3 +328,44 @@ void LogChild::insertLog(const LogMessage* logMessage, const Filter::ListResult&
 	update();
 }
 
+//--------------------------------------------------------------------------------------------
+bool LogChild::eventFilter(QObject *target, QEvent *event)
+{
+	if (target == this->header())
+	{
+		if (event->type() == QEvent::ContextMenu)
+		{
+			//Create context menu here
+			QContextMenuEvent* menuEvent = dynamic_cast<QContextMenuEvent*>(event);
+			onHeadContextMenu(menuEvent->globalPos());
+			return true;
+		}
+	}
+
+	return false;
+
+}
+
+//--------------------------------------------------------------------------------------------
+void LogChild::onHeadContextMenu(const QPoint & pos)
+{
+	LogDataModel* model = (LogDataModel*)(this->model());
+	LogColumnGroup& columnGroup = model->getColumns();
+
+	QMenu headContextMenu;
+	columnGroup.walk(false, [&](const LogColumn* column) {
+		QAction* action = headContextMenu.addAction(column->getTitle());
+
+		action->setProperty("context", QVariant(column->getIndex()));
+		action->setCheckable(true);
+		action->setChecked(column->isActive());
+	});
+
+	QAction* selectedItem = headContextMenu.exec(pos);
+	if (!selectedItem) return;
+
+	qint32 index = selectedItem->property("context").toInt();
+	Q_ASSERT(index >= 0 && index < columnGroup.getCounts());
+
+	model->switchColumn(index);
+}
