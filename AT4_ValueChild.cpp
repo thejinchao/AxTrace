@@ -53,7 +53,7 @@ void ValueDataModel::insertValue(const ValueMessage* valueMessage, const Filter:
 
 	Value& value = m_valueVector[idx];
 
-	const axtrace_time_s& t = valueMessage->getTime();
+	const MessageTime& t = valueMessage->getTime();
 	value.updateTime = tr("%1:%2 %3.%4")
 		.arg(t.hour, 2, 10, QLatin1Char('0'))
 		.arg(t.minute, 2, 10, QLatin1Char('0'))

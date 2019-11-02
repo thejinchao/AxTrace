@@ -133,14 +133,12 @@ typedef struct
 									/* [scene name buf  with '\0' ended]*/
 } axtrace_2d_end_scene_s;
 
-typedef struct
+struct MessageTime
 {
-	int				sessionID;
-	unsigned short	hour;
-	unsigned short	minute;
-	unsigned short	second;
-	unsigned short	milliseconds;
-} axtrace_time_s;
+	quint16	hour;
+	quint16	minute;
+	quint16	second;
+	quint16	milliseconds;
+};
 
 #pragma pack(pop)
-

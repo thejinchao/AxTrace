@@ -12,12 +12,12 @@
 struct LogData
 {
 	quint32			logIndex;
-	axtrace_time_s	logTime;
+	MessageTime		logTime;
 	SessionPtr		session;
 	quint32			logType;
-	QString			logContent;
 	QColor			backColor;
 	QColor			frontColor;
+	QString			logContent;
 };
 
 typedef QQueue<LogData> LogDataVector;

@@ -8,10 +8,10 @@
 #include "AT4_Message.h"
 
 //--------------------------------------------------------------------------------------------
-Message::Message(SessionPtr session, const axtrace_time_s& traceTime)
+Message::Message(SessionPtr session, const MessageTime& traceTime)
 	: m_session(session)
 {
-	memcpy(&m_time, &traceTime, sizeof(axtrace_time_s));
+	memcpy(&m_time, &traceTime, sizeof(MessageTime));
 }
 
 //--------------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ int Message::_lua_get_thread_id(lua_State *L)
 QQueue<ShakehandMessage*> ShakehandMessage::s_messagePool;
 
 //--------------------------------------------------------------------------------------------
-ShakehandMessage::ShakehandMessage(SessionPtr session, const axtrace_time_s& traceTime)
+ShakehandMessage::ShakehandMessage(SessionPtr session, const MessageTime& traceTime)
 	: Message(session, traceTime)
 {
 
@@ -97,7 +97,7 @@ bool ShakehandMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ringB
 QQueue<LogMessage*> LogMessage::s_messagePool;
 
 //--------------------------------------------------------------------------------------------
-LogMessage::LogMessage(SessionPtr session, const axtrace_time_s& traceTime)
+LogMessage::LogMessage(SessionPtr session, const MessageTime& traceTime)
 	: Message(session, traceTime)
 {
 
@@ -199,7 +199,7 @@ void LogMessage::_luaopen(lua_State *L)
 QQueue<ValueMessage*> ValueMessage::s_messagePool;
 
 //--------------------------------------------------------------------------------------------
-ValueMessage::ValueMessage(SessionPtr session, const axtrace_time_s& traceTime)
+ValueMessage::ValueMessage(SessionPtr session, const MessageTime& traceTime)
 	: Message(session, traceTime)
 	, m_valueBuf(nullptr)
 {
@@ -388,7 +388,7 @@ void ValueMessage::_luaopen(lua_State *L)
 QQueue<Begin2DSceneMessage*> Begin2DSceneMessage::s_messagePool;
 
 //--------------------------------------------------------------------------------------------
-Begin2DSceneMessage::Begin2DSceneMessage(SessionPtr session, const axtrace_time_s& traceTime)
+Begin2DSceneMessage::Begin2DSceneMessage(SessionPtr session, const MessageTime& traceTime)
 	: Message(session, traceTime)
 {
 
@@ -468,7 +468,7 @@ void Begin2DSceneMessage::_luaopen(lua_State *L)
 QQueue<Update2DActorMessage*> Update2DActorMessage::s_messagePool;
 
 //--------------------------------------------------------------------------------------------
-Update2DActorMessage::Update2DActorMessage(SessionPtr session, const axtrace_time_s& traceTime)
+Update2DActorMessage::Update2DActorMessage(SessionPtr session, const MessageTime& traceTime)
 	: Message(session, traceTime)
 {
 
@@ -602,7 +602,7 @@ void Update2DActorMessage::_luaopen(lua_State *L)
 QQueue<End2DSceneMessage*> End2DSceneMessage::s_messagePool;
 
 //--------------------------------------------------------------------------------------------
-End2DSceneMessage::End2DSceneMessage(SessionPtr session, const axtrace_time_s& traceTime)
+End2DSceneMessage::End2DSceneMessage(SessionPtr session, const MessageTime& traceTime)
 	: Message(session, traceTime)
 {
 

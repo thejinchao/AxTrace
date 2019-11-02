@@ -17,11 +17,11 @@ public:
 
 	SessionPtr getSession(void) { return m_session; }
 	const SessionPtr getSession(void) const { return m_session; }
-	const axtrace_time_s& getTime(void) const { return m_time; }
+	const MessageTime& getTime(void) const { return m_time; }
 
 protected:
 	SessionPtr		m_session;
-	axtrace_time_s	m_time;
+	MessageTime		m_time;
 
 protected:
 	static int _lua_get_type(lua_State *L);
@@ -29,7 +29,7 @@ protected:
 	static int _lua_get_thread_id(lua_State *L);
 
 public:
-	Message(SessionPtr session, const axtrace_time_s& traceTime);
+	Message(SessionPtr session, const MessageTime& traceTime);
 	virtual ~Message();
 
 public:
@@ -41,7 +41,7 @@ typedef QVector< Message* > MessageVector;
 #define DEFINE_POOL(Name) \
 public: \
 	static int debugCounts(void) { return (int)s_messagePool.size(); } \
-	static Name* allocMessage(SessionPtr session, const axtrace_time_s& traceTime) \
+	static Name* allocMessage(SessionPtr session, const MessageTime& traceTime) \
 	{ \
 		if (s_messagePool.empty()) { \
 			return new Name(session, traceTime); \
@@ -50,7 +50,7 @@ public: \
 			Name* msg = s_messagePool.front(); \
 			s_messagePool.pop_front(); \
 			msg->m_session = session; \
-			memcpy(&(msg->m_time), &traceTime, sizeof(axtrace_time_s)); \
+			memcpy(&(msg->m_time), &traceTime, sizeof(MessageTime)); \
 			return msg; \
 		} \
 	} \
@@ -88,7 +88,7 @@ private:
 	QString m_sessionName;
 
 public:
-	ShakehandMessage(SessionPtr session, const axtrace_time_s& traceTime);
+	ShakehandMessage(SessionPtr session, const MessageTime& traceTime);
 	virtual ~ShakehandMessage();
 
 	DEFINE_POOL(ShakehandMessage);
@@ -115,7 +115,7 @@ protected:
 	static int _lua_get_log(lua_State *L);
 
 public:
-	LogMessage(SessionPtr session, const axtrace_time_s& traceTime);
+	LogMessage(SessionPtr session, const MessageTime& traceTime);
 	virtual ~LogMessage();
 
 	DEFINE_POOL(LogMessage);
@@ -147,7 +147,7 @@ protected:
 	static int _lua_get_value(lua_State *L);
 
 public:
-	ValueMessage(SessionPtr session, const axtrace_time_s& traceTime);
+	ValueMessage(SessionPtr session, const MessageTime& traceTime);
 	virtual ~ValueMessage();
 
 	DEFINE_POOL(ValueMessage);
@@ -172,7 +172,7 @@ private:
 	QJsonObject		m_sceneDefine;
 
 public:
-	Begin2DSceneMessage(SessionPtr session, const axtrace_time_s& traceTime);
+	Begin2DSceneMessage(SessionPtr session, const MessageTime& traceTime);
 	virtual ~Begin2DSceneMessage();
 
 	DEFINE_POOL(Begin2DSceneMessage);
@@ -210,7 +210,7 @@ protected:
 	static int _lua_get_actor_info(lua_State *L);
 
 public:
-	Update2DActorMessage(SessionPtr session, const axtrace_time_s& traceTime);
+	Update2DActorMessage(SessionPtr session, const MessageTime& traceTime);
 	virtual ~Update2DActorMessage();
 
 	DEFINE_POOL(Update2DActorMessage);
@@ -235,7 +235,7 @@ protected:
 	static int _lua_get_actor_id(lua_State *L);
 
 public:
-	End2DSceneMessage(SessionPtr session, const axtrace_time_s& traceTime);
+	End2DSceneMessage(SessionPtr session, const MessageTime& traceTime);
 	virtual ~End2DSceneMessage();
 
 	DEFINE_POOL(End2DSceneMessage);

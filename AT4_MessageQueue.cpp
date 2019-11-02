@@ -25,10 +25,9 @@ MessageQueue::~MessageQueue()
 }
 
 //--------------------------------------------------------------------------------------------
-void MessageQueue::insertMessage(cyclone::RingBuf* buf, size_t msg_length, const QTime& timeNow, int32_t sessionID)
+void MessageQueue::insertMessage(cyclone::RingBuf* buf, size_t msg_length, const QTime& timeNow, qint32 sessionID)
 {
-	axtrace_time_s t;
-	t.sessionID = sessionID;
+	MessageTime t;
 	t.hour = timeNow.hour();
 	t.minute = timeNow.minute();
 	t.second = timeNow.second();
@@ -37,7 +36,8 @@ void MessageQueue::insertMessage(cyclone::RingBuf* buf, size_t msg_length, const
 	{
 		QMutexLocker locker(&m_lock);
 
-		m_ring_buf->memcpy_into(&t, sizeof(axtrace_time_s));
+		m_ring_buf->memcpy_into(&sessionID, sizeof(qint32));
+		m_ring_buf->memcpy_into(&t, sizeof(MessageTime));
 		buf->copyto(m_ring_buf, msg_length);
 		
 		m_counts++;
@@ -49,18 +49,23 @@ void MessageQueue::insertMessage(cyclone::RingBuf* buf, size_t msg_length, const
 //--------------------------------------------------------------------------------------------
 Message* MessageQueue::_popMessage(void)
 {
-	axtrace_time_s traceTime;
+	MessageTime traceTime;
+
+	//pop session id
+	qint32 sessionID;
+	size_t len = m_ring_buf->memcpy_out(&sessionID, sizeof(qint32));
+	Q_ASSERT(len == sizeof(qint32));
 
 	//pop time and session id
-	size_t len = m_ring_buf->memcpy_out(&traceTime, sizeof(axtrace_time_s));
-	assert(len == sizeof(axtrace_time_s));
+	len = m_ring_buf->memcpy_out(&traceTime, sizeof(MessageTime));
+	Q_ASSERT(len == sizeof(MessageTime));
 
 	axtrace_head_s head;
 	len = m_ring_buf->peek(0, &head, sizeof(head));
-	assert(len == sizeof(axtrace_head_s));
+	Q_ASSERT(len == sizeof(axtrace_head_s));
 
 	//find session
-	SessionPtr session = System::getSingleton()->getSessionManager()->findSession(traceTime.sessionID);
+	SessionPtr session = System::getSingleton()->getSessionManager()->findSession(sessionID);
 	if (session == nullptr)
 	{
 		//discard message

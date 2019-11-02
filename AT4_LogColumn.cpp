@@ -17,7 +17,7 @@ QString LogColumn_Index::getString(const LogData& logData) const
 //--------------------------------------------------------------------------------------------
 QString LogColumn_Time::getString(const LogData& logData) const
 {
-	const axtrace_time_s& t = logData.logTime;
+	const MessageTime& t = logData.logTime;
 	return  QString("%1:%2 %3.%4")
 		.arg(t.hour, 2, 10, QLatin1Char('0'))
 		.arg(t.minute, 2, 10, QLatin1Char('0'))
