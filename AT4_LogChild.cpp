@@ -141,6 +141,8 @@ QModelIndex LogDataModel::index(int row, int column, const QModelIndex &parent) 
 //--------------------------------------------------------------------------------------------
 void LogDataModel::switchColumn(qint32 index)
 {
+	Q_ASSERT(index>=0 && index< m_logColumnGroup.getCounts()-1);
+
 	const LogColumn* column = m_logColumnGroup.getColumn(index);
 	if (column->isActive())
 	{
@@ -359,6 +361,11 @@ void LogChild::onHeadContextMenu(const QPoint & pos)
 		action->setProperty("context", QVariant(column->getIndex()));
 		action->setCheckable(true);
 		action->setChecked(column->isActive());
+
+		if (column->getIndex() == columnGroup.getCounts()-1)
+		{
+			action->setEnabled(false);
+		}
 	});
 
 	QAction* selectedItem = headContextMenu.exec(pos);
