@@ -14,13 +14,14 @@
 #include "AT4_MainWindow.h"
 
 //--------------------------------------------------------------------------------------------
-LogDataModel::LogDataModel(QObject *parent)
+LogDataModel::LogDataModel(const LogParser& logParser, QObject *parent)
 	: QAbstractItemModel(parent)
-	, m_currentIndex(1)
+	, m_currentIndex(LOG_INDEX_START_FROM)
 	, m_maxOverflowCounts(DEFAULT_MAX_OVERFLOW_COUNTS)
 {
 	m_maxLogCounts = System::getSingleton()->getConfig()->getMaxLogCounts();
-	m_logColumnGroup.initDefaulGroup();
+	m_logParser = logParser;
+	m_logColumnGroup.initDefaulGroup(m_logParser);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -32,16 +33,16 @@ LogDataModel::~LogDataModel()
 //--------------------------------------------------------------------------------------------
 void LogDataModel::insertLog(const LogMessage* logMessage, const Filter::ListResult& filterResult)
 {
-	beginInsertRows(QModelIndex(), rowCount(), rowCount()+1);
-
 	LogData logData;
 	logData.logIndex = m_currentIndex++;
 	logData.logTime = logMessage->getTime();
 	logData.session = logMessage->getSession();
 	logData.logType = logMessage->getLogType();
-	logData.logContent = logMessage->getLog();
 	logData.backColor = Filter::toQColor(filterResult.backColor);
 	logData.frontColor = Filter::toQColor(filterResult.fontColor);
+	logData.logContent = m_logParser.parserLog(logMessage->getLog());
+
+	beginInsertRows(QModelIndex(), rowCount(), rowCount()+1);
 
 	m_logVector.push_back(logData);
 
@@ -277,7 +278,7 @@ LogChild::~LogChild()
 //--------------------------------------------------------------------------------------------
 void LogChild::init(void)
 {
-	LogDataModel* model = new LogDataModel();
+	LogDataModel* model = new LogDataModel(LogParser());
 	this->setModel(model);
 
 	model->getColumns().walk(true, [&](const LogColumn* column) {

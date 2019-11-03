@@ -20,7 +20,7 @@ class LogDataModel : public QAbstractItemModel
 	Q_OBJECT
 
 public:
-	explicit LogDataModel(QObject *parent = 0);
+	explicit LogDataModel(const LogParser& logParser, QObject *parent = 0);
 	~LogDataModel();
 
 	void insertLog(const LogMessage* logMessage, const Filter::ListResult& filterResult);
@@ -52,13 +52,14 @@ public:
 	}
 
 private:
-	enum { DEFAULT_MAX_OVERFLOW_COUNTS=10 };
+	enum { LOG_INDEX_START_FROM=1, DEFAULT_MAX_OVERFLOW_COUNTS=10 };
 
 	LogColumnGroup m_logColumnGroup;
 	LogDataVector m_logVector;
 	quint32 m_currentIndex;
 	qint32 m_maxLogCounts;
 	qint32 m_maxOverflowCounts;
+	LogParser m_logParser;
 };
 
 class LogChild : public QTreeView

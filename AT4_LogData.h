@@ -17,7 +17,28 @@ struct LogData
 	quint32			logType;
 	QColor			backColor;
 	QColor			frontColor;
-	QString			logContent;
+	QStringList		logContent;
 };
 
 typedef QQueue<LogData> LogDataVector;
+
+class LogParser
+{
+public:
+	bool build(const QString& regString, const QStringList& titleList);
+
+	bool isDefault(void) const { return m_default; }
+	const QStringList& getTitleList(void) const { return m_titleList; }
+	QStringList parserLog(const QString& logContent) const;
+
+private:
+	void _resetToDefault(void);
+
+private:
+	bool		m_default;
+	QRegExp		m_regExp;
+	QStringList	m_titleList;
+
+public:
+	LogParser();
+};

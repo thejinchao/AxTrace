@@ -63,11 +63,18 @@ QString LogColumn_LogType::getString(const LogData& logData) const
 //--------------------------------------------------------------------------------------------
 QString LogColumn_LogContent::getString(const LogData& logData) const
 {
-	return logData.logContent;
+	if (m_isLast)
+	{
+		return logData.logContent.last();
+	}
+	if (logData.logContent.size() == 1) return QString();
+
+	Q_ASSERT(m_indexOfList >= 0 && m_indexOfList < logData.logContent.size()-1);
+	return logData.logContent[m_indexOfList];
 }
 
 //--------------------------------------------------------------------------------------------
-void LogColumnGroup::initDefaulGroup(void)
+void LogColumnGroup::initDefaulGroup(const LogParser& logParser)
 {
 	int index = 0;
 
@@ -77,7 +84,13 @@ void LogColumnGroup::initDefaulGroup(void)
 	m_columns.push_back(new LogColumn_SessionName(index++, false));
 	m_columns.push_back(new LogColumn_ProcessID(index++, false));
 	m_columns.push_back(new LogColumn_ThreadID(index++, false));
-	m_columns.push_back(new LogColumn_LogContent(index++));
+
+	qint32 indexOfList = 0;
+	for (QString logTitle : logParser.getTitleList())
+	{
+		bool isMain = (indexOfList == logParser.getTitleList().size()-1);
+		m_columns.push_back(new LogColumn_LogContent(logTitle, indexOfList++, isMain, index++));
+	}
 
 	_resetActiveIndex();
 }

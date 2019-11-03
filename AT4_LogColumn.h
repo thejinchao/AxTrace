@@ -97,10 +97,21 @@ class LogColumn_LogContent : public LogColumn
 {
 public:
 	virtual qint32 getWidth(void) const { return 0; }
-	virtual QString getTitle(void) const { return QString("Log"); }
+	virtual QString getTitle(void) const { return m_title; }
 	virtual QString getString(const LogData& logData) const;
 public:
-	LogColumn_LogContent(qint32 index, bool active = true) : LogColumn(index, active) {}
+	LogColumn_LogContent(const QString& title, qint32 indexOfList, bool isLast, qint32 index, bool active = true)
+		: LogColumn(index, active) 
+		, m_title(title)
+		, m_indexOfList(indexOfList)
+		, m_isLast(isLast)
+	{
+	}
+
+private:
+	QString m_title;
+	qint32 m_indexOfList;
+	bool m_isLast;
 };
 
 typedef QVector< LogColumn* > LogColumnVector;
@@ -108,7 +119,7 @@ typedef QVector< LogColumn* > LogColumnVector;
 class LogColumnGroup
 {
 public:
-	void initDefaulGroup(void);
+	void initDefaulGroup(const LogParser& logParser);
 
 	void activeColumn(qint32 index, bool active);
 	qint32 getCounts(void) const { return m_columns.size(); }
