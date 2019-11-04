@@ -286,19 +286,7 @@ void MainWindow::_onCleanAll()
 void MainWindow::_onSetting()
 {
 	SettingDialog dialog(this);
-
-	if (dialog.exec() == QDialog::Accepted)
-	{
-		if (System::getSingleton()->getFilter()->reloadScript(dialog.getScript().toUtf8().toStdString().c_str()))
-		{
-			System::getSingleton()->getConfig()->setFilterScript(dialog.getScript());
-		}
-		else
-		{
-			//It should not happen
-			QMessageBox::critical(this, tr("AxTrace 4"), tr("LoadScript Error"), QMessageBox::Ok);
-		}
-	}
+	dialog.exec();
 }
 
 //--------------------------------------------------------------------------------------------
