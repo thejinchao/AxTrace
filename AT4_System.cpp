@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -75,7 +75,10 @@ bool System::init(int argc, char *argv[])
 	Map2DChild::initCachedObject();
 
 	//init managers
-	m_config->loadSetting();
+	if (!(m_config->loadSetting()))	{
+		QMessageBox::critical(nullptr, QString("AxTrace 4"), QString("Load Setting Error"), QMessageBox::Ok);
+		return false;
+	}
 	if (!(m_filter->init(m_config))) {
 		QMessageBox::critical(nullptr, QString("AxTrace 4"), QString("Load Filter Script Error"), QMessageBox::Ok);
 		return false;

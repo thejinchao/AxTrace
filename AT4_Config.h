@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -9,7 +9,7 @@
 class Config
 {
 public:
-	void loadSetting(void);
+	bool loadSetting(void);
 	void saveSetting(void) const;
 	void copyFrom(const Config& other);
 
@@ -33,8 +33,28 @@ public:
 	int getMaxLogCounts(void) const { return m_maxLogCounts; }
 	void setMaxLogCounts(int maxLogCounts);
 
+public:
+	struct LogWndColumn
+	{
+		QString name;
+		qint32 width;
+	};
+	typedef QVector<LogWndColumn> LogWndColumnVector;
+
+	struct LogParserDefine
+	{
+		QString title;
+		QString regExp;
+		LogWndColumnVector columns;
+	};
+	typedef QSharedPointer<LogParserDefine> LogParserDefinePtr;
+	typedef QHash<QString, LogParserDefinePtr> LogParserDefineMap;
+
+	const LogParserDefinePtr getLogParser(const QString& title) const;
+
 private:
 	void _resetToDefaultSetting(void);
+	bool _loadLogParserDefine(void);
 
 private:
 	bool m_bCapture;
@@ -44,6 +64,11 @@ private:
 	QString m_defaultFilterScript;
 	QByteArray m_mainGeometry;
 	int m_maxLogCounts;
+
+	QString m_logParserDefineString;
+	QString m_defaultLogParserDefineString;
+	LogParserDefineMap m_logParserDefineMap;
+	LogParserDefinePtr m_emptyLogParser;
 
 public:
 	Config();

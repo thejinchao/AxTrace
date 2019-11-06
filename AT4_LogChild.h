@@ -12,6 +12,7 @@
 #include "AT4_Filter.h"
 #include "AT4_LogData.h"
 #include "AT4_LogColumn.h"
+#include "AT4_Config.h"
 
 class LogMessage;
 
@@ -20,7 +21,7 @@ class LogDataModel : public QAbstractItemModel
 	Q_OBJECT
 
 public:
-	explicit LogDataModel(const LogParser& logParser, QObject *parent = 0);
+	explicit LogDataModel(const Config::LogParserDefinePtr logParserDefine, QObject *parent = 0);
 	~LogDataModel();
 
 	void insertLog(const LogMessage* logMessage, const Filter::ListResult& filterResult);

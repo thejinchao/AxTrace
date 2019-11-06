@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -8,6 +8,7 @@
 
 #include "AT4_Interface.h"
 #include "AT4_Session.h"
+#include "AT4_Config.h"
 
 struct LogData
 {
@@ -25,20 +26,17 @@ typedef QQueue<LogData> LogDataVector;
 class LogParser
 {
 public:
-	bool build(const QString& regString, const QStringList& titleList);
+	bool isDefault(void) const { return m_parserDefine->regExp.isEmpty(); }
 
-	bool isDefault(void) const { return m_default; }
-	const QStringList& getTitleList(void) const { return m_titleList; }
+	typedef Config::LogWndColumnVector ColumnVector;
+	const ColumnVector& getTitleList(void) const { return m_parserDefine->columns; }
+
 	QStringList parserLog(const QString& logContent) const;
 
 private:
-	void _resetToDefault(void);
-
-private:
-	bool		m_default;
-	QRegExp		m_regExp;
-	QStringList	m_titleList;
+	Config::LogParserDefinePtr	m_parserDefine;
+	QRegExp m_regExp;
 
 public:
-	LogParser();
+	LogParser(const Config::LogParserDefinePtr logParserDefine);
 };

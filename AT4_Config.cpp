@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -69,6 +69,32 @@ void Config::_resetToDefaultSetting(void)
 		"end; \r\n"
 	);
 	m_maxLogCounts = 10000;
+
+	m_defaultLogParserDefineString = m_logParserDefineString = QString(
+		"[\r\n"
+		"  {\r\n"
+		"    \"title\": \"Talk\",\r\n"
+		"    \"regex\": \"(.*)->(.*):(.*)\",\r\n"
+		"    \"column\": [\r\n"
+		"      {\r\n"
+		"        \"name\": \"Sender\",\r\n"
+		"        \"width\": \"100\"\r\n"
+		"      },\r\n"
+		"      {\r\n"
+		"        \"name\": \"Receiver\",\r\n"
+		"        \"width\": \"100\"\r\n"
+		"      },\r\n"
+		"      {\r\n"
+		"        \"name\": \"Content\",\r\n"
+		"        \"width\": \"0\"\r\n"
+		"      }\r\n"
+		"    ]\r\n"
+		"  }\r\n"
+		"]\r\n"
+	);
+
+	m_emptyLogParser = LogParserDefinePtr(new LogParserDefine());
+	m_emptyLogParser->columns.push_back({"Log", 0});
 }
 
 //--------------------------------------------------------------------------------------------
@@ -78,6 +104,8 @@ void Config::copyFrom(const Config& other)
 	m_bAutoScroll = other.m_bAutoScroll;
 	m_filterScript = other.m_filterScript;
 	m_maxLogCounts = other.m_maxLogCounts;
+	m_logParserDefineString = other.m_logParserDefineString;
+	m_logParserDefineMap = other.m_logParserDefineMap;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -100,7 +128,7 @@ void Config::setMaxLogCounts(int maxLogCounts)
 }
 
 //--------------------------------------------------------------------------------------------
-void Config::loadSetting(void)
+bool Config::loadSetting(void)
 {
 	_resetToDefaultSetting();
 
@@ -112,6 +140,10 @@ void Config::loadSetting(void)
 	m_mainGeometry = settings.value("MainGeometry", QByteArray()).toByteArray();
 	m_filterScript = settings.value("FilterScript", m_filterScript).toString();
 	m_maxLogCounts = settings.value("MaxLogCounts", m_maxLogCounts).toInt();
+	m_logParserDefineString = settings.value("LogParserDefine", m_defaultLogParserDefineString).toString();
+
+	//load log parser define
+	return _loadLogParserDefine();
 }
 
 //--------------------------------------------------------------------------------------------
@@ -125,4 +157,56 @@ void Config::saveSetting(void) const
 	settings.setValue("MainGeometry", m_mainGeometry);
 	settings.setValue("FilterScript", m_filterScript);
 	settings.setValue("MaxLogCounts", m_maxLogCounts);
+	settings.setValue("LogParserDefine", m_logParserDefineString);
+}
+
+//--------------------------------------------------------------------------------------------
+bool Config::_loadLogParserDefine(void)
+{
+	QJsonParseError json_error;
+	QJsonDocument jsonDoc(QJsonDocument::fromJson(m_logParserDefineString.toUtf8(), &json_error));
+
+	if (json_error.error != QJsonParseError::NoError)
+	{
+		return false;
+	}
+
+	QJsonArray arrayObj = jsonDoc.array();
+	for (int i = 0; i < arrayObj.size(); i++)
+	{
+		LogParserDefinePtr parser(new LogParserDefine());
+
+		QJsonObject obj = arrayObj.at(i).toObject();
+
+		parser->title = obj.value("title").toString();
+		parser->regExp = obj.value("regex").toString();
+
+		QJsonArray columnArray = obj.value("column").toArray();
+		for (int j = 0; j < columnArray.size(); j++)
+		{
+			LogWndColumn newColumn;
+			QJsonObject columnObj = columnArray.at(j).toObject();
+
+			newColumn.name = columnObj.value("name").toString();
+			newColumn.width = columnObj.value("width").toString().toInt();
+
+			parser->columns.push_back(newColumn);
+		}
+
+		m_logParserDefineMap.insert(parser->title, parser);
+	}
+
+	return true;
+}
+
+//--------------------------------------------------------------------------------------------
+const Config::LogParserDefinePtr Config::getLogParser(const QString& title) const
+{
+	LogParserDefineMap::const_iterator it = m_logParserDefineMap.find(title);
+	if (it == m_logParserDefineMap.end())
+	{
+		return m_emptyLogParser;
+	}
+
+	return it.value();
 }

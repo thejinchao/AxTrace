@@ -14,13 +14,13 @@
 #include "AT4_MainWindow.h"
 
 //--------------------------------------------------------------------------------------------
-LogDataModel::LogDataModel(const LogParser& logParser, QObject *parent)
+LogDataModel::LogDataModel(const Config::LogParserDefinePtr logParserDefine, QObject *parent)
 	: QAbstractItemModel(parent)
 	, m_currentIndex(LOG_INDEX_START_FROM)
 	, m_maxOverflowCounts(DEFAULT_MAX_OVERFLOW_COUNTS)
+	, m_logParser(logParserDefine)
 {
 	m_maxLogCounts = System::getSingleton()->getConfig()->getMaxLogCounts();
-	m_logParser = logParser;
 	m_logColumnGroup.initDefaulGroup(m_logParser);
 }
 
@@ -278,7 +278,8 @@ LogChild::~LogChild()
 //--------------------------------------------------------------------------------------------
 void LogChild::init(void)
 {
-	LogDataModel* model = new LogDataModel(LogParser());
+	Config* config = System::getSingleton()->getConfig();
+	LogDataModel* model = new LogDataModel(config->getLogParser(m_title));
 	this->setModel(model);
 
 	model->getColumns().walk(true, [&](const LogColumn* column) {
@@ -317,7 +318,8 @@ void LogChild::timerEvent(QTimerEvent *event)
 	}
 
 	LogDataModel* model = (LogDataModel*)(this->model());
-	model->autoCheckOverflow();
+	if(model)
+		model->autoCheckOverflow();
 }
 
 //--------------------------------------------------------------------------------------------

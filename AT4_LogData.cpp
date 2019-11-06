@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -9,56 +9,28 @@
 #include "AT4_LogData.h"
 
 //--------------------------------------------------------------------------------------------
-LogParser::LogParser()
+LogParser::LogParser(const Config::LogParserDefinePtr logParserDefine)
+	: m_parserDefine(logParserDefine)
 {
-	_resetToDefault();
-}
+	if (isDefault()) return;
 
-//--------------------------------------------------------------------------------------------
-void LogParser::_resetToDefault(void)
-{
-	m_default = true;
-	m_titleList = (QStringList() << "Log");
-}
-
-//--------------------------------------------------------------------------------------------
-bool LogParser::build(const QString& regString, const QStringList& titleList)
-{
-	_resetToDefault();
-
-	if (regString.isEmpty())
-	{
-		return true;
-	}
-
-	QRegExp regExp(regString);
-	if (regExp.captureCount() != titleList.size())
-	{
-		return false;
-	}
-
-	m_default = false;
-	m_regExp = regExp;
-	m_titleList = titleList;
-	return true;
+	m_regExp = QRegExp(m_parserDefine->regExp);
+	Q_ASSERT(m_regExp.captureCount() == m_parserDefine->columns.size());
 }
 
 //--------------------------------------------------------------------------------------------
 QStringList LogParser::parserLog(const QString& logContent) const
 {
-	if (!isDefault())
+	if (isDefault() || !m_regExp.exactMatch(logContent))
 	{
-		if (m_regExp.exactMatch(logContent))
-		{
-			QStringList ret;
-			QStringList captureTexts = m_regExp.capturedTexts();
-			for (qint32 i = 1; i < captureTexts.size(); i++)
-			{
-				ret << captureTexts[i];
-			}
-			return ret;
-		}
+		return QStringList(logContent);
 	}
 
-	return QStringList(logContent);
+	QStringList ret;
+	QStringList captureTexts = m_regExp.capturedTexts();
+	for (qint32 i = 1; i < captureTexts.size(); i++)
+	{
+		ret << captureTexts[i];
+	}
+	return ret;
 }
