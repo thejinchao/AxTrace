@@ -60,6 +60,16 @@ int main(int argc, char* argv[])
 		axlog(AXT_ERROR, "ERROR: This is a error message");
 		axlog(AXT_FATAL, "FATAL: This is a fatal message");
 	}
+
+	//--------------------------
+	{
+		printf("AxTrace Custom Parser\n");
+		system("pause");
+
+		//test AxTrace
+		axlog(AXT_USERDEF + 1, "Alice->Bob:Hello,Bob, How are you doing?");
+		axlog(AXT_USERDEF + 1, "Bob->Alice:Hi, Alice, I'm good!");
+	}
 	//--------------------------
 	{
 		printf("AxTrace Pressure Test\n");
