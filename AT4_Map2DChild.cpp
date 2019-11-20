@@ -62,7 +62,8 @@ QBrush*	Map2DChild::m_cachedBrush[Map2DChild::MAX_COLOR_COUNTS] = { nullptr };
 
 //--------------------------------------------------------------------------------------------
 Map2DChild::Map2DChild(const QString& title)
-	: m_scene(nullptr)
+	: m_frameIndex(0)
+	, m_scene(nullptr)
 	, m_camera(nullptr)
 {
 	setAttribute(Qt::WA_DeleteOnClose);
@@ -206,102 +207,117 @@ void Map2DChild::resizeGL(int w, int h)
 //--------------------------------------------------------------------------------------------
 void Map2DChild::paintEvent(QPaintEvent *event)
 {
+	if (m_scene == nullptr) return;
+		
 	QPainter painter;
+
+	//Begin draw
 	painter.begin(this);
 	painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
 
 	painter.fillRect(event->rect(), m_backgroundBrush);
+
+	// set transform from camera
+	painter.save();
+	painter.setTransform(m_camera->getTransform());
+
+	//0. draw scene background
+	m_sceneBorderPen.setWidthF(1.0 / m_camera->getScale());
+	painter.setPen(m_sceneBorderPen);
+	painter.fillRect(m_scene->getSceneRect(), m_sceneBrush);
+
+	//1. draw scene grid
+	if (m_scene->isGridDefined() && System::getSingleton()->getConfig()->getShowGrid())
+	{
+		m_sceneGridPen.setWidthF(1.0 / m_camera->getScale());
+		painter.setPen(m_sceneGridPen);
+
+		_drawGrid(painter);
+	}
+
+	Filter* filter = System::getSingleton()->getFilter();
+
+	bool firstActor = true;
 	QString mouseTips;
 
-	painter.save();
-	if (m_scene)
+	//2. draw actor
+	m_scene->walk([&](const Scene2D::Actor& actor)
 	{
-		painter.setTransform(m_camera->getTransform());
+		painter.setBrush(getCachedBrush(actor.fillColor));
 
-		const QRectF& sceneRect = m_scene->getSceneRect();
+		QPen& actorPen = getCachedPen(actor.borderColor);
+		actorPen.setWidthF(1.0 / m_camera->getScale());
+		painter.setPen(actorPen);
 
-		//scene background
-		m_sceneBorderPen.setWidthF(1.0 / m_camera->getScale());
-		painter.setPen(m_sceneBorderPen);
-		painter.fillRect(m_scene->getSceneRect(), m_sceneBrush);
+		painter.save();
 
-		//scene grid
-		if (m_scene->isGridDefined() && System::getSingleton()->getConfig()->getShowGrid())
+		QTransform localMove = QTransform::fromTranslate(actor.pos.x(), actor.pos.y());
+
+		bool idDirNormal = std::isnormal(actor.dir);
+		if (idDirNormal)
+			localMove.rotateRadians(actor.dir);
+		
+		painter.setTransform(localMove, true);
+
+		//get actor tips
+		_getMouseTips(painter.transform(), actor, mouseTips);
+
+		switch (actor.type)
 		{
-			m_sceneGridPen.setWidthF(1.0 / m_camera->getScale());
-			painter.setPen(m_sceneGridPen);
+		case Filter::AT_CIRCLE:
+		{
+			painter.drawEllipse(QPointF(0.0, 0.0), actor.size, actor.size);
+			if(idDirNormal)
+				painter.drawLine(QPointF(0.0, 0.0), QPointF(actor.size*1.2, 0.0));
+		}
+		break;
 
-			_drawGrid(painter);
+		case Filter::AT_QUAD:
+		{
+			painter.drawRect(QRectF(-actor.size, -actor.size, actor.size * 2, actor.size * 2));
+			if(idDirNormal)
+				painter.drawLine(QPointF(0.0, 0.0), QPointF(actor.size*1.2, 0.0));
+		}
+		break;
+
+		case Filter::AT_TRIANGLE:
+		{
+			float l = -0.866025*actor.size; // sqrt(0.75)
+			float t = 0.5*actor.size;
+			QPointF triangles[3] = {
+				QPointF(actor.size, 0),
+				QPointF(l, -t),
+				QPointF(l,  t)
+			};
+			painter.drawConvexPolygon(triangles, 3);
+			if (idDirNormal)
+				painter.drawLine(QPointF(0.0, 0.0), QPointF(actor.size*1.2, 0.0));
+		}
+		break;
+
+		default:
+			break;
 		}
 
-		Filter* filter = System::getSingleton()->getFilter();
+		painter.restore();
+	});
 
-		//actor
-		m_scene->walk([&](const Scene2D::Actor& actor) 
-		{
-			painter.setBrush(getCachedBrush(actor.fillColor));
-
-			QPen& actorPen = getCachedPen(actor.borderColor);
-			actorPen.setWidthF(1.0 / m_camera->getScale());
-			painter.setPen(actorPen);
-
-			painter.save();
-
-			QTransform localMove = QTransform::fromTranslate(actor.pos.x(), actor.pos.y());
-			localMove.rotateRadians(actor.dir);
-			painter.setTransform(localMove, true);
-
-			_getMouseTips(painter.transform(), actor, mouseTips);
-
-			switch (actor.type)
-			{
-			case Filter::AT_CIRCLE:
-			{
-				painter.drawEllipse(QPointF(0.0, 0.0), actor.size, actor.size);
-				painter.drawLine(QPointF(0.0, 0.0), QPointF(actor.size*1.2, 0.0));
-			}
-			break;
-
-			case Filter::AT_QUAD:
-			{
-				painter.drawRect(QRectF(-actor.size, -actor.size, actor.size*2, actor.size*2));
-				painter.drawLine(QPointF(0.0, 0.0), QPointF(actor.size*1.2, 0.0));
-			}
-			break;
-
-			case Filter::AT_TRIANGLE:
-			{
-				float l = -0.866025*actor.size; // sqrt(0.75)
-				float t = 0.5*actor.size;
-				QPointF triangles[3] = { 
-					QPointF(actor.size, 0),
-					QPointF(l, -t),
-					QPointF(l,  t)
-				};
-				painter.drawConvexPolygon(triangles, 3);
-			}
-			break;
-			}
-
-			painter.restore();
-		});
-	}
 	painter.restore();
 
-	if (m_scene)
-	{
-		painter.setPen(m_infoTextPen);
-		painter.setFont(m_infoTextFont);
+	//3. draw text
+	painter.setPen(m_infoTextPen);
+	painter.setFont(m_infoTextFont);
 
-		QString infoText = QString("SceneSize:%1,%2\nMouse:%3,%4\n%5")
-			.arg(abs(m_scene->getSceneRect().width()))
-			.arg(abs(m_scene->getSceneRect().height()))
-			.arg(m_cursorPosScene.x())
-			.arg(m_cursorPosScene.y())
-			.arg(mouseTips);
-		painter.drawText(QRect(0, 0, m_camera->getViewSize().width(), m_camera->getViewSize().height()), Qt::AlignLeft|Qt::AlignTop, infoText);
-	}
+	QString infoText = QString("Frame:%1\nSceneSize:%2,%3\nMouse:%4,%5\n%6")
+		.arg(m_frameIndex++)
+		.arg(abs(m_scene->getSceneRect().width()))
+		.arg(abs(m_scene->getSceneRect().height()))
+		.arg(m_cursorPosScene.x())
+		.arg(m_cursorPosScene.y())
+		.arg(mouseTips);
+	painter.drawText(QRect(0, 0, m_camera->getViewSize().width(), m_camera->getViewSize().height()), Qt::AlignLeft | Qt::AlignTop, infoText);
 
+	//4. end
 	painter.end();
 }
 
@@ -350,12 +366,12 @@ void Map2DChild::_drawGrid(QPainter& painter)
 }
 
 //--------------------------------------------------------------------------------------------
-void Map2DChild::_getMouseTips(const QTransform& localMove, const Scene2D::Actor& actor, QString& mouseTips)
+bool Map2DChild::_getMouseTips(const QTransform& localMove, const Scene2D::Actor& actor, QString& mouseTips)
 {
 	//calc cursor pos
 	bool invertible;
 	QTransform localMoveInvert = localMove.inverted(&invertible);
-	if (!invertible) return;
+	if (!invertible) return false;
 	
 	QPointF pos = localMoveInvert * m_cursorPosView;
 
@@ -363,13 +379,13 @@ void Map2DChild::_getMouseTips(const QTransform& localMove, const Scene2D::Actor
 	{
 	case Filter::AT_CIRCLE:
 	{
-		if (QPointF::dotProduct(pos, pos) > (actor.size*actor.size)) return;
+		if (QPointF::dotProduct(pos, pos) > (actor.size*actor.size)) return false;
 	}
 	break;
 
 	case Filter::AT_QUAD:
 	{
-		if (pos.x() < -actor.size || pos.x() > actor.size || pos.y() < -actor.size || pos.y() > actor.size) return;
+		if (pos.x() < -actor.size || pos.x() > actor.size || pos.y() < -actor.size || pos.y() > actor.size) return false;
 	}
 	break;
 
@@ -378,17 +394,17 @@ void Map2DChild::_getMouseTips(const QTransform& localMove, const Scene2D::Actor
 		const float sqrt_0_75 = 0.866025f; //sqrt(0.75)
 		const float s1_len = 1.93185165258f; //sqrt(2+2*sqrt(0.75)) 
 
-		if (pos.x() < -sqrt_0_75 * actor.size) return;
+		if (pos.x() < -sqrt_0_75 * actor.size) return false;
 
 		QPointF s1 = QPointF(-(1+ sqrt_0_75 )*actor.size, -0.5*actor.size); // -(1+sqrt(0.75)), -0.5
 		QPointF p = QPointF(pos.x() - actor.size, pos.y());
 		const float p_len = sqrt(QPointF::dotProduct(p, p));
 
-		if (QPointF::dotProduct(p, s1) < sqrt_0_75*p_len*s1_len*actor.size) return;
+		if (QPointF::dotProduct(p, s1) < sqrt_0_75*p_len*s1_len*actor.size) return false;
 	}
 	break;
 	
-	default: return;
+	default: return false;
 	}
 
 	QString tips = QString("-------------\nID:%1\nPos:%2,%3\n%4\n")
@@ -397,6 +413,7 @@ void Map2DChild::_getMouseTips(const QTransform& localMove, const Scene2D::Actor
 		.arg(actor.info);
 
 	mouseTips += tips;
+	return true;
 }
 
 //--------------------------------------------------------------------------------------------

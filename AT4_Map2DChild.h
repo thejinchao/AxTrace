@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -43,7 +43,7 @@ protected:
 
 private:
 	QString m_title;
-
+	qint32 m_frameIndex;
 	QBrush m_backgroundBrush;
 	QBrush m_sceneBrush;
 	QPen m_sceneBorderPen;
@@ -58,7 +58,7 @@ private:
 	QPointF m_cursorPosScene;
 
 private:
-	void _getMouseTips(const QTransform& localMove, const Scene2D::Actor& actor, QString& mouseTips);
+	bool _getMouseTips(const QTransform& localMove, const Scene2D::Actor& actor, QString& mouseTips);
 	void _drawGrid(QPainter& painter);
 
 public:
