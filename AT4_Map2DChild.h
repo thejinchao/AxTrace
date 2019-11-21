@@ -50,6 +50,7 @@ private:
 	QPen m_sceneGridPen;
 	QPen m_infoTextPen;
 	QFont m_infoTextFont;
+	QPen m_selectBorder;
 
 	Scene2D* m_scene;
 	Camera2D* m_camera;
@@ -57,9 +58,15 @@ private:
 	QPointF	m_cursorPosView;
 	QPointF m_cursorPosScene;
 
+	bool m_hasSelectedActor; 
+	qint64 m_selectActor;
+	//all actor under mouse cursor
+	QSet<qint64> m_hovedActor;
+
 private:
 	bool _getMouseTips(const QTransform& localMove, const Scene2D::Actor& actor, QString& mouseTips);
 	void _drawGrid(QPainter& painter);
+	void _onMoseSelect(void);
 
 public:
 	static void initCachedObject(void);

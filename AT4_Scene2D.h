@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -13,6 +13,7 @@ class Update2DActorMessage;
 class End2DSceneMessage;
 
 #include "AT4_Filter.h"
+#include "AT4_Interface.h"
 
 class Scene2D
 {
@@ -27,6 +28,9 @@ public:
 		quint16 fillColor;
 		qreal size;
 		QString info;
+
+		QString buildBriefInfo(void) const;
+		QString buildDetailInfo(void) const;
 	};
 
 public:

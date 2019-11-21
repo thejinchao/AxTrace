@@ -65,6 +65,7 @@ Map2DChild::Map2DChild(const QString& title)
 	: m_frameIndex(0)
 	, m_scene(nullptr)
 	, m_camera(nullptr)
+	, m_hasSelectedActor(false)
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 
@@ -98,6 +99,7 @@ void Map2DChild::init(QWidget* parent)
 	m_sceneBorderPen = QPen(Qt::white);
 	m_sceneGridPen = QPen(Qt::gray);
 	m_infoTextPen = QPen(Qt::white);
+	m_selectBorder = QPen(Qt::yellow);
 	m_infoTextFont.setPixelSize(16);
 	setMouseTracking(true);
 }
@@ -161,6 +163,10 @@ void Map2DChild::mousePressEvent(QMouseEvent *e)
 		grabMouse();
 		m_camera->beginDrag(e);
 	}
+	else if (e->button() == Qt::LeftButton) {
+		_onMoseSelect();
+		update();
+	}
 }
 
 //--------------------------------------------------------------------------------------------
@@ -223,6 +229,7 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 
 	//0. draw scene background
 	m_sceneBorderPen.setWidthF(1.0 / m_camera->getScale());
+	m_selectBorder.setWidthF(1.0 / m_camera->getScale());
 	painter.setPen(m_sceneBorderPen);
 	painter.fillRect(m_scene->getSceneRect(), m_sceneBrush);
 
@@ -237,6 +244,7 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 
 	Filter* filter = System::getSingleton()->getFilter();
 
+	m_hovedActor.clear();
 	bool firstActor = true;
 	QString mouseTips;
 
@@ -260,8 +268,27 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 		painter.setTransform(localMove, true);
 
 		//get actor tips
-		_getMouseTips(painter.transform(), actor, mouseTips);
+		QString actorTips;
+		if (_getMouseTips(painter.transform(), actor, actorTips))
+		{
+			m_hovedActor.insert(actor.actorID);
+		}
 
+		if (m_hasSelectedActor )
+		{
+			//build select actor detail text
+			if (actor.actorID == m_selectActor)
+			{
+				mouseTips = QString("-------------\n%1\n")
+					.arg(actor.buildDetailInfo());
+			}
+		}
+		else
+		{
+			mouseTips += actorTips;
+		}
+
+		//2.1 draw actor
 		switch (actor.type)
 		{
 		case Filter::AT_CIRCLE:
@@ -298,6 +325,35 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 		default:
 			break;
 		}
+
+		//2.2 draw select border
+		if (m_hasSelectedActor && actor.actorID == m_selectActor)
+		{
+			painter.setPen(m_selectBorder);
+			painter.setBrush(Qt::NoBrush);
+
+			switch (actor.type)
+			{
+				case Filter::AT_CIRCLE:
+				{
+					painter.drawRect(QRectF(-actor.size, -actor.size, actor.size * 2, actor.size * 2));
+				}
+				break;
+				case Filter::AT_QUAD:
+				{
+					painter.drawRect(QRectF(-actor.size*1.1, -actor.size*1.1, actor.size * 2.2, actor.size * 2.2));
+				}
+				break;
+
+				case Filter::AT_TRIANGLE:
+				{
+					float l = 0.866025*actor.size; // sqrt(0.75)
+					float t = 0.5*actor.size;
+					painter.drawRect(QRectF(-l, -t, actor.size+l, actor.size));
+				}
+			}
+		}
+
 
 		painter.restore();
 	});
@@ -407,13 +463,47 @@ bool Map2DChild::_getMouseTips(const QTransform& localMove, const Scene2D::Actor
 	default: return false;
 	}
 
-	QString tips = QString("-------------\nID:%1\nPos:%2,%3\n%4\n")
-		.arg(actor.actorID)
-		.arg(actor.pos.x()).arg(actor.pos.y())
-		.arg(actor.info);
+	QString tips = QString("-------------\n%1\n")
+		.arg(actor.buildBriefInfo());
 
-	mouseTips += tips;
+	mouseTips = tips;
 	return true;
+}
+
+//--------------------------------------------------------------------------------------------
+void Map2DChild::_onMoseSelect(void)
+{
+	if (m_hasSelectedActor)
+	{
+		if (m_hovedActor.empty())
+		{
+			//cancel select
+			m_hasSelectedActor = false;
+		}
+		else
+		{
+			//same pos?
+			if (m_hovedActor.contains(m_selectActor))
+			{
+				//TODO: select next actor
+			}
+			else
+			{
+				//select first actor
+				m_selectActor = *m_hovedActor.begin();
+				m_hasSelectedActor = true;
+			}
+		}
+
+	}
+	else
+	{
+		if (m_hovedActor.empty()) return;
+
+		//select first actor
+		m_selectActor = *m_hovedActor.begin();
+		m_hasSelectedActor = true;
+	}
 }
 
 //--------------------------------------------------------------------------------------------

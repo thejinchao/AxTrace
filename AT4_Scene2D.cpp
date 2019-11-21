@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -142,4 +142,27 @@ void Scene2D::_parserSceneDefine(const QJsonObject& sceneInfo)
 			m_gridPoint = QPointF(gridPointX, gridPointY);
 		}
 	}
+}
+
+//--------------------------------------------------------------------------------------------
+QString Scene2D::Actor::buildBriefInfo(void) const
+{
+	QString brief = QString("ID:%1\nPos:%2,%3")
+		.arg(actorID)
+		.arg(pos.x()).arg(pos.y());
+
+	if (!info.isEmpty())
+	{
+		brief += "\n";
+		brief += info;
+	}
+	
+	return brief;
+}
+
+//--------------------------------------------------------------------------------------------
+QString Scene2D::Actor::buildDetailInfo(void) const
+{
+	//TODO: add actor log
+	return buildBriefInfo();
 }
