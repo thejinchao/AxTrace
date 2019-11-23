@@ -11,6 +11,7 @@
 class Begin2DSceneMessage;
 class Update2DActorMessage;
 class End2DSceneMessage;
+class Add2DActorLogMessage;
 
 #include "AT4_Filter.h"
 #include "AT4_Interface.h"
@@ -28,15 +29,27 @@ public:
 		quint16 fillColor;
 		qreal size;
 		QString info;
+	};
 
-		QString buildBriefInfo(void) const;
-		QString buildDetailInfo(void) const;
+	struct PosHistory
+	{
+		QPointF pos;
+		qreal dir;
+		MessageTime time;
+	};
+
+	struct ActorHistory
+	{
+		qint64 actorID;
+		QQueue<PosHistory> posHistory;
+		QQueue<QString> logHistory;
 	};
 
 public:
 	void beginScene(const Begin2DSceneMessage* msg);
 	void updateActor(const Update2DActorMessage* msg, const Filter::Actor2DResult& filterResult);
 	void endScene(const End2DSceneMessage* msg);
+	void addActorLog(Add2DActorLogMessage* msg);
 
 	void clean(void);
 
@@ -49,6 +62,9 @@ public:
 	bool isGridDefined(void) const { return m_gridDefined; }
 	const QSizeF& getGridSize(void) const { return m_gridSize; }
 	const QPointF& getGridPoint(void) const { return m_gridPoint; }
+
+	QString getActorBriefInfo(const Actor& actor) const;
+	QString getActorDetailInfo(const Actor& actor) const;
 
 private:
 	void _parserSceneDefine(const QJsonObject& sceneInfo);
@@ -69,6 +85,9 @@ private:
 	QRectF			m_updatingRect;
 	QJsonObject		m_updatingSceneDefine;
 	
+	typedef QHash< qint64, ActorHistory > ActorHistoryMap;
+	ActorHistoryMap m_actorHistory;
+
 public:
 	Scene2D(Begin2DSceneMessage* msg);
 	~Scene2D();

@@ -148,6 +148,15 @@ void Map2DChild::endScene(End2DSceneMessage* msg)
 }
 
 //--------------------------------------------------------------------------------------------
+void Map2DChild::addActorLog(Add2DActorLogMessage* msg)
+{
+	if (m_scene)
+	{
+		m_scene->addActorLog(msg);
+	}
+}
+
+//--------------------------------------------------------------------------------------------
 void Map2DChild::closeEvent(QCloseEvent *event)
 {
 	System::getSingleton()->getMainWindow()->notifySubWindowClose(IChild::CT_2DMAP, m_title);
@@ -229,7 +238,7 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 
 	//0. draw scene background
 	m_sceneBorderPen.setWidthF(1.0 / m_camera->getScale());
-	m_selectBorder.setWidthF(1.0 / m_camera->getScale());
+	m_selectBorder.setWidthF(2.0 / m_camera->getScale());
 	painter.setPen(m_sceneBorderPen);
 	painter.fillRect(m_scene->getSceneRect(), m_sceneBrush);
 
@@ -245,8 +254,8 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 	Filter* filter = System::getSingleton()->getFilter();
 
 	m_hovedActor.clear();
-	bool firstActor = true;
 	QString mouseTips;
+	bool findSelectedActor = false;
 
 	//2. draw actor
 	m_scene->walk([&](const Scene2D::Actor& actor)
@@ -280,7 +289,8 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 			if (actor.actorID == m_selectActor)
 			{
 				mouseTips = QString("-------------\n%1\n")
-					.arg(actor.buildDetailInfo());
+					.arg(m_scene->getActorDetailInfo(actor));
+				findSelectedActor = true;
 			}
 		}
 		else
@@ -375,6 +385,11 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 
 	//4. end
 	painter.end();
+
+	if (!findSelectedActor)
+	{
+		m_hasSelectedActor = false;
+	}
 }
 
 //--------------------------------------------------------------------------------------------
@@ -464,7 +479,7 @@ bool Map2DChild::_getMouseTips(const QTransform& localMove, const Scene2D::Actor
 	}
 
 	QString tips = QString("-------------\n%1\n")
-		.arg(actor.buildBriefInfo());
+		.arg(m_scene->getActorBriefInfo(actor));
 
 	mouseTips = tips;
 	return true;

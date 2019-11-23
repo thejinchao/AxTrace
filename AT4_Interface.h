@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -43,6 +43,7 @@
 #define AXTRACE_CMD_TYPE_2D_BEGIN_SCENE	(3)
 #define AXTRACE_CMD_TYPE_2D_ACTOR		(4)
 #define AXTRACE_CMD_TYPE_2D_END_SCENE	(5)
+#define AXTRACE_CMD_TYPE_2D_ACTOR_LOG	(6)
 
 #define AXTRACE_MAX_PROCESSNAME_LENGTH	(512)
 #define AXTRACE_MAX_LOG_STRING_LENGTH	(0x8000)
@@ -51,6 +52,7 @@
 #define AXTRACE_MAX_SCENE_NAME_LENGTH	(128)
 #define AXTRACE_MAX_SCENE_DEFINE_LENGTH	(2048)
 #define AXTRACE_MAX_ACTOR_INFO_LENGTH	(2048)
+#define AXTRACE_MAX_ACTOR_LOG_LENGTH	(2048)
 
 /*---------------------------------------------------------------------------------------------*/
 #pragma pack(push)
@@ -132,6 +134,17 @@ typedef struct
 
 									/* [scene name buf  with '\0' ended]*/
 } axtrace_2d_end_scene_s;
+
+typedef struct
+{
+	axtrace_head_s	head;			/* common head */
+	__int64			actor_id;		/* id of actor */
+	unsigned short	name_len;		/* length of scene name */
+	unsigned short	log_len;		/* length of actor log */
+
+									/* [scene name buf  with '\0' ended]*/
+									/* [actor log(utf8) buf  with '\0' ended]*/
+} axtrace_2d_actor_log_s;
 
 struct MessageTime
 {

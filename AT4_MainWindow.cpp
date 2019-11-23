@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -104,6 +104,10 @@ void MainWindow::_processAxTraceData(Message* msg)
 		_end2DScene((End2DSceneMessage*)msg);
 		break;
 
+	case AXTRACE_CMD_TYPE_2D_ACTOR_LOG:
+		_addActor2DLog((Add2DActorLogMessage*)msg);
+		break;
+
 	default: break;
 	}
 }
@@ -161,6 +165,13 @@ void MainWindow::_end2DScene(End2DSceneMessage* msg)
 {
 	Map2DChild* child = getMap2DChild(msg->getSceneName());
 	child->endScene(msg);
+}
+
+//--------------------------------------------------------------------------------------------
+void MainWindow::_addActor2DLog(Add2DActorLogMessage* msg)
+{
+	Map2DChild* child = getMap2DChild(msg->getSceneName());
+	child->addActorLog(msg);
 }
 
 //--------------------------------------------------------------------------------------------

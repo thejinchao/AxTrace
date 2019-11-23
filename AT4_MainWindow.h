@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -21,6 +21,7 @@ class ValueMessage;
 class Begin2DSceneMessage;
 class Update2DActorMessage;
 class End2DSceneMessage;
+class Add2DActorLogMessage;
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -68,6 +69,7 @@ private:
 	void _begin2DScene(Begin2DSceneMessage* msg);
 	void _update2DActor(Update2DActorMessage* msg);
 	void _end2DScene(End2DSceneMessage* msg);
+	void _addActor2DLog(Add2DActorLogMessage* msg);
 
 private:
 	typedef QMap<QString, LogChild*> LogChildMap;

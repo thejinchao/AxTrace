@@ -19,6 +19,7 @@ class Camera2D;
 class Begin2DSceneMessage;
 class Update2DActorMessage;
 class End2DSceneMessage;
+class Add2DActorLogMessage;
 
 class Map2DChild : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -30,6 +31,7 @@ public:
 	void beginScene(Begin2DSceneMessage* msg);
 	void updateActor(Update2DActorMessage* msg, const Filter::Actor2DResult& filterResult);
 	void endScene(End2DSceneMessage* msg);
+	void addActorLog(Add2DActorLogMessage* msg);
 
 protected:
 	void closeEvent(QCloseEvent *event) override;

@@ -66,6 +66,7 @@ void Scene2D::updateActor(const Update2DActorMessage* msg, const Filter::Actor2D
 		actor.size = filterResult.size;
 		actor.fillColor = filterResult.fillColor;
 		actor.borderColor = filterResult.borderColor;
+		actor.info = msg->getActorInfo();
 	}
 }
 
@@ -79,6 +80,25 @@ void Scene2D::endScene(const End2DSceneMessage* msg)
 	m_sceneRect = m_updatingRect;
 
 	_parserSceneDefine(m_updatingSceneDefine);
+}
+
+//--------------------------------------------------------------------------------------------
+void Scene2D::addActorLog(Add2DActorLogMessage* msg)
+{
+	ActorHistoryMap::iterator it = m_actorHistory.find(msg->getActorID());
+	if (it == m_actorHistory.end())
+	{
+		ActorHistory history;
+		history.actorID = msg->getActorID();
+		history.logHistory.push_back(msg->getActorLog());
+
+		m_actorHistory.insert(msg->getActorID(), history);
+	}
+	else
+	{
+		ActorHistory& history = *it;
+		history.logHistory.push_back(msg->getActorLog());
+	}
 }
 
 //--------------------------------------------------------------------------------------------
@@ -145,24 +165,40 @@ void Scene2D::_parserSceneDefine(const QJsonObject& sceneInfo)
 }
 
 //--------------------------------------------------------------------------------------------
-QString Scene2D::Actor::buildBriefInfo(void) const
+QString Scene2D::getActorBriefInfo(const Actor& actor) const
 {
 	QString brief = QString("ID:%1\nPos:%2,%3")
-		.arg(actorID)
-		.arg(pos.x()).arg(pos.y());
+		.arg(actor.actorID)
+		.arg(actor.pos.x()).arg(actor.pos.y());
 
-	if (!info.isEmpty())
+	if (!actor.info.isEmpty())
 	{
-		brief += "\n";
-		brief += info;
+		brief += "\nInfo:";
+		brief += actor.info;
 	}
 	
 	return brief;
 }
 
 //--------------------------------------------------------------------------------------------
-QString Scene2D::Actor::buildDetailInfo(void) const
+QString Scene2D::getActorDetailInfo(const Actor& actor) const
 {
-	//TODO: add actor log
-	return buildBriefInfo();
+	QString detailInfo = getActorBriefInfo(actor);
+
+	//add actor log
+	ActorHistoryMap::const_iterator it = m_actorHistory.find(actor.actorID);
+	if (it == m_actorHistory.end()) return detailInfo;
+
+	//get log info
+	const ActorHistory& history = it.value();
+	if (!history.logHistory.empty())
+	{
+		detailInfo += "\nLog:";
+		foreach(const QString& log, history.logHistory)
+		{
+			detailInfo += "\n";
+			detailInfo += log;
+		}
+	}
+	return detailInfo;
 }

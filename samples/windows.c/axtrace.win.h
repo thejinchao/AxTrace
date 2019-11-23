@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -102,9 +102,16 @@ create/update a actor in the scene
 AXTRACE_EXTERN_C void ax2d_actor(const char* scene_name, __int64 actor_id, double x, double y, double dir, unsigned int actor_style, const char* actor_info);
 
 /*
-draw all acotrs between ax2d_begin_scene and ax2d_end_scene
+draw all actors between ax2d_begin_scene and ax2d_end_scene
 @param scene_name the name of scene(id)
 */
 AXTRACE_EXTERN_C void ax2d_end_scene(const char* scene_name);
 
+/*
+push log to a actor, It can be called any time, not necessarily between begin_scene and end_scene
+@param scene_name the name of scene(id)
+@param actor_id actor id
+@param actor_log actor log
+*/
+AXTRACE_EXTERN_C void ax2d_actor_log(const char* scene_name, __int64 actor_id, const char* actor_log);
 #endif

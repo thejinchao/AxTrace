@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -109,6 +109,12 @@ Message* MessageQueue::_popMessage(void)
 	case AXTRACE_CMD_TYPE_2D_END_SCENE:
 	{
 		message = End2DSceneMessage::allocMessage(session, traceTime);
+	}
+	break;
+
+	case AXTRACE_CMD_TYPE_2D_ACTOR_LOG:
+	{
+		message = Add2DActorLogMessage::allocMessage(session, traceTime);
 	}
 	break;
 

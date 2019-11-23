@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -231,9 +231,6 @@ public:
 private:
 	QString			m_sceneName;
 
-protected:
-	static int _lua_get_actor_id(lua_State *L);
-
 public:
 	End2DSceneMessage(SessionPtr session, const MessageTime& traceTime);
 	virtual ~End2DSceneMessage();
@@ -241,3 +238,31 @@ public:
 	DEFINE_POOL(End2DSceneMessage);
 };
 
+class Add2DActorLogMessage : public Message
+{
+public:
+	static const char* MetaName;
+	static void _luaopen(lua_State *L);
+
+	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
+	virtual unsigned int getType(void) const { return AXTRACE_CMD_TYPE_2D_ACTOR_LOG; }
+
+	qint64 getActorID(void) const { return m_actorID; }
+	const QString& getSceneName(void) const { return m_sceneName; }
+	const QString& getActorLog(void) const { return m_actorLog; }
+
+private:
+	QString			m_sceneName;
+	qint64			m_actorID;
+	QString			m_actorLog;
+
+protected:
+	static int _lua_get_actor_id(lua_State *L);
+	static int _lua_get_actor_log(lua_State *L);
+
+public:
+	Add2DActorLogMessage(SessionPtr session, const MessageTime& traceTime);
+	virtual ~Add2DActorLogMessage();
+
+	DEFINE_POOL(Add2DActorLogMessage);
+};

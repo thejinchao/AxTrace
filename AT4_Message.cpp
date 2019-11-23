@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -504,7 +504,6 @@ bool Update2DActorMessage::build(const axtrace_head_s& head, cyclone::RingBuf* r
 		tempName[name_length - 1] = 0; //make sure last char is '\0'
 		m_sceneName = QString::fromUtf8(tempName);
 	}
-
 	//copy info
 	char tempInfo[AXTRACE_MAX_ACTOR_INFO_LENGTH] = { 0 };
 	int info_length = value_head.info_len;
@@ -515,6 +514,8 @@ bool Update2DActorMessage::build(const axtrace_head_s& head, cyclone::RingBuf* r
 		tempInfo[info_length - 1] = 0; //make sure last char is '\0'
 		m_actorInfo = QString::fromUtf8(tempInfo);
 	}
+	else
+		m_actorInfo = QString();
 	return true;
 }
 
@@ -651,6 +652,105 @@ void End2DSceneMessage::_luaopen(lua_State *L)
 
 	//PlayerData meta table
 	luaL_newmetatable(L, End2DSceneMessage::MetaName);
+	lua_pushvalue(L, -1);  /* push metatable */
+	lua_setfield(L, -2, "__index");  /* metatable.__index = metatable */
+
+	luaL_register(L, NULL, msg_data_meta);  /* file methods */
+}
+
+//--------------------------------------------------------------------------------------------
+QQueue<Add2DActorLogMessage*> Add2DActorLogMessage::s_messagePool;
+
+//--------------------------------------------------------------------------------------------
+Add2DActorLogMessage::Add2DActorLogMessage(SessionPtr session, const MessageTime& traceTime)
+	: Message(session, traceTime)
+{
+
+}
+
+//--------------------------------------------------------------------------------------------
+Add2DActorLogMessage::~Add2DActorLogMessage()
+{
+
+}
+
+//--------------------------------------------------------------------------------------------
+bool Add2DActorLogMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
+{
+	if (!(m_session->isHandshaked())) return false;
+
+	axtrace_2d_actor_log_s message_head;
+	size_t len = ringBuf->memcpy_out(&message_head, sizeof(message_head));
+	assert(len == sizeof(message_head));
+
+	m_actorID = (qint64)message_head.actor_id;
+
+	//copy scene name 
+	char tempName[AXTRACE_MAX_SCENE_NAME_LENGTH] = { 0 };
+	int name_length = message_head.name_len;
+	if (name_length > AXTRACE_MAX_SCENE_NAME_LENGTH) name_length = AXTRACE_MAX_SCENE_NAME_LENGTH;
+	if (name_length > 0) {
+		len = ringBuf->memcpy_out(tempName, name_length);
+		assert(len == name_length);
+		tempName[name_length - 1] = 0; //make sure last char is '\0'
+		m_sceneName = QString::fromUtf8(tempName);
+	}
+
+	//copy actor log
+	char tempLog[AXTRACE_MAX_ACTOR_LOG_LENGTH] = { 0 };
+	int log_length = message_head.log_len;
+	if (log_length > AXTRACE_MAX_ACTOR_LOG_LENGTH) log_length = AXTRACE_MAX_ACTOR_LOG_LENGTH;
+	if (log_length > 0) {
+		len = ringBuf->memcpy_out(tempLog, log_length);
+		assert(len == log_length);
+		tempLog[log_length - 1] = 0; //make sure last char is '\0'
+		m_actorLog = QString::fromUtf8(tempLog);
+	}
+	return true;
+}
+
+//-------------------------------------------------------------------------------------
+int Add2DActorLogMessage::_lua_get_actor_id(lua_State *L)
+{
+	const Add2DActorLogMessage* msg = (const Add2DActorLogMessage*)lua_touserdata(L, 1);
+
+	QString id = QString("%1").arg(msg->getActorID());
+	lua_pushstring(L, id.toUtf8().toStdString().c_str());
+	return 1;
+}
+
+//-------------------------------------------------------------------------------------
+int Add2DActorLogMessage::_lua_get_actor_log(lua_State *L)
+{
+	const Add2DActorLogMessage* msg = (const Add2DActorLogMessage*)lua_touserdata(L, 1);
+
+	QString actorLog = msg->getActorLog();
+
+	QByteArray msgUtf8 = actorLog.toUtf8();
+	lua_pushstring(L, msgUtf8.data());
+	return 1;
+}
+
+//--------------------------------------------------------------------------------------------
+const char* Add2DActorLogMessage::MetaName = "AxTrace.AddActor2DLog";
+
+void Add2DActorLogMessage::_luaopen(lua_State *L)
+{
+	static luaL_Reg msg_data_meta[] =
+	{
+		{ "get_type", Message::_lua_get_type },
+		{ "get_pid", Message::_lua_get_process_id },
+		{ "get_tid", Message::_lua_get_thread_id },
+
+		{ "get_actor_id", Add2DActorLogMessage::_lua_get_actor_id },
+		{ "get_actor_log", Add2DActorLogMessage::_lua_get_actor_log },
+
+		{ 0, 0 }
+	};
+
+
+	//PlayerData meta table
+	luaL_newmetatable(L, Add2DActorLogMessage::MetaName);
 	lua_pushvalue(L, -1);  /* push metatable */
 	lua_setfield(L, -2, "__index");  /* metatable.__index = metatable */
 
