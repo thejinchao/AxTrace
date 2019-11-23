@@ -88,9 +88,16 @@ void Incoming::on_message(cyclone::TcpServer* server, int32_t thread_index, cycl
 				return;
 			}
 
-			//package is completed
+			//message type or message size is not valid
+			qint32 maxMessageSize = Message::getMessageMaxSize(head.type);
+			if (maxMessageSize<0 || head.length>maxMessageSize) {
+				//error!, kick off this session
+				m_server->shutdown_connection(conn);
+				return;
+			}
+
+			//package is not completed yet
 			if (input_size < head.length) {
-				//TODO: size too large?
 				return;
 			}
 

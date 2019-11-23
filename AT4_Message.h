@@ -13,12 +13,13 @@ class Message
 {
 public:
 	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf) = 0;
-	virtual unsigned int getType(void) const = 0;
+	virtual qint32 getType(void) const = 0;
 
 	SessionPtr getSession(void) { return m_session; }
 	const SessionPtr getSession(void) const { return m_session; }
 	const MessageTime& getTime(void) const { return m_time; }
 
+	static qint32 getMessageMaxSize(qint32 msgType);
 protected:
 	SessionPtr		m_session;
 	MessageTime		m_time;
@@ -74,7 +75,7 @@ class ShakehandMessage : public Message
 {
 public:
 	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
-	virtual unsigned int getType(void) const { return AXTRACE_CMD_TYPE_SHAKEHAND; }
+	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_SHAKEHAND; }
 
 	int32_t getVersion(void) const { return m_version; }
 	unsigned int getProcessID(void) const { return m_processID; }
@@ -101,7 +102,7 @@ public:
 	static void _luaopen(lua_State *L);
 
 	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
-	virtual unsigned int getType(void) const { return AXTRACE_CMD_TYPE_LOG; }
+	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_LOG; }
 
 	unsigned int getLogType(void) const { return m_logType; }
 	const QString& getLog(void) const { return m_log; }
@@ -128,7 +129,7 @@ public:
 	static void _luaopen(lua_State *L);
 
 	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
-	virtual unsigned int getType(void) const { return AXTRACE_CMD_TYPE_VALUE; }
+	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_VALUE; }
 
 	const QString& getName(void) const { return m_name; }
 	void getValueAsString(QString& value) const;
@@ -160,7 +161,7 @@ public:
 	static void _luaopen(lua_State *L);
 
 	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
-	virtual unsigned int getType(void) const { return AXTRACE_CMD_TYPE_2D_BEGIN_SCENE; }
+	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_2D_BEGIN_SCENE; }
 
 	const QString& getSceneName(void) const { return m_sceneName; }
 	const QRectF& getSceneRect(void) const { return m_sceneRect; }
@@ -185,7 +186,7 @@ public:
 	static void _luaopen(lua_State *L);
 
 	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
-	virtual unsigned int getType(void) const { return AXTRACE_CMD_TYPE_2D_ACTOR; }
+	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_2D_ACTOR; }
 
 	const QString& getSceneName(void) const { return m_sceneName; }
 	qint64 getActorID(void) const { return m_actorID; }
@@ -224,7 +225,7 @@ public:
 	static void _luaopen(lua_State *L);
 
 	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
-	virtual unsigned int getType(void) const { return AXTRACE_CMD_TYPE_2D_END_SCENE; }
+	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_2D_END_SCENE; }
 
 	const QString& getSceneName(void) const { return m_sceneName; }
 
@@ -245,7 +246,7 @@ public:
 	static void _luaopen(lua_State *L);
 
 	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
-	virtual unsigned int getType(void) const { return AXTRACE_CMD_TYPE_2D_ACTOR_LOG; }
+	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_2D_ACTOR_LOG; }
 
 	qint64 getActorID(void) const { return m_actorID; }
 	const QString& getSceneName(void) const { return m_sceneName; }

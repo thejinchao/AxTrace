@@ -21,6 +21,26 @@ Message::~Message()
 }
 
 //-------------------------------------------------------------------------------------
+qint32 Message::getMessageMaxSize(qint32 msgType)
+{
+	static qint32 s_MessageMaxSize[] =
+	{
+		sizeof(axtrace_shakehand_s) + AXTRACE_MAX_PROCESSNAME_LENGTH,	// AXTRACE_CMD_TYPE_SHAKEHAND(0)
+		sizeof(axtrace_log_s) + AXTRACE_MAX_LOG_STRING_LENGTH,			// AXTRACE_CMD_TYPE_LOG(1)
+		sizeof(axtrace_value_s) + AXTRACE_MAX_VALUENAME_LENGTH + AXTRACE_MAX_VALUE_LENGTH,	//AXTRACE_CMD_TYPE_VALUE(2)
+		sizeof(axtrace_2d_begin_scene_s) + AXTRACE_MAX_SCENE_NAME_LENGTH + AXTRACE_MAX_SCENE_DEFINE_LENGTH, //AXTRACE_CMD_TYPE_2D_BEGIN_SCENE(3)
+		sizeof(axtrace_2d_actor_s) + AXTRACE_MAX_SCENE_NAME_LENGTH + AXTRACE_MAX_ACTOR_INFO_LENGTH, //AXTRACE_CMD_TYPE_2D_ACTOR(4)
+		sizeof(axtrace_2d_end_scene_s) + AXTRACE_MAX_SCENE_NAME_LENGTH, //AXTRACE_CMD_TYPE_2D_END_SCENE(5)
+		sizeof(axtrace_2d_actor_log_s) + AXTRACE_MAX_SCENE_NAME_LENGTH + AXTRACE_MAX_ACTOR_LOG_LENGTH,	//AXTRACE_CMD_TYPE_2D_ACTOR_LOG
+	};
+	static qint32 s_MessageTypeCounts = sizeof(s_MessageMaxSize) / sizeof(s_MessageMaxSize[0]);
+
+	if (msgType < 0 || msgType >= s_MessageTypeCounts) return -1;
+
+	return s_MessageMaxSize[msgType];
+}
+
+//-------------------------------------------------------------------------------------
 int Message::_lua_get_type(lua_State *L)
 {
 	const Message* msg = (const Message*)lua_touserdata(L, 1);
