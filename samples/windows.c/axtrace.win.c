@@ -21,7 +21,7 @@
 #define DEFAULT_AXTRACE_SERVER_IP		"127.0.0.1"
 #define DEFAULT_AXTRACE_SERVER_PORT		(1978)
 #define AXTRACE_MAX_PROCESSNAME_LENGTH	(512)
-#define AXTRACE_MAX_TRACE_STRING_LENGTH	(0x8000)
+#define AXTRACE_MAX_LOG_STRING_LENGTH	(0x8000)
 #define AXTRACE_MAX_VALUENAME_LENGTH	(128)
 #define AXTRACE_MAX_VALUE_LENGTH		(1024)
 #define AXTRACE_MAX_SCENE_NAME_LENGTH	(128)
@@ -258,7 +258,7 @@ void axlog(unsigned int log_type, const char *format, ...)
 	int send_len;
 
 	/* buf for send , call send() once*/
-	char buf[sizeof(axtrace_log_s) + AXTRACE_MAX_TRACE_STRING_LENGTH] = { 0 };
+	char buf[sizeof(axtrace_log_s) + AXTRACE_MAX_LOG_STRING_LENGTH] = { 0 };
 	axtrace_log_s* trace_head = (axtrace_log_s*)(buf);
 	char* trace_string = (char*)(buf + sizeof(axtrace_log_s));
 
@@ -268,13 +268,13 @@ void axlog(unsigned int log_type, const char *format, ...)
 
 	/* Create String Contents*/
 	va_start(ptr, format);
-	hr = StringCbVPrintfA(trace_string, AXTRACE_MAX_TRACE_STRING_LENGTH, format, ptr);
+	hr = StringCbVPrintfA(trace_string, AXTRACE_MAX_LOG_STRING_LENGTH, format, ptr);
 	va_end(ptr);
 	/* failed ?*/
 	if (FAILED(hr)) return;
 
 	/** get string length*/
-	hr = StringCbLengthA(trace_string, AXTRACE_MAX_TRACE_STRING_LENGTH - 1, &contents_byte_size);
+	hr = StringCbLengthA(trace_string, AXTRACE_MAX_LOG_STRING_LENGTH - 1, &contents_byte_size);
 	/* failed ?*/
 	if (FAILED(hr)) return;
 
