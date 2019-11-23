@@ -66,7 +66,15 @@ void Config::_resetToDefaultSetting(void)
 		"msg:get_actor_id(), msg:get_actor_position(), msg:get_actor_dir(), msg:get_actor_style() \r\n"
 		"--]] \r\n"
 		"function onActor2DMessage(msg)\r\n"
-		"\t\treturn true, ACTOR_CIRCLE, 1, COL_WHITE, COL_GRAY; \r\n"
+		"\tlocal shape = ACTOR_CIRCLE;\r\n"
+		"\tlocal actor_style = msg:get_actor_style();\r\n"
+		"\tif (actor_style == 0) then\r\n"
+		"\t\treturn true, ACTOR_TRIANGLE, 5, COL_WHITE, COL_GRAY;\r\n"
+		"\telseif(actor_style == 1) then\r\n"
+		"\t\treturn true, ACTOR_QUAD, 5, COL_WHITE, COL_GRAY;\r\n"
+		"\telse\r\n"
+		"\t\treturn true, ACTOR_CIRCLE, 5, COL_WHITE, COL_RED;\r\n"
+		"\tend;\r\n"
 		"end; \r\n"
 	);
 	m_maxLogCounts = 10000;
