@@ -104,12 +104,11 @@ bool ShakehandMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ringB
 	m_processID = shakehand.pid;
 	m_threadID = shakehand.tid;
 
-	//shakehand
+	//shakehand already
 	if (!(m_session->onSessionShakehand(this))) return false;
 
 	//ok!
-	ringBuf->discard(shakehand.head.length);
-
+	ringBuf->discard(head.length);
 	return true;
 }
 
@@ -137,22 +136,27 @@ bool LogMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
 	if (!(m_session->isHandshaked())) return false;
 
 	axtrace_log_s logHead;
-	size_t len = ringBuf->memcpy_out(&logHead, sizeof(axtrace_log_s));
+	size_t len = ringBuf->peek(0, &logHead, sizeof(axtrace_log_s));
 	assert(len == sizeof(axtrace_log_s));
 
 	m_logType = logHead.log_type;
 
-	int logLength = logHead.length;
+	//check log length
+	qint32 logByteLength = logHead.length;
+	if (logByteLength<0 || logByteLength>AXTRACE_MAX_LOG_STRING_LENGTH) return false;
+
+	//check length
+	if (head.length != sizeof(axtrace_log_s) + logByteLength) return false;
 
 	QByteArray& cache = memoryCache.localData();
-	if (cache.size() < logLength + 2)
-		cache.resize(logLength + 2);
+	if (cache.size() < logByteLength + 2)
+		cache.resize(logByteLength + 2);
 
-	len = ringBuf->memcpy_out(cache.data(), logLength);
-	assert(len == logLength);
+	len = ringBuf->peek(sizeof(axtrace_log_s), cache.data(), logByteLength);
+	assert(len == logByteLength);
 
-	cache.data()[logLength] = 0;
-	cache.data()[logLength+1] = 0;
+	cache.data()[logByteLength + 0] = 0;
+	cache.data()[logByteLength + 1] = 0;
 
 	switch (logHead.code_page)
 	{
@@ -166,6 +170,9 @@ bool LogMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
 		m_log = QString::fromLocal8Bit(cache);
 		break;
 	}
+
+	//ok!
+	ringBuf->discard(head.length);
 	return true;
 }
 
@@ -241,22 +248,25 @@ bool ValueMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
 	if (!(m_session->isHandshaked())) return false;
 
 	axtrace_value_s value_head;
-	size_t len = ringBuf->peek(0, &value_head, sizeof(axtrace_value_s));
+	size_t len = ringBuf->peek(0, &value_head, sizeof(value_head));
 	assert(len == sizeof(value_head));
 
 	m_valueType = value_head.value_type;
+	
+	//check value length
 	m_valueSize = value_head.value_len;
+	if (m_valueSize<0 || m_valueSize>AXTRACE_MAX_VALUE_LENGTH) return false;
+
+	//check name length
+	qint32 name_length = value_head.name_len;
+	if (name_length<=0 || name_length > AXTRACE_MAX_VALUENAME_LENGTH) return false;
+
+	//check length
+	if (head.length != sizeof(value_head) + name_length + m_valueSize) return false;
 
 	//copy name 
 	char tempName[AXTRACE_MAX_VALUENAME_LENGTH];
-	int name_length = value_head.name_len;
-	//check name length
-	if (name_length > AXTRACE_MAX_VALUENAME_LENGTH) return false;
-
-	//ok
-	ringBuf->discard(sizeof(axtrace_value_s));
-
-	len = ringBuf->memcpy_out(tempName, name_length);
+	len = ringBuf->peek(sizeof(axtrace_value_s), tempName, name_length);
 	assert(len == name_length);
 	tempName[name_length - 1] = 0; //make sure last char is '\0'
 	m_name = QString::fromUtf8(tempName);
@@ -274,7 +284,7 @@ bool ValueMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
 	}
 
 	//value
-	len = ringBuf->memcpy_out(m_valueBuf, m_valueSize);
+	len = ringBuf->peek(sizeof(axtrace_value_s) + name_length, m_valueBuf, m_valueSize);
 	assert(len == m_valueSize);
 
 	//make sure '\0' ended
@@ -294,6 +304,9 @@ bool ValueMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
 		((char*)m_valueBuf)[m_valueSize - 3] = 0;
 		((char*)m_valueBuf)[m_valueSize - 4] = 0;
 	}
+
+	//ok!
+	ringBuf->discard(head.length);
 	return true;
 }
 
@@ -425,28 +438,33 @@ bool Begin2DSceneMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ri
 {
 	if (!(m_session->isHandshaked())) return false;
 
-	axtrace_2d_begin_scene_s value_head;
-	size_t len = ringBuf->memcpy_out(&value_head, sizeof(value_head));
-	assert(len == sizeof(value_head));
+	axtrace_2d_begin_scene_s begin_scene_head;
+	size_t len = ringBuf->peek(0, &begin_scene_head, sizeof(begin_scene_head));
+	assert(len == sizeof(begin_scene_head));
 
-	m_sceneRect = QRectF(value_head.left, value_head.top, value_head.right-value_head.left, value_head.bottom-value_head.top);
+	m_sceneRect = QRectF(begin_scene_head.left, begin_scene_head.top, begin_scene_head.right- begin_scene_head.left, begin_scene_head.bottom- begin_scene_head.top);
+
+	//check scene name
+	qint32 name_length = begin_scene_head.name_len;
+	if (name_length <= 0 || name_length > AXTRACE_MAX_SCENE_NAME_LENGTH) return false;
+
+	//check scene define
+	qint32 define_length = begin_scene_head.define_len;
+	if (define_length<0 || define_length > AXTRACE_MAX_SCENE_DEFINE_LENGTH) return false;
+
+	//check length
+	if (head.length != sizeof(begin_scene_head) + name_length + define_length) return false;
 
 	//copy name 
 	char tempBuf[AXTRACE_MAX_SCENE_DEFINE_LENGTH] = { 0 };
-	int name_length = value_head.name_len;
-	if (name_length > AXTRACE_MAX_SCENE_NAME_LENGTH) name_length = AXTRACE_MAX_SCENE_NAME_LENGTH;
-	if (name_length > 0) {
-		len = ringBuf->memcpy_out(tempBuf, name_length);
-		assert(len == name_length);
-		tempBuf[name_length - 1] = 0; //make sure last char is '\0'
-		m_sceneName = QString::fromUtf8(tempBuf);
-	}
+	len = ringBuf->peek(sizeof(begin_scene_head), tempBuf, name_length);
+	assert(len == name_length);
+	tempBuf[name_length - 1] = 0; //make sure last char is '\0'
+	m_sceneName = QString::fromUtf8(tempBuf);
 
 	//copy define 
-	int define_length = value_head.define_len;
-	if (define_length > AXTRACE_MAX_SCENE_DEFINE_LENGTH) define_length = AXTRACE_MAX_SCENE_DEFINE_LENGTH;
 	if (define_length > 0) {
-		len = ringBuf->memcpy_out(tempBuf, define_length);
+		len = ringBuf->peek(sizeof(begin_scene_head)+ name_length, tempBuf, define_length);
 		assert(len == define_length);
 		tempBuf[define_length - 1] = 0;
 	
@@ -458,6 +476,8 @@ bool Begin2DSceneMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ri
 			m_sceneDefine = jsonDocument.object();
 		}
 	}
+	//ok!
+	ringBuf->discard(head.length);
 	return true;
 }
 
@@ -474,7 +494,6 @@ void Begin2DSceneMessage::_luaopen(lua_State *L)
 
 		{ 0, 0 }
 	};
-
 
 	//PlayerData meta table
 	luaL_newmetatable(L, Begin2DSceneMessage::MetaName);
@@ -505,37 +524,48 @@ bool Update2DActorMessage::build(const axtrace_head_s& head, cyclone::RingBuf* r
 {
 	if (!(m_session->isHandshaked())) return false;
 
-	axtrace_2d_actor_s value_head;
-	size_t len = ringBuf->memcpy_out(&value_head, sizeof(value_head));
-	assert(len == sizeof(value_head));
+	axtrace_2d_actor_s actor_head;
+	size_t len = ringBuf->peek(0, &actor_head, sizeof(actor_head));
+	assert(len == sizeof(actor_head));
 
-	m_actorID = (qint64)value_head.actor_id;
-	m_position = QPointF((qreal)value_head.x, (qreal)value_head.y);
-	m_dir = (qreal)value_head.dir;
-	m_style = (quint32)value_head.style;
+	m_actorID = (qint64)actor_head.actor_id;
+	m_position = QPointF((qreal)actor_head.x, (qreal)actor_head.y);
+	m_dir = (qreal)actor_head.dir;
+	m_style = (quint32)actor_head.style;
+
+	//check scene name
+	qint32 name_length = actor_head.name_len;
+	if (name_length <= 0 || name_length > AXTRACE_MAX_SCENE_NAME_LENGTH) return false;
+
+	//check actor info length
+	qint32 info_length = actor_head.info_len;
+	if (info_length<0 || info_length > AXTRACE_MAX_ACTOR_INFO_LENGTH) return false;
+
+	//check length
+	if (head.length != sizeof(actor_head) + name_length + info_length) return false;
 
 	//copy name 
 	char tempName[AXTRACE_MAX_SCENE_NAME_LENGTH] = { 0 };
-	int name_length = value_head.name_len;
-	if (name_length > AXTRACE_MAX_SCENE_NAME_LENGTH) name_length = AXTRACE_MAX_SCENE_NAME_LENGTH;
-	if (name_length > 0) {
-		len = ringBuf->memcpy_out(tempName, name_length);
-		assert(len == name_length);
-		tempName[name_length - 1] = 0; //make sure last char is '\0'
-		m_sceneName = QString::fromUtf8(tempName);
-	}
+	len = ringBuf->peek(sizeof(actor_head), tempName, name_length);
+	assert(len == name_length);
+	tempName[name_length - 1] = 0; //make sure last char is '\0'
+	m_sceneName = QString::fromUtf8(tempName);
+	
 	//copy info
 	char tempInfo[AXTRACE_MAX_ACTOR_INFO_LENGTH] = { 0 };
-	int info_length = value_head.info_len;
-	if (info_length > AXTRACE_MAX_ACTOR_INFO_LENGTH) info_length = AXTRACE_MAX_ACTOR_INFO_LENGTH;
 	if (info_length > 0) {
-		len = ringBuf->memcpy_out(tempInfo, info_length);
+		len = ringBuf->peek(sizeof(actor_head)+name_length, tempInfo, info_length);
 		assert(len == info_length);
 		tempInfo[info_length - 1] = 0; //make sure last char is '\0'
 		m_actorInfo = QString::fromUtf8(tempInfo);
 	}
 	else
+	{
 		m_actorInfo = QString();
+	}
+
+	//ok!
+	ringBuf->discard(head.length);
 	return true;
 }
 
@@ -640,19 +670,27 @@ bool End2DSceneMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ring
 {
 	if (!(m_session->isHandshaked())) return false;
 
-	axtrace_2d_end_scene_s value_head;
-	size_t len = ringBuf->memcpy_out(&value_head, sizeof(value_head));
-	assert(len == sizeof(value_head));
+	axtrace_2d_end_scene_s end_scene_head;
+	size_t len = ringBuf->peek(0, &end_scene_head, sizeof(end_scene_head));
+	assert(len == sizeof(end_scene_head));
+
+	//check scene name
+	qint32 name_length = end_scene_head.name_len;
+	if (name_length <= 0 || name_length > AXTRACE_MAX_SCENE_NAME_LENGTH) return false;
+
+	//check length
+	if (head.length != sizeof(end_scene_head) + name_length) return false;
+
 	//copy name 
 	char tempName[AXTRACE_MAX_SCENE_NAME_LENGTH] = { 0 };
-	int name_length = value_head.name_len;
-	if (name_length > AXTRACE_MAX_SCENE_NAME_LENGTH) name_length = AXTRACE_MAX_SCENE_NAME_LENGTH;
-	if (name_length > 0) {
-		len = ringBuf->memcpy_out(tempName, name_length);
-		assert(len == name_length);
-		tempName[name_length - 1] = 0; //make sure last char is '\0'
-		m_sceneName = QString::fromUtf8(tempName);
-	}
+
+	len = ringBuf->peek(sizeof(end_scene_head), tempName, name_length);
+	assert(len == name_length);
+	tempName[name_length - 1] = 0; //make sure last char is '\0'
+	m_sceneName = QString::fromUtf8(tempName);
+
+	//ok!
+	ringBuf->discard(head.length);
 	return true;
 }
 
@@ -700,32 +738,40 @@ bool Add2DActorLogMessage::build(const axtrace_head_s& head, cyclone::RingBuf* r
 	if (!(m_session->isHandshaked())) return false;
 
 	axtrace_2d_actor_log_s message_head;
-	size_t len = ringBuf->memcpy_out(&message_head, sizeof(message_head));
+	size_t len = ringBuf->peek(0, &message_head, sizeof(message_head));
 	assert(len == sizeof(message_head));
 
 	m_actorID = (qint64)message_head.actor_id;
 
+	//check scene name
+	qint32 name_length = message_head.name_len;
+	if (name_length <= 0 || name_length > AXTRACE_MAX_SCENE_NAME_LENGTH) return false;
+
+	//check log 
+	qint32 log_length = message_head.log_len;
+	if (log_length < 0 || log_length > AXTRACE_MAX_ACTOR_LOG_LENGTH) return false;
+
+	//check length
+	if (head.length != sizeof(message_head) + name_length + log_length) return false;
+
 	//copy scene name 
 	char tempName[AXTRACE_MAX_SCENE_NAME_LENGTH] = { 0 };
-	int name_length = message_head.name_len;
-	if (name_length > AXTRACE_MAX_SCENE_NAME_LENGTH) name_length = AXTRACE_MAX_SCENE_NAME_LENGTH;
-	if (name_length > 0) {
-		len = ringBuf->memcpy_out(tempName, name_length);
-		assert(len == name_length);
-		tempName[name_length - 1] = 0; //make sure last char is '\0'
-		m_sceneName = QString::fromUtf8(tempName);
-	}
+	len = ringBuf->peek(sizeof(message_head), tempName, name_length);
+	assert(len == name_length);
+	tempName[name_length - 1] = 0; //make sure last char is '\0'
+	m_sceneName = QString::fromUtf8(tempName);
 
 	//copy actor log
 	char tempLog[AXTRACE_MAX_ACTOR_LOG_LENGTH] = { 0 };
-	int log_length = message_head.log_len;
-	if (log_length > AXTRACE_MAX_ACTOR_LOG_LENGTH) log_length = AXTRACE_MAX_ACTOR_LOG_LENGTH;
 	if (log_length > 0) {
-		len = ringBuf->memcpy_out(tempLog, log_length);
+		len = ringBuf->peek(sizeof(message_head)+name_length, tempLog, log_length);
 		assert(len == log_length);
 		tempLog[log_length - 1] = 0; //make sure last char is '\0'
 		m_actorLog = QString::fromUtf8(tempLog);
 	}
+
+	//ok!
+	ringBuf->discard(head.length);
 	return true;
 }
 
