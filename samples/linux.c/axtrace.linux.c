@@ -189,9 +189,6 @@ static void _send_handshake_message(axtrace_contex_s* ctx)
 /*---------------------------------------------------------------------------------------------*/
 static axtrace_contex_s* _axtrace_try_init(const char* server_ip, unsigned short server_port)
 {
-    const char* final_server_ip = server_ip ? server_ip : DEFAULT_AXTRACE_SERVER_IP;
-    unsigned short findal_server_port = server_port != 0 ? server_port : DEFAULT_AXTRACE_SERVER_PORT;
-    
 	axtrace_contex_s* ctx = (axtrace_contex_s*)malloc(sizeof(axtrace_contex_s));
 	if (ctx == 0){
 		//TODO: fatal error, should stop the process
