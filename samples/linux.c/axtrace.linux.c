@@ -201,8 +201,8 @@ static axtrace_contex_s* _axtrace_try_init(const char* server_ip, unsigned short
 	
 	/* create address struct */
 	ctx->address.sin_family = AF_INET;
-	ctx->address.sin_port = htons(server_port != 0 ? server_port : DEFAULT_AXTRACE_SERVER_PORT);
-	if (inet_pton(AF_INET, server_ip ? server_ip : DEFAULT_AXTRACE_SERVER_IP, &(ctx->address.sin_addr)) != 1) {
+	ctx->address.sin_port = htons(server_port);
+	if (inet_pton(AF_INET, server_ip, &(ctx->address.sin_addr)) != 1) {
 		return ctx;
 	}
 	
@@ -233,7 +233,7 @@ static axtrace_contex_s* _axtrace_try_init(const char* server_ip, unsigned short
 }
 
 /*---------------------------------------------------------------------------------------------*/
-static axtrace_contex_s* _axtrace_get_thread_contex(const char* server_ip, unsigned short server_port)
+static axtrace_contex_s* _axtrace_get_thread_contex()
 {
 	static __thread axtrace_contex_s* s_the_thread_data = 0;
 
@@ -243,7 +243,7 @@ static axtrace_contex_s* _axtrace_get_thread_contex(const char* server_ip, unsig
 	}
 
 	/* try init */
-	s_the_thread_data = _axtrace_try_init(server_ip, server_port);
+	s_the_thread_data = _axtrace_try_init(DEFAULT_AXTRACE_SERVER_IP, DEFAULT_AXTRACE_SERVER_PORT);
 	return (s_the_thread_data->is_init_succ != 0) ? s_the_thread_data : 0;	
 }
 
@@ -261,7 +261,7 @@ void axlog(unsigned int log_type, const char *format, ...)
 	char* trace_string = (char*)(buf + sizeof(axtrace_log_s));
 
 	/* is init ok? */
-	ctx = _axtrace_get_thread_contex(0, 0);
+	ctx = _axtrace_get_thread_contex();
 	if (ctx == 0) return;
 
 	/* Create String Contents*/
@@ -336,7 +336,7 @@ void axvalue(unsigned int value_type, const char* value_name, const void* value)
 	char* value_name_buf = (char*)(buf + sizeof(axtrace_value_s));
 
 	/* is init ok? */
-	ctx = _axtrace_get_thread_contex(0, 0);
+	ctx = _axtrace_get_thread_contex();
 	if (ctx == 0) return;
 
 	/** get value name length*/
@@ -385,7 +385,7 @@ void ax2d_begin_scene(const char* scene_name, double left, double top, double ri
 	char* _name = (char*)(buf + sizeof(axtrace_2d_begin_scene_s));
 
 	/* is init ok? */
-	ctx = _axtrace_get_thread_contex(0, 0);
+	ctx = _axtrace_get_thread_contex();
 	if (ctx == 0) return;
 
 	/** get scene name length*/
@@ -445,7 +445,7 @@ void ax2d_actor(const char* scene_name, long long actor_id, double x, double y, 
 	char* _name = (char*)(buf + sizeof(axtrace_2d_actor_s));	    
     
 	/* is init ok? */
-	ctx = _axtrace_get_thread_contex(0, 0);
+	ctx = _axtrace_get_thread_contex();
 	if (ctx == 0) return;
 	        
 	/** get scene name length*/
@@ -506,7 +506,7 @@ void ax2d_end_scene(const char* scene_name)
 	char* _name = (char*)(buf + sizeof(axtrace_2d_end_scene_s));	    
     
     /* is init ok? */
-	ctx = _axtrace_get_thread_contex(0, 0);
+	ctx = _axtrace_get_thread_contex();
 	if (ctx == 0) return;
     
 	/** get scene name length*/
@@ -543,7 +543,7 @@ void ax2d_actor_log(const char* scene_name, long long actor_id, const char* acto
 	char* _name = (char*)(buf + sizeof(axtrace_2d_actor_log_s));	    
 
 	/* is init ok? */
-	ctx = _axtrace_get_thread_contex(0, 0);
+	ctx = _axtrace_get_thread_contex();
 	if (ctx == 0) return;
 	
 	/** get scene name length*/
