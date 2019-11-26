@@ -66,6 +66,48 @@ double rand_number(double r1, double r2)
 }
 
 //--------------------------------------------------------------------------------------------
+struct AxActor2D
+{
+	int id;
+	int type;
+	char  info[64];
+	double speed;
+
+	double sx, sy;
+	double tx, ty;
+
+	double x, y;
+	double dir;
+
+	void init(int index, double move_step)
+	{
+		id = 100 + index;
+		type = index % 3;
+		snprintf(info, 32, "actor(%d)", id);
+		speed = move_step * (type + 1);
+	}
+	double current_distance(void) const {
+		return sqrt((x - sx)*(x - sx) + (y - sy)*(y - sy));
+	}
+	double remain_distance(void) const {
+		return sqrt((x - tx)*(x - tx) + (y - ty)*(y - ty));
+	}
+	void select_next_target(double map_left, double map_right, double map_top, double map_bottom, double move_step) 
+	{
+		double min_distance = 10 * move_step;
+		double max_distance = 100 * move_step;
+
+		do {
+			tx = rand_number(map_left, map_right);
+			ty = rand_number(map_top, map_bottom);
+		} while (remain_distance() < min_distance || remain_distance() > max_distance);
+		sx = x;
+		sy = y;
+		dir = atan2(ty - sy, tx - sx);
+	};
+};
+
+//--------------------------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
     printf("============= AxTrace4 Linux Test(C++) ================\n");
@@ -301,42 +343,23 @@ int main(int argc, char* argv[])
 		double MAP_WIDTH = MAP_RIGHT - MAP_LEFT;
 		double MAP_HEIGHT = MAP_BOTTOM - MAP_TOP;	    
 		
-		struct Actor
-		{
-			double sx, sy;
-			double tx, ty;
-
-			double x, y;
-			double dir;
-
-			double current_distance(void) const {
-				return sqrt((x - sx)*(x - sx) + (y - sy)*(y - sy));
-			}
-			double remain_distance(void) const {
-				return sqrt((x - tx)*(x - tx) + (y - ty)*(y - ty));
-			}
-		};
-
-		Actor allActors[ACTOR_COUNTS];
+		AxActor2D allActors[ACTOR_COUNTS];
 	
-		std::function<void(Actor&)> _selectNextTarget = [&](Actor& actor) {
-			do {
-				actor.tx = rand_number(MAP_LEFT, MAP_RIGHT);
-				actor.ty = rand_number(MAP_TOP, MAP_BOTTOM);
-			} while (actor.remain_distance()< MOVE_STEP*10);
-			actor.sx = actor.x;
-			actor.sy = actor.y;
-			actor.dir = atan2(actor.ty-actor.sy, actor.tx-actor.sx);
-		};
-		
+		ax2d_begin_scene("test", MAP_LEFT, MAP_TOP, MAP_RIGHT, MAP_BOTTOM, "{\"gridSize\":[32.0,32.0], \"gridPoint\":[-256.0, 256.0]}");
 		for (int i = 0; i < ACTOR_COUNTS; i++)
 		{
-			Actor& actor = allActors[i];
+			AxActor2D& actor = allActors[i];
+			actor.init(i, MOVE_STEP);
 
 			actor.sx = actor.x = rand_number(MAP_LEFT, MAP_RIGHT);
 			actor.sy = actor.y = rand_number(MAP_TOP, MAP_BOTTOM);
-			_selectNextTarget(actor);
-		}	
+			actor.select_next_target(MAP_LEFT, MAP_RIGHT, MAP_TOP, MAP_BOTTOM, MOVE_STEP);
+
+			ax2d_actor("test", actor.id, actor.x, actor.y, actor.dir, actor.type, actor.info);
+		}
+		ax2d_end_scene("test");
+		
+		press_any_key("Begin Random Move Test");
 		
 		for (int i = 0; i < MOVE_COUNTS; i++)
 		{
@@ -344,16 +367,21 @@ int main(int argc, char* argv[])
 
 			for (int j = 0; j < ACTOR_COUNTS; j++)
 			{
-				Actor& actor = allActors[j];
+				AxActor2D& actor = allActors[j];
 
-				ax2d_actor("test", 100 + j, actor.x, actor.y, actor.dir, 0, "Test");
+				ax2d_actor("test", actor.id, actor.x, actor.y, actor.dir, actor.type, actor.info);
 
-				if (actor.remain_distance() <= MOVE_STEP) {
-					_selectNextTarget(actor);
+				if (actor.remain_distance() <= MOVE_STEP*4) {
+					actor.select_next_target(MAP_LEFT, MAP_RIGHT, MAP_TOP, MAP_BOTTOM, MOVE_STEP);
+
+					char actor_log[128] = { 0 };
+					snprintf(actor_log, 128, "move to:%f, %f", actor.tx, actor.ty);
+
+					ax2d_actor_log("test", actor.id, actor_log);
 				}
 
-				if ((rand() % 10) > 5) {
-					double distance = actor.current_distance() + MOVE_STEP;
+				if ((rand() % 10) > 2) {
+					double distance = actor.current_distance() + actor.speed;
 					actor.x = actor.sx + distance * cos(actor.dir);
 					actor.y = actor.sy + distance * sin(actor.dir);
 				}
@@ -362,8 +390,8 @@ int main(int argc, char* argv[])
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
 		
-        press_any_key("Remove Actor Test");
-        
+		press_any_key("Remove Actor Test");
+
 		for (int i = 0; i < ACTOR_COUNTS; i++)
 		{
 			char temp[256] = { 0 };
@@ -374,8 +402,8 @@ int main(int argc, char* argv[])
 			ax2d_begin_scene("test", MAP_LEFT * 2, MAP_TOP * 2, MAP_RIGHT * 2, MAP_BOTTOM * 2, temp);
 			for (int j = 0; j < ACTOR_COUNTS-i; j++)
 			{
-				Actor& actor = allActors[j];
-				ax2d_actor("test", 100 + j, actor.x, actor.y, actor.dir, 0, "Test");
+				AxActor2D& actor = allActors[j];
+				ax2d_actor("test", actor.id, actor.x, actor.y, actor.dir, actor.type, actor.info);
 			}
 			ax2d_end_scene("test");
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
