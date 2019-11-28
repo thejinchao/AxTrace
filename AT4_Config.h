@@ -33,6 +33,9 @@ public:
 	int getMaxLogCounts(void) const { return m_maxLogCounts; }
 	void setMaxLogCounts(int maxLogCounts);
 
+	int getMaxActorLogCounts(void) const { return m_maxActorLogCounts; }
+	void setMaxActorLogCounts(qint32 maxActorLogCounts);
+
 public:
 	struct LogWndColumn
 	{
@@ -63,12 +66,14 @@ private:
 	QString m_filterScript;
 	QString m_defaultFilterScript;
 	QByteArray m_mainGeometry;
-	int m_maxLogCounts;
+	qint32 m_maxLogCounts;
 
 	QString m_logParserDefineString;
 	QString m_defaultLogParserDefineString;
 	LogParserDefineMap m_logParserDefineMap;
 	LogParserDefinePtr m_emptyLogParser;
+
+	qint32 m_maxActorLogCounts;
 
 public:
 	Config();

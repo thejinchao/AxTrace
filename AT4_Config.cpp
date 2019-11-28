@@ -104,6 +104,8 @@ void Config::_resetToDefaultSetting(void)
 
 	m_emptyLogParser = LogParserDefinePtr(new LogParserDefine());
 	m_emptyLogParser->columns.push_back({"Log", 0});
+
+	m_maxActorLogCounts = 30;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -115,6 +117,7 @@ void Config::copyFrom(const Config& other)
 	m_maxLogCounts = other.m_maxLogCounts;
 	m_logParserDefineString = other.m_logParserDefineString;
 	m_logParserDefineMap = other.m_logParserDefineMap;
+	m_maxActorLogCounts = other.m_maxActorLogCounts;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -137,6 +140,12 @@ void Config::setMaxLogCounts(int maxLogCounts)
 }
 
 //--------------------------------------------------------------------------------------------
+void Config::setMaxActorLogCounts(qint32 maxActorLogCounts)
+{
+	m_maxActorLogCounts = maxActorLogCounts;
+}
+
+//--------------------------------------------------------------------------------------------
 bool Config::loadSetting(void)
 {
 	_resetToDefaultSetting();
@@ -150,7 +159,7 @@ bool Config::loadSetting(void)
 	m_filterScript = settings.value("FilterScript", m_filterScript).toString();
 	m_maxLogCounts = settings.value("MaxLogCounts", m_maxLogCounts).toInt();
 	m_logParserDefineString = settings.value("LogParserDefine", m_defaultLogParserDefineString).toString();
-
+	m_maxActorLogCounts = settings.value("MaxActorLogCounts", m_maxActorLogCounts).toInt();
 	//load log parser define
 	return _loadLogParserDefine();
 }
@@ -167,6 +176,7 @@ void Config::saveSetting(void) const
 	settings.setValue("FilterScript", m_filterScript);
 	settings.setValue("MaxLogCounts", m_maxLogCounts);
 	settings.setValue("LogParserDefine", m_logParserDefineString);
+	settings.setValue("MaxActorLogCounts", m_maxActorLogCounts);
 }
 
 //--------------------------------------------------------------------------------------------

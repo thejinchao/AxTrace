@@ -7,6 +7,8 @@
 #include "stdafx.h"
 #include "AT4_Scene2D.h"
 #include "AT4_Message.h"
+#include "AT4_System.h"
+#include "AT4_Config.h"
 
 //--------------------------------------------------------------------------------------------
 Scene2D::Scene2D(Begin2DSceneMessage* msg)
@@ -98,6 +100,10 @@ void Scene2D::addActorLog(Add2DActorLogMessage* msg)
 	{
 		ActorHistory& history = *it;
 		history.logHistory.push_back(msg->getActorLog());
+
+		qint32 maxActorLogCounts = System::getSingleton()->getConfig()->getMaxActorLogCounts();
+		while(history.logHistory.size()>maxActorLogCounts)
+			history.logHistory.pop_front();
 	}
 }
 
@@ -167,9 +173,10 @@ void Scene2D::_parserSceneDefine(const QJsonObject& sceneInfo)
 //--------------------------------------------------------------------------------------------
 QString Scene2D::getActorBriefInfo(const Actor& actor) const
 {
-	QString brief = QString("ID:%1\nPos:%2,%3")
+	QString brief = QString("ID:%1\nPos:%2,%3\nDir:%4")
 		.arg(actor.actorID)
-		.arg(actor.pos.x()).arg(actor.pos.y());
+		.arg(actor.pos.x()).arg(actor.pos.y())
+		.arg(actor.dir);
 
 	if (!actor.info.isEmpty())
 	{
