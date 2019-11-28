@@ -270,7 +270,9 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 
 		QTransform localMove = QTransform::fromTranslate(actor.pos.x(), actor.pos.y());
 
-		bool idDirNormal = std::isnormal(actor.dir);
+		int dirClass = std::fpclassify(actor.dir);
+		bool idDirNormal = (dirClass != FP_INFINITE && dirClass != FP_NAN);
+
 		if (idDirNormal)
 			localMove.rotateRadians(actor.dir);
 		
