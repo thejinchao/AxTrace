@@ -15,6 +15,7 @@ set(CMAKE_AUTORCC ON)
 
 # add subdirectory
 add_subdirectory(luajit)
+add_subdirectory(QtPropertyBrowser)
 add_subdirectory(axtrace)
 
 #install

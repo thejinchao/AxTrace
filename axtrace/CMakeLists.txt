@@ -20,7 +20,9 @@ set(AT4_CPP_SOURCES
 	AT4_LogColumn.cpp
 	AT4_LogData.cpp
 	AT4_SettingDialog_Filter.cpp
-	AT4_CodeEditor.cpp)
+	AT4_CodeEditor.cpp
+	AT4_ScriptVariant.cpp
+	AT4_ExtensionProperty.cpp)
 
 set(AT4_H_SOURCES
     stdafx.h
@@ -44,7 +46,9 @@ set(AT4_H_SOURCES
 	AT4_LogColumn.h
 	AT4_LogData.h
 	AT4_SettingDialog_Filter.h
-	AT4_CodeEditor.h)
+	AT4_CodeEditor.h
+	AT4_ScriptVariant.h
+	AT4_ExtensionProperty.h)
 
 set(AT4_RC_SOURCES
     AT4.qrc
@@ -69,6 +73,7 @@ set_source_files_properties(${AT4_PRECOMPILE_FILE}
 include_directories(
 	$ENV{CYCLONE_SDK_ROOT}/include
 	../luajit
+	../QtPropertyBrowser
 )
 
 link_directories(
@@ -85,6 +90,7 @@ add_executable(AxTrace4 WIN32
 
 target_link_libraries(AxTrace4 
 	Qt5::Widgets
+	QtPropertyBrowser
 	lua51
 	cyclone 
 	ws2_32 
