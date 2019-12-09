@@ -1,22 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
 
-project(AxTrace4)
-
-set(CMAKE_PREFIX_PATH $ENV{QT5_SDK_ROOT}/lib/cmake)
-
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTORCC ON)
-
-find_package(Qt5Widgets CONFIG REQUIRED)
-
-add_subdirectory(luajit)
-set(LUA_INCLUDE_DIR luajit)
-
-
 set(AT4_CPP_SOURCES
     AT4_Main.cpp
     AT4_MainWindow.cpp
@@ -85,7 +68,7 @@ set_source_files_properties(${AT4_PRECOMPILE_FILE}
 
 include_directories(
 	$ENV{CYCLONE_SDK_ROOT}/include
-	${LUA_INCLUDE_DIR}
+	../luajit
 )
 
 link_directories(
@@ -109,12 +92,10 @@ target_link_libraries(AxTrace4
 )
 add_dependencies(AxTrace4 lua51)
 set_target_properties(AxTrace4 
-    PROPERTIES LINK_FLAGS "${CMAKE_CURRENT_BINARY_DIR}/luajit/_build/lj_vm.obj"
+    PROPERTIES LINK_FLAGS "${CMAKE_CURRENT_BINARY_DIR}/../luajit/_build/lj_vm.obj"
 )
 
 #install
-set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/run)
-
 install(TARGETS AxTrace4
     DESTINATION .)
 
