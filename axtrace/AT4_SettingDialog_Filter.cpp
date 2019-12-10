@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -14,7 +14,7 @@
 
 //--------------------------------------------------------------------------------------------
 SettingDialog_Filter::SettingDialog_Filter(QWidget *parent)
-	: QWidget(parent)
+	: QDialog(parent)
 {
 	QFont font;
 	font.setFamily("Courier");
@@ -29,28 +29,45 @@ SettingDialog_Filter::SettingDialog_Filter(QWidget *parent)
 	Config* config = System::getSingleton()->getConfig();
 	m_editor->setPlainText(config->getFilterScript());
 
+	m_defaultButton = new QPushButton(tr("Default"));
+	connect(m_defaultButton, SIGNAL(clicked()), this, SLOT(reset()));
+
+	m_dlgButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+
+	connect(m_dlgButtons, &QDialogButtonBox::accepted, this, &SettingDialog_Filter::verify);
+	connect(m_dlgButtons, &QDialogButtonBox::rejected, this, &SettingDialog_Filter::reject);
+
 	QVBoxLayout *mainLayout = new QVBoxLayout;
 	mainLayout->addWidget(m_editor);
 
+	QHBoxLayout *buttonLayout = new QHBoxLayout;
+	buttonLayout->addWidget(m_defaultButton);
+	buttonLayout->addWidget(m_dlgButtons);
+
+	mainLayout->addLayout(buttonLayout);
+
 	setLayout(mainLayout);
+	resize(1024, 512);
+	setWindowFlags(windowFlags() | Qt::WindowMinMaxButtonsHint);
+	setWindowTitle(tr("AxTrace Filter Script"));
 }
 
 //--------------------------------------------------------------------------------------------
-bool SettingDialog_Filter::onVerify(void)
+void SettingDialog_Filter::verify(void)
 {
 	QString errorMsg;
 	std::string plainText = m_editor->toPlainText().toUtf8().toStdString();
 	if (!Filter::tryLoadScript(plainText.c_str(), errorMsg))
 	{
 		QMessageBox::critical(this, tr("LoadScript Error"), errorMsg, QMessageBox::Ok);
-		return false;
+		return;
 	}
 
 	if (QMessageBox::Yes != QMessageBox::warning(this,
 		tr("Compile Script Success!"), tr("Do you want reload filter script now?"),
 		QMessageBox::Yes | QMessageBox::No))
 	{
-		return false;
+		return;
 	}
 
 	m_script = m_editor->toPlainText();
@@ -60,11 +77,11 @@ bool SettingDialog_Filter::onVerify(void)
 	Q_ASSERT(reloadSuccess);
 
 	System::getSingleton()->getConfig()->setFilterScript(m_script);
-	return true;
+	accept();
 }
 
 //--------------------------------------------------------------------------------------------
-void SettingDialog_Filter::onReset(void)
+void SettingDialog_Filter::reset(void)
 {
 	if (QMessageBox::Yes != QMessageBox::question(this,
 		tr("Axtrace 4"), tr("Do you want reset filter script to default?"),

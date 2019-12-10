@@ -58,7 +58,6 @@ private:
 	LogColumnGroup m_logColumnGroup;
 	LogDataVector m_logVector;
 	quint32 m_currentIndex;
-	qint32 m_maxLogCounts;
 	qint32 m_maxOverflowCounts;
 	LogParser m_logParser;
 };

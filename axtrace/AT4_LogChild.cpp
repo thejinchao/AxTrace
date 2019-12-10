@@ -20,7 +20,6 @@ LogDataModel::LogDataModel(const Config::LogParserDefinePtr logParserDefine, QOb
 	, m_maxOverflowCounts(DEFAULT_MAX_OVERFLOW_COUNTS)
 	, m_logParser(logParserDefine)
 {
-	m_maxLogCounts = System::getSingleton()->getConfig()->getMaxLogCounts();
 	m_logColumnGroup.initDefaulGroup(m_logParser);
 }
 
@@ -60,10 +59,11 @@ void LogDataModel::clearAllLog(void)
 //--------------------------------------------------------------------------------------------
 void LogDataModel::autoCheckOverflow(void)
 {
-	int currentCounts = m_logVector.size();
+	qint32 currentCounts = m_logVector.size();
+	qint32 maxLogCounts = System::getSingleton()->getConfig()->getMaxLogCounts();
 
-	if (currentCounts > m_maxLogCounts + m_maxOverflowCounts) {
-		int needRemove = currentCounts - m_maxLogCounts;
+	if (currentCounts > maxLogCounts + m_maxOverflowCounts) {
+		int needRemove = currentCounts - maxLogCounts;
 
 		beginRemoveRows(QModelIndex(), 0, needRemove-1);
 		m_logVector.erase(m_logVector.begin(), m_logVector.begin() + needRemove);

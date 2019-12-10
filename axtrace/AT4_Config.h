@@ -30,9 +30,11 @@ public:
 
 	const QString& getDefaultFilterScript(void) const { return m_defaultFilterScript; }
 
+	enum { MAX_LOG_COUNTS_RANGE_MIN=10, MAX_LOG_COUNTS_RANGE_MAX=10000000 };
 	int getMaxLogCounts(void) const { return m_maxLogCounts; }
 	void setMaxLogCounts(int maxLogCounts);
 
+	enum { MAX_ACTOR_LOG_COUNTS_RANGE_MIN = 5, MAX_ACTOR_LOG_COUNTS_RANGE_MAX = 100 };
 	int getMaxActorLogCounts(void) const { return m_maxActorLogCounts; }
 	void setMaxActorLogCounts(qint32 maxActorLogCounts);
 

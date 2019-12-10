@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -9,28 +9,26 @@
 #include <QDialog>
 
 QT_BEGIN_NAMESPACE
+class QtProperty;
 class QDialogButtonBox;
+class QtTreePropertyBrowser;
 QT_END_NAMESPACE
 
 class SettingDialog : public QDialog
 {
 	Q_OBJECT
-public:
-	class SubInterface
-	{
-	public:
-		virtual bool onVerify(void) = 0;
-		virtual void onReset(void) = 0;
-	};
 
-public slots:
-	void verify();
-	void reset();
+private slots:
+	void scriptEditButtonClicked(QtProperty *);
+	void valueChanged(QtProperty *property, const QVariant &value);
 
 private:
-	QTabWidget*			m_tabWidget;
-	QPushButton*		m_defaultButton;
-	QDialogButtonBox*	m_dlgButtons;
+	void _initProperty(void);
+	void _addProperty(QtProperty *property, const QString &id);
+
+private:
+	QtTreePropertyBrowser* m_propertyBrowser;
+	QDialogButtonBox* m_dlgButtons;
 
 public:
 	SettingDialog(QWidget *parent = nullptr);

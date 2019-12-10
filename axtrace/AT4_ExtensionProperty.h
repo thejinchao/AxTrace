@@ -45,6 +45,12 @@ public:
 
 	QWidget* createEditor(QtVariantPropertyManager *manager, QtProperty *property, QWidget *parent);
 
+public slots:
+	void editButtonClicked(QtProperty *);
+
+Q_SIGNALS:
+	void scriptEditButtonClicked(QtProperty*);
+
 private:
 	ScriptEditorFactory *m_scriptEditorFactory;
 };

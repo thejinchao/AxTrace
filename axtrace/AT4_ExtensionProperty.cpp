@@ -88,6 +88,7 @@ VariantEditorFactory::VariantEditorFactory(QObject *parent /*= 0*/)
 	: QtVariantEditorFactory(parent)
 {
 	m_scriptEditorFactory = new ScriptEditorFactory(this);
+	connect(m_scriptEditorFactory, SIGNAL(editButtonClicked(QtProperty *)), this, SLOT(editButtonClicked(QtProperty *)));
 }
 
 VariantEditorFactory::~VariantEditorFactory()
@@ -106,4 +107,9 @@ QWidget* VariantEditorFactory::createEditor(QtVariantPropertyManager *manager, Q
 	}
 
 	return QtVariantEditorFactory::createEditor(manager, property, parent);
+}
+
+void VariantEditorFactory::editButtonClicked(QtProperty * property)
+{
+	emit scriptEditButtonClicked(property);
 }
