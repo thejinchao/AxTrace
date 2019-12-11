@@ -79,7 +79,7 @@ void Config::_resetToDefaultSetting(void)
 	);
 	m_maxLogCounts = 10000;
 
-	m_defaultLogParserDefineString = m_logParserDefineString = QString(
+	m_defaultLogParserDefineScript = m_logParserDefineScript = QString(
 		"[\r\n"
 		"  {\r\n"
 		"    \"title\": \"Talk\",\r\n"
@@ -102,7 +102,7 @@ void Config::_resetToDefaultSetting(void)
 		"]\r\n"
 	);
 
-	m_emptyLogParser = LogParserDefinePtr(new LogParserDefine());
+	m_emptyLogParser = LogParserDefinePtr(new LogParser::Define());
 	m_emptyLogParser->columns.push_back({"Log", 0});
 
 	m_maxActorLogCounts = 30;
@@ -115,7 +115,7 @@ void Config::copyFrom(const Config& other)
 	m_bAutoScroll = other.m_bAutoScroll;
 	m_filterScript = other.m_filterScript;
 	m_maxLogCounts = other.m_maxLogCounts;
-	m_logParserDefineString = other.m_logParserDefineString;
+	m_logParserDefineScript = other.m_logParserDefineScript;
 	m_logParserDefineMap = other.m_logParserDefineMap;
 	m_maxActorLogCounts = other.m_maxActorLogCounts;
 }
@@ -158,10 +158,18 @@ bool Config::loadSetting(void)
 	m_mainGeometry = settings.value("MainGeometry", QByteArray()).toByteArray();
 	m_filterScript = settings.value("FilterScript", m_filterScript).toString();
 	m_maxLogCounts = settings.value("MaxLogCounts", m_maxLogCounts).toInt();
-	m_logParserDefineString = settings.value("LogParserDefine", m_defaultLogParserDefineString).toString();
 	m_maxActorLogCounts = settings.value("MaxActorLogCounts", m_maxActorLogCounts).toInt();
+
 	//load log parser define
-	return _loadLogParserDefine();
+	QString logParserDefineScript = settings.value("LogParserScript", m_defaultLogParserDefineScript).toString();
+
+	QString errorMsg;
+	if (!LogParser::tryLoadParserScript(logParserDefineScript, errorMsg, m_logParserDefineMap))
+	{
+		return false;
+	}
+	m_logParserDefineScript = logParserDefineScript;
+	return true;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -175,57 +183,34 @@ void Config::saveSetting(void) const
 	settings.setValue("MainGeometry", m_mainGeometry);
 	settings.setValue("FilterScript", m_filterScript);
 	settings.setValue("MaxLogCounts", m_maxLogCounts);
-	settings.setValue("LogParserDefine", m_logParserDefineString);
+	settings.setValue("LogParserScript", m_logParserDefineScript);
 	settings.setValue("MaxActorLogCounts", m_maxActorLogCounts);
 }
 
 //--------------------------------------------------------------------------------------------
-bool Config::_loadLogParserDefine(void)
+const LogParser::DefinePtr Config::getLogParser(const QString& title) const
 {
-	QJsonParseError json_error;
-	QJsonDocument jsonDoc(QJsonDocument::fromJson(m_logParserDefineString.toUtf8(), &json_error));
-
-	if (json_error.error != QJsonParseError::NoError)
-	{
-		return false;
-	}
-
-	QJsonArray arrayObj = jsonDoc.array();
-	for (int i = 0; i < arrayObj.size(); i++)
-	{
-		LogParserDefinePtr parser(new LogParserDefine());
-
-		QJsonObject obj = arrayObj.at(i).toObject();
-
-		parser->title = obj.value("title").toString();
-		parser->regExp = obj.value("regex").toString();
-
-		QJsonArray columnArray = obj.value("column").toArray();
-		for (int j = 0; j < columnArray.size(); j++)
-		{
-			LogWndColumn newColumn;
-			QJsonObject columnObj = columnArray.at(j).toObject();
-
-			newColumn.name = columnObj.value("name").toString();
-			newColumn.width = columnObj.value("width").toString().toInt();
-
-			parser->columns.push_back(newColumn);
-		}
-
-		m_logParserDefineMap.insert(parser->title, parser);
-	}
-
-	return true;
-}
-
-//--------------------------------------------------------------------------------------------
-const Config::LogParserDefinePtr Config::getLogParser(const QString& title) const
-{
-	LogParserDefineMap::const_iterator it = m_logParserDefineMap.find(title);
+	LogParser::DefineMap::const_iterator it = m_logParserDefineMap.find(title);
 	if (it == m_logParserDefineMap.end())
 	{
 		return m_emptyLogParser;
 	}
 
 	return it.value();
+}
+
+//--------------------------------------------------------------------------------------------
+void Config::setLogParserScript(const QString& logParserScript)
+{
+	QString errorMsg;
+	LogParserDefineMap logParserDefineMap;
+	bool success = LogParser::tryLoadParserScript(logParserScript, errorMsg, logParserDefineMap);
+	Q_ASSERT(success);
+	if (!success)
+	{
+		return;
+	}
+
+	m_logParserDefineScript = logParserScript;
+	m_logParserDefineMap = logParserDefineMap;
 }

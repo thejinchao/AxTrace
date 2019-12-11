@@ -61,6 +61,9 @@ public:
 
 	void notifySubWindowClose(IChild::Type t, const QString& title);
 
+	qint32 getLogChildCounts(void) const {
+		return m_logChildMap.size();
+	}
 private:
 	void _processAxTraceData(Message* msg);
 	void _onShakeHand(ShakehandMessage* msg);

@@ -6,6 +6,8 @@
 ***************************************************/
 #pragma once
 
+#include "AT4_LogData.h"
+
 class Config
 {
 public:
@@ -39,27 +41,21 @@ public:
 	void setMaxActorLogCounts(qint32 maxActorLogCounts);
 
 public:
-	struct LogWndColumn
-	{
-		QString name;
-		qint32 width;
-	};
-	typedef QVector<LogWndColumn> LogWndColumnVector;
+	typedef LogParser::DefineMap LogParserDefineMap;
+	typedef LogParser::DefinePtr LogParserDefinePtr;
 
-	struct LogParserDefine
-	{
-		QString title;
-		QString regExp;
-		LogWndColumnVector columns;
-	};
-	typedef QSharedPointer<LogParserDefine> LogParserDefinePtr;
-	typedef QHash<QString, LogParserDefinePtr> LogParserDefineMap;
 
 	const LogParserDefinePtr getLogParser(const QString& title) const;
+	const QString& getLoaParserScript(void) const {
+		return m_logParserDefineScript;
+	}
+	const QString& getDefaultLogParserScript(void) const {
+		return m_defaultLogParserDefineScript;
+	}
+	void setLogParserScript(const QString& logParserScript);
 
 private:
 	void _resetToDefaultSetting(void);
-	bool _loadLogParserDefine(void);
 
 private:
 	bool m_bCapture;
@@ -70,8 +66,8 @@ private:
 	QByteArray m_mainGeometry;
 	qint32 m_maxLogCounts;
 
-	QString m_logParserDefineString;
-	QString m_defaultLogParserDefineString;
+	QString m_logParserDefineScript;
+	QString m_defaultLogParserDefineScript;
 	LogParserDefineMap m_logParserDefineMap;
 	LogParserDefinePtr m_emptyLogParser;
 

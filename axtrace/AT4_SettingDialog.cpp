@@ -100,7 +100,12 @@ void SettingDialog::scriptEditButtonClicked(QtProperty* property)
 
 	if (scriptVariant.type == "Filter")
 	{
-		SettingDialog_Filter dlg;
+		ScriptEditorDialog_Filter dlg;
+		dlg.exec();
+	}
+	else if (scriptVariant.type == "Parser")
+	{
+		ScriptEditorDialog_LogParser dlg;
 		dlg.exec();
 	}
 }

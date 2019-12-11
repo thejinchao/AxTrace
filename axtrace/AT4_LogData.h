@@ -8,7 +8,6 @@
 
 #include "AT4_Interface.h"
 #include "AT4_Session.h"
-#include "AT4_Config.h"
 
 struct LogData
 {
@@ -26,17 +25,39 @@ typedef QQueue<LogData> LogDataVector;
 class LogParser
 {
 public:
-	bool isDefault(void) const { return m_parserDefine->regExp.isEmpty(); }
+	struct Column
+	{
+		QString name;
+		qint32 width;
+	};
+	typedef QVector<Column> ColumnVector;
 
-	typedef Config::LogWndColumnVector ColumnVector;
-	const ColumnVector& getTitleList(void) const { return m_parserDefine->columns; }
+	struct Define
+	{
+		QString title;
+		QString regExp;
+		ColumnVector columns;
+	};
+	typedef QSharedPointer<Define> DefinePtr;
+	typedef QHash<QString, DefinePtr> DefineMap;
+
+	static bool tryLoadParserScript(const QString& script, QString& errorMsg, DefineMap& defineMap);
+
+public:
+	bool isDefault(void) const { 
+		return m_parserDefine->regExp.isEmpty(); 
+	}
+
+	const ColumnVector& getTitleList(void) const { 
+		return m_parserDefine->columns; 
+	}
 
 	QStringList parserLog(const QString& logContent) const;
 
 private:
-	Config::LogParserDefinePtr	m_parserDefine;
+	DefinePtr m_parserDefine;
 	QRegExp m_regExp;
 
 public:
-	LogParser(const Config::LogParserDefinePtr logParserDefine);
+	LogParser(const DefinePtr parserDefine);
 };

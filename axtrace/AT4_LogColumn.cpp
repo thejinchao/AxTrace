@@ -86,7 +86,7 @@ void LogColumnGroup::initDefaulGroup(const LogParser& logParser)
 	m_columns.push_back(new LogColumn_ThreadID(index++, false));
 
 	qint32 indexOfList = 0;
-	for (Config::LogWndColumn logTitle : logParser.getTitleList())
+	for (LogParser::Column logTitle : logParser.getTitleList())
 	{
 		bool isMain = (indexOfList == logParser.getTitleList().size()-1);
 		m_columns.push_back(new LogColumn_LogContent(logTitle.name, indexOfList++, isMain, index++));

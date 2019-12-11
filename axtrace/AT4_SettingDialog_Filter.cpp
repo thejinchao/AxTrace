@@ -11,9 +11,10 @@
 #include "AT4_Filter.h"
 #include "AT4_LuaHighlighter.h"
 #include "AT4_CodeEditor.h"
+#include "AT4_MainWindow.h"
 
 //--------------------------------------------------------------------------------------------
-SettingDialog_Filter::SettingDialog_Filter(QWidget *parent)
+ScriptEditorDialog::ScriptEditorDialog(QWidget *parent)
 	: QDialog(parent)
 {
 	QFont font;
@@ -24,18 +25,13 @@ SettingDialog_Filter::SettingDialog_Filter(QWidget *parent)
 	m_editor = new CodeEditor;
 	m_editor->setFont(font);
 
-	m_highlighter = new LuaHighlighter(m_editor->document());
-
-	Config* config = System::getSingleton()->getConfig();
-	m_editor->setPlainText(config->getFilterScript());
-
 	m_defaultButton = new QPushButton(tr("Default"));
-	connect(m_defaultButton, SIGNAL(clicked()), this, SLOT(reset()));
+	connect(m_defaultButton, SIGNAL(clicked()), this, SLOT(onResetButton()));
 
 	m_dlgButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
-	connect(m_dlgButtons, &QDialogButtonBox::accepted, this, &SettingDialog_Filter::verify);
-	connect(m_dlgButtons, &QDialogButtonBox::rejected, this, &SettingDialog_Filter::reject);
+	connect(m_dlgButtons, &QDialogButtonBox::accepted, this, &ScriptEditorDialog::verify);
+	connect(m_dlgButtons, &QDialogButtonBox::rejected, this, &ScriptEditorDialog::reject);
 
 	QVBoxLayout *mainLayout = new QVBoxLayout;
 	mainLayout->addWidget(m_editor);
@@ -53,7 +49,17 @@ SettingDialog_Filter::SettingDialog_Filter(QWidget *parent)
 }
 
 //--------------------------------------------------------------------------------------------
-void SettingDialog_Filter::verify(void)
+ScriptEditorDialog_Filter::ScriptEditorDialog_Filter(QWidget *parent)
+	: ScriptEditorDialog(parent)
+{
+	m_highlighter = new LuaHighlighter(m_editor->document());
+
+	Config* config = System::getSingleton()->getConfig();
+	m_editor->setPlainText(config->getFilterScript());
+}
+
+//--------------------------------------------------------------------------------------------
+void ScriptEditorDialog_Filter::verify(void)
 {
 	QString errorMsg;
 	std::string plainText = m_editor->toPlainText().toUtf8().toStdString();
@@ -81,7 +87,13 @@ void SettingDialog_Filter::verify(void)
 }
 
 //--------------------------------------------------------------------------------------------
-void SettingDialog_Filter::reset(void)
+void ScriptEditorDialog::onResetButton()
+{
+	reset();
+}
+
+//--------------------------------------------------------------------------------------------
+void ScriptEditorDialog_Filter::reset(void)
 {
 	if (QMessageBox::Yes != QMessageBox::question(this,
 		tr("Axtrace 4"), tr("Do you want reset filter script to default?"),
@@ -92,3 +104,47 @@ void SettingDialog_Filter::reset(void)
 
 	m_editor->setPlainText(System::getSingleton()->getConfig()->getDefaultFilterScript());
 }
+
+//--------------------------------------------------------------------------------------------
+ScriptEditorDialog_LogParser::ScriptEditorDialog_LogParser(QWidget *parent)
+	: ScriptEditorDialog(parent)
+{
+	Config* config = System::getSingleton()->getConfig();
+	m_editor->setPlainText(config->getLoaParserScript());
+}
+
+//--------------------------------------------------------------------------------------------
+void ScriptEditorDialog_LogParser::verify(void)
+{
+	if (System::getSingleton()->getMainWindow()->getLogChildCounts() > 0) 
+	{
+		QMessageBox::critical(this, tr("Axtrace 4"), tr("Close all log window first!"), QMessageBox::Ok);
+		return;
+	}
+
+	m_script = m_editor->toPlainText();
+
+	QString errorMsg;
+	LogParser::DefineMap logParserDefineMap;
+	if (!LogParser::tryLoadParserScript(m_script, errorMsg, logParserDefineMap))
+	{
+		QMessageBox::critical(this, tr("Axtrace 4"), tr("Load log parser script error:%1").arg(errorMsg), QMessageBox::Ok);
+		return;
+	}
+	System::getSingleton()->getConfig()->setLogParserScript(m_script);
+	accept();
+}
+
+//--------------------------------------------------------------------------------------------
+void ScriptEditorDialog_LogParser::reset(void)
+{
+	if (QMessageBox::Yes != QMessageBox::question(this,
+		tr("Axtrace 4"), tr("Do you want reset log parser script to default?"),
+		QMessageBox::Yes | QMessageBox::No))
+	{
+		return;
+	}
+
+	m_editor->setPlainText(System::getSingleton()->getConfig()->getDefaultLogParserScript());
+}
+
