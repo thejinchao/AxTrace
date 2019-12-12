@@ -19,7 +19,7 @@ set(AT4_CPP_SOURCES
 	AT4_Session.cpp
 	AT4_LogColumn.cpp
 	AT4_LogData.cpp
-	AT4_SettingDialog_Filter.cpp
+	AT4_ScriptEditDialog.cpp
 	AT4_CodeEditor.cpp
 	AT4_ScriptVariant.cpp
 	AT4_ExtensionProperty.cpp)
@@ -45,7 +45,7 @@ set(AT4_H_SOURCES
 	AT4_Session.h
 	AT4_LogColumn.h
 	AT4_LogData.h
-	AT4_SettingDialog_Filter.h
+	AT4_ScriptEditDialog.h
 	AT4_CodeEditor.h
 	AT4_ScriptVariant.h
 	AT4_ExtensionProperty.h)

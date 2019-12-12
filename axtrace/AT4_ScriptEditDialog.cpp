@@ -5,7 +5,7 @@
 	(C) Copyright thecodeway.com 2019
 ***************************************************/
 #include "stdafx.h"
-#include "AT4_SettingDialog_Filter.h"
+#include "AT4_ScriptEditDialog.h"
 #include "AT4_System.h"
 #include "AT4_Config.h"
 #include "AT4_Filter.h"

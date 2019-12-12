@@ -6,7 +6,7 @@
 ***************************************************/
 #include "stdafx.h"
 #include "AT4_SettingDialog.h"
-#include "AT4_SettingDialog_Filter.h"
+#include "AT4_ScriptEditDialog.h"
 #include "AT4_ExtensionProperty.h"
 #include "AT4_ScriptVariant.h"
 #include "AT4_System.h"
