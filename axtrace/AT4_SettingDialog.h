@@ -12,6 +12,7 @@ QT_BEGIN_NAMESPACE
 class QtProperty;
 class QDialogButtonBox;
 class QtTreePropertyBrowser;
+class QLabel;
 QT_END_NAMESPACE
 
 class SettingDialog : public QDialog
@@ -21,14 +22,16 @@ class SettingDialog : public QDialog
 private slots:
 	void scriptEditButtonClicked(QtProperty *);
 	void valueChanged(QtProperty *property, const QVariant &value);
+	void clearMessage() ;
 
 private:
 	void _initProperty(void);
-	void _addProperty(QtProperty *property, const QString &id);
+	void _setWarningText(const QString& message);
 
 private:
 	QtTreePropertyBrowser* m_propertyBrowser;
 	QDialogButtonBox* m_dlgButtons;
+	QLabel* m_warningLabel;
 
 public:
 	SettingDialog(QWidget *parent = nullptr);

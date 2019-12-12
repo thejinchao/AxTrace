@@ -6,6 +6,8 @@
 ***************************************************/
 #include "stdafx.h"
 #include "AT4_Config.h"
+#include "AT4_System.h"
+#include "AT4_MainWindow.h"
 
 //--------------------------------------------------------------------------------------------
 Config::Config()
@@ -77,7 +79,7 @@ void Config::_resetToDefaultSetting(void)
 		"\tend;\r\n"
 		"end; \r\n"
 	);
-	m_maxLogCounts = 10000;
+	m_maxLogCounts = MAX_LOG_COUNTS_DEFAULT;
 
 	m_defaultLogParserDefineScript = m_logParserDefineScript = QString(
 		"[\r\n"
@@ -105,7 +107,9 @@ void Config::_resetToDefaultSetting(void)
 	m_emptyLogParser = LogParserDefinePtr(new LogParser::Define());
 	m_emptyLogParser->columns.push_back({"Log", 0});
 
-	m_maxActorLogCounts = 30;
+	m_maxActorLogCounts = MAX_ACTOR_LOG_COUNTS_DEFAULT;
+
+	m_listenPort = LISTEN_PORT_DEFAULT;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -118,6 +122,7 @@ void Config::copyFrom(const Config& other)
 	m_logParserDefineScript = other.m_logParserDefineScript;
 	m_logParserDefineMap = other.m_logParserDefineMap;
 	m_maxActorLogCounts = other.m_maxActorLogCounts;
+	m_listenPort = other.m_listenPort;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -136,13 +141,26 @@ void Config::setMainGeometry(const QByteArray& geometry)
 //--------------------------------------------------------------------------------------------
 void Config::setMaxLogCounts(int maxLogCounts)
 {
+	Q_ASSERT(maxLogCounts > MAX_LOG_COUNTS_RANGE_MIN && maxLogCounts < MAX_LOG_COUNTS_RANGE_MAX);
+
 	m_maxLogCounts = maxLogCounts;
 }
 
 //--------------------------------------------------------------------------------------------
 void Config::setMaxActorLogCounts(qint32 maxActorLogCounts)
 {
+	Q_ASSERT(maxActorLogCounts > MAX_ACTOR_LOG_COUNTS_RANGE_MIN && maxActorLogCounts < MAX_ACTOR_LOG_COUNTS_RANGE_MAX);
+
 	m_maxActorLogCounts = maxActorLogCounts;
+}
+
+//--------------------------------------------------------------------------------------------
+void Config::setListenPort(qint32 listenPort)
+{
+	Q_ASSERT(listenPort >= LISTEN_PORT_MIN && listenPort<= LISTEN_PORT_MAX);
+	Q_ASSERT(System::getSingleton()->getSessionManager()->getSessionCounts() == 0);
+
+	m_listenPort = listenPort;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -159,7 +177,7 @@ bool Config::loadSetting(void)
 	m_filterScript = settings.value("FilterScript", m_filterScript).toString();
 	m_maxLogCounts = settings.value("MaxLogCounts", m_maxLogCounts).toInt();
 	m_maxActorLogCounts = settings.value("MaxActorLogCounts", m_maxActorLogCounts).toInt();
-
+	m_listenPort = settings.value("ListenPort", m_listenPort).toInt();
 	//load log parser define
 	QString logParserDefineScript = settings.value("LogParserScript", m_defaultLogParserDefineScript).toString();
 
@@ -185,6 +203,7 @@ void Config::saveSetting(void) const
 	settings.setValue("MaxLogCounts", m_maxLogCounts);
 	settings.setValue("LogParserScript", m_logParserDefineScript);
 	settings.setValue("MaxActorLogCounts", m_maxActorLogCounts);
+	settings.setValue("ListenPort", m_listenPort);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -202,6 +221,8 @@ const LogParser::DefinePtr Config::getLogParser(const QString& title) const
 //--------------------------------------------------------------------------------------------
 void Config::setLogParserScript(const QString& logParserScript)
 {
+	Q_ASSERT(System::getSingleton()->getMainWindow()->getLogChildCounts() == 0);
+
 	QString errorMsg;
 	LogParserDefineMap logParserDefineMap;
 	bool success = LogParser::tryLoadParserScript(logParserScript, errorMsg, logParserDefineMap);

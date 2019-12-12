@@ -11,12 +11,18 @@
 #include "AT4_ScriptVariant.h"
 #include "AT4_System.h"
 #include "AT4_Config.h"
+#include "AT4_Incoming.h"
 
 //--------------------------------------------------------------------------------------------
 SettingDialog::SettingDialog(QWidget *parent)
 	: QDialog(parent)
 {
 	_initProperty();
+
+	m_warningLabel = new QLabel;
+	QFont font = m_warningLabel->font();
+	font.setBold(true);
+	m_warningLabel->setFont(font);
 
 	m_dlgButtons = new QDialogButtonBox(QDialogButtonBox::Close);
 	connect(m_dlgButtons, &QDialogButtonBox::rejected, this, &SettingDialog::reject);
@@ -25,6 +31,7 @@ SettingDialog::SettingDialog(QWidget *parent)
 	mainLayout->addWidget(m_propertyBrowser);
 
 	QHBoxLayout *buttonLayout = new QHBoxLayout;
+	buttonLayout->addWidget(m_warningLabel);
 	buttonLayout->addWidget(m_dlgButtons);
 
 	mainLayout->addLayout(buttonLayout);
@@ -51,6 +58,12 @@ void SettingDialog::_initProperty(void)
 
 	//==== General Group =====
 	QtProperty *generalGroup = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),QString("General"));
+
+	QtVariantProperty *listenPort = variantManager->addProperty(QVariant::Int, QString("ListenPort"));
+	listenPort->setValue(config->getListenPort());
+	listenPort->setAttribute(QLatin1String("minimum"), Config::LISTEN_PORT_MIN);
+	listenPort->setAttribute(QLatin1String("maximum"), Config::LISTEN_PORT_MAX);
+	generalGroup->addSubProperty(listenPort);
 
 	QtVariantProperty *filterScript = variantManager->addProperty(ScriptVariant::Type, QString("FilterScript"));
 	filterScript->setValue(ScriptVariant("Filter", ""));
@@ -93,6 +106,13 @@ void SettingDialog::_initProperty(void)
 }
 
 //--------------------------------------------------------------------------------------------
+void SettingDialog::_setWarningText(const QString& message)
+{
+	m_warningLabel->setText(message);
+	QTimer::singleShot(2 * 1000, this, SLOT(clearMessage()));
+}
+
+//--------------------------------------------------------------------------------------------
 void SettingDialog::scriptEditButtonClicked(QtProperty* property)
 {
 	QtVariantProperty *filterScript = static_cast<QtVariantProperty*>(property);
@@ -116,7 +136,29 @@ void SettingDialog::valueChanged(QtProperty *property, const QVariant &value)
 	QString propertyName = property->propertyName();
 	Config* config = System::getSingleton()->getConfig();
 
-	if (propertyName == "MaxLogCounts") {
+	if (propertyName == "ListenPort") {
+		qint32 listenPort = value.toInt();
+		if (config->getListenPort() == listenPort) return;
+
+		SessionManager* sessionManager = System::getSingleton()->getSessionManager();
+		if (sessionManager->getSessionCounts() > 0)
+		{
+			((QtVariantProperty *)property)->setValue(config->getListenPort());
+			_setWarningText(tr("Disconnect all connection first!"));
+			return;
+		}
+
+		Incoming* incoming = System::getSingleton()->getIncoming();
+		Q_ASSERT(incoming);
+
+		//shutdown current network
+		incoming->close();
+
+		//set new listen port and restart network
+		config->setListenPort(listenPort);
+		incoming->init(listenPort);
+	}
+	else if (propertyName == "MaxLogCounts") {
 		qint32 maxLogCounts = value.toInt();
 		config->setMaxLogCounts(maxLogCounts);
 	}
@@ -124,4 +166,10 @@ void SettingDialog::valueChanged(QtProperty *property, const QVariant &value)
 		qint32 maxActorLogCounts = value.toInt();
 		config->setMaxActorLogCounts(maxActorLogCounts);
 	}
+}
+
+//--------------------------------------------------------------------------------------------
+void SettingDialog::clearMessage()
+{
+	m_warningLabel->setText("");
 }

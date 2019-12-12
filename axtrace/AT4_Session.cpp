@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -66,6 +66,14 @@ SessionPtr SessionManager::findSession(int32_t sessionID)
 	if (it == m_sessionMap.end()) return SessionPtr(nullptr);
 	
 	return it.value();
+}
+
+//--------------------------------------------------------------------------------------------
+qint32 SessionManager::getSessionCounts(void) const
+{ 
+	QMutexLocker locker(&m_lock);
+
+	return m_sessionMap.size();
 }
 
 //--------------------------------------------------------------------------------------------

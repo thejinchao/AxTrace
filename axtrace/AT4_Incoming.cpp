@@ -17,23 +17,23 @@
 Incoming::Incoming()
 	: m_server(nullptr)
 {
+	//set cyclone log level
+	cyclone::setLogThreshold(cyclone::L_ERROR);
 }
 
 //--------------------------------------------------------------------------------------------
 Incoming::~Incoming()
 {
-	if (m_server) {
-		delete m_server;
-	}
+	close();
 }
 
 //--------------------------------------------------------------------------------------------
-bool Incoming::init(void)
+bool Incoming::init(qint32 listenPort)
 {
-	//disable cyclone log
-	cyclone::setLogThreshold(cyclone::L_ERROR);
+	Q_ASSERT(m_server == nullptr);
 
-	cyclone::Address address(DEFAULT_PORT, false);
+	//begin listen
+	cyclone::Address address(listenPort, false);
 	m_server = new cyclone::TcpServer("axtrace", nullptr);
 	m_server->m_listener.onConnected = std::bind(&Incoming::on_connected, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	m_server->m_listener.onMessage = std::bind(&Incoming::on_message, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
@@ -108,10 +108,15 @@ void Incoming::on_message(cyclone::TcpServer* server, int32_t thread_index, cycl
 }
 
 //--------------------------------------------------------------------------------------------
-void Incoming::closeListen(void)
+void Incoming::close(void)
 {
+	if (m_server == nullptr) return;
+
 	//wait cyclone quit...
 	m_server->stop();
 	m_server->join();
+
+	delete m_server;
+	m_server = nullptr;
 }
 

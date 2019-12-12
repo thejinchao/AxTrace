@@ -84,7 +84,7 @@ bool System::init(int argc, char *argv[])
 		return false;
 	}
 
-	if (!(m_incoming->init())) {
+	if (!(m_incoming->init(m_config->getListenPort()))) {
 		QMessageBox::critical(nullptr, QString("AxTrace 4"), QString("Init Socket Error"), QMessageBox::Ok);
 		return false;
 	}
@@ -102,7 +102,7 @@ int System::run(void)
 	int retCode = m_theApplication->exec();
 
 	m_config->saveSetting();
-	m_incoming->closeListen();
+	m_incoming->close();
 
 	return retCode;
 }

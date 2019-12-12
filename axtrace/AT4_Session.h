@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -44,6 +44,7 @@ class SessionManager
 public:
 	//Thread safe functions
 	SessionPtr findSession(int32_t sessionID);
+	qint32 getSessionCounts(void) const;
 
 	void onSessionConnected(cyclone::ConnectionPtr connPtr);
 	void onSessionClose(cyclone::ConnectionPtr connPtr);
@@ -51,7 +52,7 @@ public:
 private:
 	typedef QMap<int32_t, SessionPtr> SessionMap;
 
-	QMutex		m_lock;
+	mutable QMutex m_lock;
 	SessionMap	m_sessionMap;
 
 public:

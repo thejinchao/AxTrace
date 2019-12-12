@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -9,13 +9,10 @@
 class Incoming
 {
 public:
-	//default listen port is 1978 :)
-	enum { DEFAULT_PORT = 1978 };
-
-	/** create receive thread */
-	bool init(void);
-	/** try close receive thread*/
-	void closeListen(void);
+	// create receive thread and start listen port
+	bool init(qint32 listenPort);
+	// try close current network thread
+	void close(void);
 	//kick out connection
 	void kickConnection(cyclone::ConnectionPtr conn);
 
