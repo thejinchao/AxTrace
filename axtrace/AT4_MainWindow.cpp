@@ -244,6 +244,14 @@ void MainWindow::_onCapture()
 }
 
 //--------------------------------------------------------------------------------------------
+void MainWindow::_onDocumentPause()
+{
+	IChild* activeChild = activeMdiChild();
+	if (activeChild)
+		activeChild->switchPause();
+}
+
+//--------------------------------------------------------------------------------------------
 void MainWindow::_onAutoScroll()
 {
 	Config* config = System::getSingleton()->getConfig();
@@ -346,6 +354,9 @@ void MainWindow::updateMenus()
 	m_saveAsAct->setEnabled(hasMdiChild);
 	m_captureAct->setChecked(config->getCapture());
 
+	m_docPauseAct->setEnabled(hasMdiChild);
+	m_docPauseAct->setChecked(activeChild && activeChild->isPause());
+
 	m_autoScrollAct->setEnabled(activeChild && activeChild->getType() == IChild::CT_LOG);
 	m_autoScrollAct->setChecked(config->getAutoScroll());
 
@@ -414,6 +425,13 @@ void MainWindow::createActions()
 	m_captureAct->setCheckable(true);
 	connect(m_captureAct, &QAction::triggered, this, &MainWindow::_onCapture);
 	fileMenu->addAction(m_captureAct);
+
+	const QIcon documentPauseIcon = QIcon(":/images/doc-pause.png");
+	m_docPauseAct = new QAction(documentPauseIcon, tr("&Pause"), this);
+	m_docPauseAct->setStatusTip(tr("Pause/Resume document capture"));
+	m_docPauseAct->setCheckable(true);
+	connect(m_docPauseAct, &QAction::triggered, this, &MainWindow::_onDocumentPause);
+	fileMenu->addAction(m_docPauseAct);
 
     fileMenu->addSeparator();
 
@@ -518,6 +536,7 @@ void MainWindow::createActions()
 	QToolBar *mainToolBar = addToolBar(tr("Main"));
 	mainToolBar->addAction(m_saveAsAct);
 	mainToolBar->addAction(m_captureAct);
+	mainToolBar->addAction(m_docPauseAct);
 	mainToolBar->addSeparator();
 	mainToolBar->addAction(m_autoScrollAct);
 	mainToolBar->addAction(m_showGridAct);

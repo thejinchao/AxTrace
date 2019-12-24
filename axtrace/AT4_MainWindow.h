@@ -87,6 +87,7 @@ private:
 private slots:
     void _onSaveAs();
 	void _onCapture();
+	void _onDocumentPause();
 	void _onAutoScroll();
 	void _onShowGrid();
     void _onCopy();
@@ -115,6 +116,7 @@ private:
 
 	QAction* m_saveAsAct;
 	QAction* m_captureAct;
+	QAction* m_docPauseAct;
 
 	QAction* m_autoScrollAct;
 	QAction* m_showGridAct;

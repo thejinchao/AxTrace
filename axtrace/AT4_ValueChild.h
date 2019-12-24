@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -65,9 +65,12 @@ public:
 	void init(void);
 	void insertValue(const ValueMessage* valueMessage, const Filter::ListResult& filterResult);
 	void clearAllValue(void);
+	bool isPause(void) const { return m_pause; }
+	void switchPause(void);
 
 private:
 	QString m_title;
+	bool m_pause;
 
 protected:
 	void closeEvent(QCloseEvent *event) override;

@@ -169,6 +169,14 @@ public:
 		return !(m_proxy->selectionModel()->selectedRows().empty());
 	}
 
+	virtual bool isPause(void) const {
+		return m_proxy->isPause();
+	}
+
+	virtual void switchPause(void) {
+		m_proxy->switchPause();
+	}
+
 	virtual void onCopy(void) const
 	{
 		LogDataModel* model = (LogDataModel*)(m_proxy->model());
@@ -254,6 +262,7 @@ public:
 
 //--------------------------------------------------------------------------------------------
 LogChild::LogChild(const QString& title)
+	: m_pause(false)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -309,6 +318,12 @@ void LogChild::closeEvent(QCloseEvent *event)
 }
 
 //--------------------------------------------------------------------------------------------
+void LogChild::switchPause(void)
+{
+	m_pause = !m_pause;
+}
+
+//--------------------------------------------------------------------------------------------
 void LogChild::timerEvent(QTimerEvent *event)
 {
 	if (m_bNeedScrollDown && System::getSingleton()->getConfig()->getAutoScroll()) {
@@ -325,6 +340,8 @@ void LogChild::timerEvent(QTimerEvent *event)
 //--------------------------------------------------------------------------------------------
 void LogChild::insertLog(const LogMessage* logMessage, const Filter::ListResult& filterResult)
 {
+	if (m_pause) return;
+
 	LogDataModel* model = (LogDataModel*)(this->model());
 
 	model->insertLog(logMessage, filterResult);

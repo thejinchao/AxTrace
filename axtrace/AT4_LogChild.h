@@ -69,6 +69,8 @@ class LogChild : public QTreeView
 public:
 	void init(void);
 	void insertLog(const LogMessage* logMessage, const Filter::ListResult& filterResult);
+	bool isPause(void) const { return m_pause; }
+	void switchPause(void);
 
 protected:
 	bool eventFilter(QObject *target, QEvent *event);
@@ -79,6 +81,7 @@ protected:
 
 private:
 	QString m_title;
+	bool m_pause;
 	bool m_bNeedScrollDown;
 
 public:

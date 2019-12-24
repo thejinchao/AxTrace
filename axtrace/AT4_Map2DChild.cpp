@@ -30,6 +30,14 @@ public:
 		return false;
 	}
 
+	virtual bool isPause(void) const {
+		return m_proxy->isPause();
+	}
+
+	virtual void switchPause(void) {
+		m_proxy->switchPause();
+	}
+
 	virtual void onCopy(void) const {
 
 	}
@@ -62,7 +70,8 @@ QBrush*	Map2DChild::m_cachedBrush[Map2DChild::MAX_COLOR_COUNTS] = { nullptr };
 
 //--------------------------------------------------------------------------------------------
 Map2DChild::Map2DChild(const QString& title)
-	: m_frameIndex(0)
+	: m_pause(false)
+	, m_frameIndex(0)
 	, m_scene(nullptr)
 	, m_camera(nullptr)
 	, m_hasSelectedActor(false)
@@ -117,6 +126,8 @@ void Map2DChild::clean(void)
 //--------------------------------------------------------------------------------------------
 void Map2DChild::beginScene(Begin2DSceneMessage* msg)
 {
+	if (m_pause) return;
+
 	if (!m_scene)
 	{
 		m_scene = new Scene2D(msg);
@@ -129,6 +140,8 @@ void Map2DChild::beginScene(Begin2DSceneMessage* msg)
 //--------------------------------------------------------------------------------------------
 void Map2DChild::updateActor(Update2DActorMessage* msg, const Filter::Actor2DResult& filterResult)
 {
+	if (m_pause) return;
+
 	if (m_scene)
 	{
 		m_scene->updateActor(msg, filterResult);
@@ -138,7 +151,9 @@ void Map2DChild::updateActor(Update2DActorMessage* msg, const Filter::Actor2DRes
 //--------------------------------------------------------------------------------------------
 void Map2DChild::endScene(End2DSceneMessage* msg)
 {
-	if (m_scene) 
+	if (m_pause) return;
+
+	if (m_scene)
 	{
 		m_scene->endScene(msg);
 		m_camera->reset(size(), m_scene->getSceneRect());
@@ -150,10 +165,18 @@ void Map2DChild::endScene(End2DSceneMessage* msg)
 //--------------------------------------------------------------------------------------------
 void Map2DChild::addActorLog(Add2DActorLogMessage* msg)
 {
+	if (m_pause) return;
+
 	if (m_scene)
 	{
 		m_scene->addActorLog(msg);
 	}
+}
+
+//--------------------------------------------------------------------------------------------
+void Map2DChild::switchPause(void)
+{
+	m_pause = !m_pause;
 }
 
 //--------------------------------------------------------------------------------------------

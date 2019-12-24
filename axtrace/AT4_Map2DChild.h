@@ -32,6 +32,8 @@ public:
 	void updateActor(Update2DActorMessage* msg, const Filter::Actor2DResult& filterResult);
 	void endScene(End2DSceneMessage* msg);
 	void addActorLog(Add2DActorLogMessage* msg);
+	bool isPause(void) const { return m_pause; }
+	void switchPause(void);
 
 protected:
 	void closeEvent(QCloseEvent *event) override;
@@ -45,6 +47,7 @@ protected:
 
 private:
 	QString m_title;
+	bool m_pause;
 	qint32 m_frameIndex;
 	QBrush m_backgroundBrush;
 	QBrush m_sceneBrush;

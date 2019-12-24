@@ -156,6 +156,15 @@ public:
 	virtual bool copyAble(void) const {
 		return !(m_proxy->selectionModel()->selectedRows().empty());
 	}
+
+	virtual bool isPause(void) const {
+		return m_proxy->isPause();
+	}
+
+	virtual void switchPause(void) {
+		m_proxy->switchPause();
+	}
+
 	virtual void onCopy(void) const
 	{
 		ValueDataModel* model = (ValueDataModel*)(m_proxy->model());
@@ -228,6 +237,7 @@ public:
 
 //--------------------------------------------------------------------------------------------
 ValueChild::ValueChild(const QString& title)
+	: m_pause(false)
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 	
@@ -265,6 +275,8 @@ void ValueChild::init(void)
 //--------------------------------------------------------------------------------------------
 void ValueChild::insertValue(const ValueMessage* valueMessage, const Filter::ListResult& filterResult)
 {
+	if (m_pause) return;
+
 	ValueDataModel* model = (ValueDataModel*)(this->model());
 
 	model->insertValue(valueMessage, filterResult);
@@ -283,4 +295,10 @@ void ValueChild::clearAllValue(void)
 	ValueDataModel* model = (ValueDataModel*)(this->model());
 
 	model->clearAllValue();
+}
+
+//--------------------------------------------------------------------------------------------
+void ValueChild::switchPause(void)
+{
+	m_pause = !m_pause;
 }

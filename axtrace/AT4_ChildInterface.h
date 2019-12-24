@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -18,6 +18,9 @@ public:
 
 	virtual Type getType(void) const = 0;
 	virtual QString getTitle(void) const = 0;
+
+	virtual bool isPause(void) const = 0;
+	virtual void switchPause(void) = 0;
 
 	virtual bool copyAble(void) const = 0;
 	virtual void onCopy(void) const = 0;
