@@ -34,8 +34,6 @@ void ValueDataModel::insertValue(const ValueMessage* valueMessage, const Filter:
 	auto it = m_valueHashMap.find(name);
 	if (it == m_valueHashMap.end())
 	{
-		beginInsertRows(QModelIndex(), rowCount(), rowCount());
-
 		idx = m_valueVector.size();
 
 		Value value;
@@ -43,13 +41,13 @@ void ValueDataModel::insertValue(const ValueMessage* valueMessage, const Filter:
 
 		m_valueVector.push_back(value);
 		m_valueHashMap.insert(name, idx);
-
-		endInsertRows();
 	}
 	else
 	{
 		idx = it.value();
 	}
+
+	beginInsertRows(QModelIndex(), idx, idx);
 
 	Value& value = m_valueVector[idx];
 
@@ -66,6 +64,7 @@ void ValueDataModel::insertValue(const ValueMessage* valueMessage, const Filter:
 
 	value.backColor = Filter::toQColor(filterResult.backColor);
 	value.frontColor = Filter::toQColor(filterResult.fontColor);
+	endInsertRows();
 
 	dataChanged(index(idx, 0), index(idx, COLUMN_COUNTS));
 }

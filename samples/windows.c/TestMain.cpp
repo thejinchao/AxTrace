@@ -86,6 +86,7 @@ int main(int argc, char* argv[])
 	printf("============= AxTrace4 Test(C++) ================\n");
 	srand((unsigned int)::time(0));
 
+
 	//--------------------------
 	{
 		printf("AxTrace Test\n");
@@ -236,6 +237,9 @@ int main(int argc, char* argv[])
 
 	}
 
+
+	axvalue(AXV_STR_ACP, "MultiLineTest", "MultiLineTest\nLine1:第一行");
+
 	//--------------------------
 	{
 		printf("AxValue Pressure Test\n");
@@ -278,6 +282,8 @@ int main(int argc, char* argv[])
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
 	}
+
+	axvalue(AXV_STR_ACP, "MultiLineTest", "MultiLineTest\nLine1:第一行\nLine2:第二行\nLine3:第三行");
 
 	{
 		ctpl::thread_pool tp(std::thread::hardware_concurrency());
