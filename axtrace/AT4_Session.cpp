@@ -11,7 +11,7 @@
 #include "AT4_Incoming.h"
 
 //--------------------------------------------------------------------------------------------
-Session::Session(cyclone::ConnectionPtr connPtr)
+Session::Session(cyclone::TcpConnectionPtr connPtr)
 	: m_bShakehand(false)
 	, m_connection(connPtr)
 	, m_processID(0)
@@ -77,7 +77,7 @@ qint32 SessionManager::getSessionCounts(void) const
 }
 
 //--------------------------------------------------------------------------------------------
-void SessionManager::onSessionConnected(cyclone::ConnectionPtr connPtr)
+void SessionManager::onSessionConnected(cyclone::TcpConnectionPtr connPtr)
 {
 	QMutexLocker locker(&m_lock);
 
@@ -87,7 +87,7 @@ void SessionManager::onSessionConnected(cyclone::ConnectionPtr connPtr)
 }
 
 //--------------------------------------------------------------------------------------------
-void SessionManager::onSessionClose(cyclone::ConnectionPtr connPtr)
+void SessionManager::onSessionClose(cyclone::TcpConnectionPtr connPtr)
 {
 	QMutexLocker locker(&m_lock);
 

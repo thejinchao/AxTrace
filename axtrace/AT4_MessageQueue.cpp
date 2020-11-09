@@ -38,7 +38,7 @@ void MessageQueue::insertMessage(cyclone::RingBuf* buf, size_t msg_length, const
 
 		m_ring_buf->memcpy_into(&sessionID, sizeof(qint32));
 		m_ring_buf->memcpy_into(&t, sizeof(MessageTime));
-		buf->copyto(m_ring_buf, msg_length);
+		buf->moveto(*m_ring_buf, msg_length);
 		
 		m_counts++;
 

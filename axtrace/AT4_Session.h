@@ -24,14 +24,14 @@ public:
 	void closeConnection(void);
 
 private:
-	bool					m_bShakehand;
-	cyclone::ConnectionPtr	m_connection;
-	uint32_t				m_processID;
-	uint32_t 				m_threadID;
-	QString					m_sessionName;
+	bool						m_bShakehand;
+	cyclone::TcpConnectionPtr	m_connection;
+	uint32_t					m_processID;
+	uint32_t 					m_threadID;
+	QString						m_sessionName;
 
 public:
-	Session(cyclone::ConnectionPtr connPtr);
+	Session(cyclone::TcpConnectionPtr connPtr);
 	virtual ~Session();
 
 	friend class SessionManager;
@@ -46,8 +46,8 @@ public:
 	SessionPtr findSession(int32_t sessionID);
 	qint32 getSessionCounts(void) const;
 
-	void onSessionConnected(cyclone::ConnectionPtr connPtr);
-	void onSessionClose(cyclone::ConnectionPtr connPtr);
+	void onSessionConnected(cyclone::TcpConnectionPtr connPtr);
+	void onSessionClose(cyclone::TcpConnectionPtr connPtr);
 
 private:
 	typedef QMap<int32_t, SessionPtr> SessionMap;
