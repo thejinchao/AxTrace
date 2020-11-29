@@ -29,6 +29,7 @@ class QMenu;
 class QMdiArea;
 class QMdiSubWindow;
 class QCustomEvent;
+class QButton;
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -43,9 +44,15 @@ public:
 	class AxTraceEvent : public QEvent
 	{
 	public:
-		enum { Type = QEvent::User + 100 };
+		enum EventType { 
+			ET_NewSession = QEvent::User + 100,
+			ET_Message,
+			ET_CloseSession,
 
-		AxTraceEvent() : QEvent((QEvent::Type)Type) {}
+			ET_Counts
+		};
+
+		AxTraceEvent(EventType type) : QEvent((QEvent::Type)type) {}
 		~AxTraceEvent() {}
 	};
 
@@ -108,6 +115,8 @@ private:
 
     void _restoreSettings(void);
 
+	void _updateStatusBar(void);
+
 	IChild *activeMdiChild() const;
 
     QMdiArea *m_mdiArea;
@@ -135,4 +144,6 @@ private:
     QAction *m_previousAct;
 
     QAction *m_windowMenuSeparatorAct;
+
+	QPushButton  *m_statusBtn;
 };

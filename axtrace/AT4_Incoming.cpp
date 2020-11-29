@@ -12,6 +12,7 @@
 #include "AT4_Config.h"
 #include "AT4_MessageQueue.h"
 #include "AT4_Session.h"
+#include "AT4_MainWindow.h"
 
 //--------------------------------------------------------------------------------------------
 Incoming::Incoming()
@@ -55,6 +56,7 @@ void Incoming::on_connected(cyclone::TcpServer* server, int32_t thread_index, cy
 	SessionManager* sessionManager = System::getSingleton()->getSessionManager();
 
 	sessionManager->onSessionConnected(conn);
+	QCoreApplication::postEvent(System::getSingleton()->getMainWindow(), new MainWindow::AxTraceEvent(MainWindow::AxTraceEvent::ET_NewSession));
 }
 
 //--------------------------------------------------------------------------------------------
@@ -63,6 +65,7 @@ void Incoming::on_close(cyclone::TcpServer* server, int32_t thread_index, cyclon
 	SessionManager* sessionManager = System::getSingleton()->getSessionManager();
 
 	sessionManager->onSessionClose(conn);
+	QCoreApplication::postEvent(System::getSingleton()->getMainWindow(), new MainWindow::AxTraceEvent(MainWindow::AxTraceEvent::ET_CloseSession));
 }
 
 //--------------------------------------------------------------------------------------------

@@ -57,20 +57,39 @@ void MainWindow::closeEvent(QCloseEvent *event)
 //--------------------------------------------------------------------------------------------
 bool MainWindow::event(QEvent* e)
 {
-	if (e->type() == AxTraceEvent::Type)
+	switch (e->type())
+	{
+	case AxTraceEvent::ET_NewSession:
+	{
+		_updateStatusBar();
+	}
+		break;
+
+	case AxTraceEvent::ET_Message:
 	{
 		MessageVector msgVector;
 		System::getSingleton()->getMessageQueue()->popMessage(msgVector);
 
 		if (!msgVector.empty())
 		{
-			for (auto msg : msgVector) 
+			for (auto msg : msgVector)
 			{
 				_processAxTraceData(msg);
 				msg->reccycleMessage();
 			}
 			msgVector.clear();
 		}
+	}
+	break;
+
+	case AxTraceEvent::ET_CloseSession:
+	{
+		_updateStatusBar();
+	}
+	break;
+
+	default:
+		break;
 	}
 	return QMainWindow::event(e);
 }
@@ -115,7 +134,7 @@ void MainWindow::_processAxTraceData(Message* msg)
 //--------------------------------------------------------------------------------------------
 void MainWindow::_onShakeHand(ShakehandMessage* msg)
 {
-
+	_updateStatusBar();
 }
 
 //--------------------------------------------------------------------------------------------
@@ -552,6 +571,11 @@ void MainWindow::createActions()
 void MainWindow::createStatusBar()
 {
     statusBar()->showMessage(tr("Ready"));
+
+	m_statusBtn = new QPushButton();
+	statusBar()->addPermanentWidget(m_statusBtn);
+
+	_updateStatusBar();
 }
 
 //--------------------------------------------------------------------------------------------
@@ -575,4 +599,13 @@ IChild *MainWindow::activeMdiChild() const
     if (QMdiSubWindow *activeSubWindow = m_mdiArea->activeSubWindow())
         return (IChild *)(activeSubWindow->widget()->userData(0));
     return nullptr;
+}
+
+//--------------------------------------------------------------------------------------------
+void MainWindow::_updateStatusBar(void)
+{
+	int sessionCounts = System::getSingleton()->getSessionManager()->getSessionCounts();
+
+	QString statusText = QString("Session: %1").arg(sessionCounts);
+	m_statusBtn->setText(statusText);
 }

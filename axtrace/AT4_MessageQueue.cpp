@@ -42,7 +42,7 @@ void MessageQueue::insertMessage(cyclone::RingBuf* buf, size_t msg_length, const
 		
 		m_counts++;
 
-		QCoreApplication::postEvent(System::getSingleton()->getMainWindow(), new MainWindow::AxTraceEvent());
+		QCoreApplication::postEvent(System::getSingleton()->getMainWindow(), new MainWindow::AxTraceEvent(MainWindow::AxTraceEvent::ET_Message));
 	}
 }
 
