@@ -19,10 +19,12 @@
 #include "AT4_Scene2D.h"
 #include "AT4_SettingDialog.h"
 #include "AT4_Session.h"
+#include "AT4_SessionDialog.h"
 
 //--------------------------------------------------------------------------------------------
 MainWindow::MainWindow()
     : m_mdiArea(new QMdiArea)
+	, m_sessionDialog(nullptr)
 {
 	m_mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	m_mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -60,8 +62,12 @@ bool MainWindow::event(QEvent* e)
 	switch (e->type())
 	{
 	case AxTraceEvent::ET_NewSession:
+	case AxTraceEvent::ET_CloseSession:
 	{
 		_updateStatusBar();
+		if (m_sessionDialog) {
+			m_sessionDialog->updateSessionList();
+		}
 	}
 		break;
 
@@ -79,12 +85,6 @@ bool MainWindow::event(QEvent* e)
 			}
 			msgVector.clear();
 		}
-	}
-	break;
-
-	case AxTraceEvent::ET_CloseSession:
-	{
-		_updateStatusBar();
 	}
 	break;
 
@@ -135,6 +135,9 @@ void MainWindow::_processAxTraceData(Message* msg)
 void MainWindow::_onShakeHand(ShakehandMessage* msg)
 {
 	_updateStatusBar();
+	if (m_sessionDialog) {
+		m_sessionDialog->updateSession(msg->getSession()->getID());
+	}
 }
 
 //--------------------------------------------------------------------------------------------
@@ -574,6 +577,7 @@ void MainWindow::createStatusBar()
 
 	m_statusBtn = new QPushButton();
 	statusBar()->addPermanentWidget(m_statusBtn);
+	connect(m_statusBtn, SIGNAL(clicked()), this, SLOT(_onStatusButton()));
 
 	_updateStatusBar();
 }
@@ -608,4 +612,13 @@ void MainWindow::_updateStatusBar(void)
 
 	QString statusText = QString("Session: %1").arg(sessionCounts);
 	m_statusBtn->setText(statusText);
+}
+
+//--------------------------------------------------------------------------------------------
+void MainWindow::_onStatusButton()
+{
+	SessionDialog dialog(this);
+	m_sessionDialog = &dialog;
+	dialog.exec();
+	m_sessionDialog = nullptr;
 }

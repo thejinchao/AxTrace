@@ -11,11 +11,13 @@
 #include "AT4_Incoming.h"
 
 //--------------------------------------------------------------------------------------------
-Session::Session(cyclone::TcpConnectionPtr connPtr)
-	: m_bShakehand(false)
+Session::Session(int32_t id, cyclone::TcpConnectionPtr connPtr)
+	: m_id(id)
+	, m_bShakehand(false)
 	, m_connection(connPtr)
 	, m_processID(0)
 	, m_threadID(0)
+	, m_userData(-1)
 {
 
 }
@@ -24,6 +26,14 @@ Session::Session(cyclone::TcpConnectionPtr connPtr)
 Session::~Session()
 {
 
+}
+
+//--------------------------------------------------------------------------------------------
+QString Session::getPeerAddress(void) const
+{
+	return QString("%0:%1")
+		.arg(m_connection->get_peer_addr().get_ip())
+		.arg(m_connection->get_peer_addr().get_port());
 }
 
 //--------------------------------------------------------------------------------------------
@@ -81,9 +91,9 @@ void SessionManager::onSessionConnected(cyclone::TcpConnectionPtr connPtr)
 {
 	QMutexLocker locker(&m_lock);
 
-	SessionPtr session = SessionPtr(new Session(connPtr));
+	SessionPtr session = SessionPtr(new Session(connPtr->get_id(), connPtr));
 
-	m_sessionMap.insert(connPtr->get_id(), session);
+	m_sessionMap.insert(session->getID(), session);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -92,4 +102,12 @@ void SessionManager::onSessionClose(cyclone::TcpConnectionPtr connPtr)
 	QMutexLocker locker(&m_lock);
 
 	m_sessionMap.remove(connPtr->get_id());
+}
+
+//--------------------------------------------------------------------------------------------
+void SessionManager::walk(SessionManager::WalkCallback callback)
+{
+	for (auto& it = m_sessionMap.begin(); it != m_sessionMap.end(); it++) {
+		callback(it.key(), it.value());
+	}
 }

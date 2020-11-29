@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+﻿cmake_minimum_required(VERSION 3.1)
 
 set(AT4_CPP_SOURCES
     AT4_Main.cpp
@@ -22,7 +22,8 @@ set(AT4_CPP_SOURCES
 	AT4_ScriptEditDialog.cpp
 	AT4_CodeEditor.cpp
 	AT4_ScriptVariant.cpp
-	AT4_ExtensionProperty.cpp)
+	AT4_ExtensionProperty.cpp
+	AT4_SessionDialog.cpp)
 
 set(AT4_H_SOURCES
     stdafx.h
@@ -48,7 +49,8 @@ set(AT4_H_SOURCES
 	AT4_ScriptEditDialog.h
 	AT4_CodeEditor.h
 	AT4_ScriptVariant.h
-	AT4_ExtensionProperty.h)
+	AT4_ExtensionProperty.h
+	AT4_SessionDialog.h)
 
 set(AT4_RC_SOURCES
     AT4.qrc

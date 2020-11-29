@@ -22,6 +22,7 @@ class Begin2DSceneMessage;
 class Update2DActorMessage;
 class End2DSceneMessage;
 class Add2DActorLogMessage;
+class SessionDialog;
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -102,6 +103,7 @@ private slots:
 	void _onCleanAll();
 	void _onSetting();
 	void _onAbout();
+	void _onStatusButton();
 
     void updateMenus();
     void updateWindowMenu();
@@ -146,4 +148,5 @@ private:
     QAction *m_windowMenuSeparatorAct;
 
 	QPushButton  *m_statusBtn;
+	SessionDialog *m_sessionDialog;
 };
