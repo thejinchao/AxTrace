@@ -525,7 +525,20 @@ void Map2DChild::_onMoseSelect(void)
 			//same pos?
 			if (m_hovedActor.contains(m_selectActor))
 			{
-				//TODO: select next actor
+				//select next actor
+				for (QSet<qint64>::iterator it=m_hovedActor.begin(); it!= m_hovedActor.end(); it++) {
+					if (*it == m_selectActor) {
+						QSet<qint64>::iterator it_next = ++it;
+						if (it_next == m_hovedActor.end()) {
+							it_next = m_hovedActor.begin();
+						}
+						m_selectActor = *it_next;
+						m_hasSelectedActor = true;
+						break;
+					}
+				}
+				//wtf?
+				Q_ASSERT(false);
 			}
 			else
 			{
