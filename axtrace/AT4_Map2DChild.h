@@ -48,7 +48,6 @@ protected:
 private:
 	QString m_title;
 	bool m_pause;
-	qint32 m_frameIndex;
 	QBrush m_backgroundBrush;
 	QBrush m_sceneBrush;
 	QPen m_sceneBorderPen;

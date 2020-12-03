@@ -15,6 +15,7 @@ Scene2D::Scene2D(Begin2DSceneMessage* msg)
 	: m_sceneName(msg->getSceneName())
 	, m_sceneRect(msg->getSceneRect())
 	, m_actorMapIndex(0)
+	, m_frameIndex(0)
 	, m_updating(false)
 	, m_updatingRect(msg->getSceneRect())
 {
@@ -79,6 +80,7 @@ void Scene2D::endScene(const End2DSceneMessage* msg)
 
 	m_updating = false;
 	m_actorMapIndex = 1 - m_actorMapIndex;
+	m_frameIndex++;
 	m_sceneRect = m_updatingRect;
 
 	_parserSceneDefine(m_updatingSceneDefine);

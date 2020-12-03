@@ -58,6 +58,7 @@ public:
 
 	const QString& getSceneName(void) const { return m_sceneName; }
 	const QRectF& getSceneRect(void) const { return m_sceneRect; }
+	int32_t getFrameIndex(void) const {	return m_frameIndex; }
 
 	bool isGridDefined(void) const { return m_gridDefined; }
 	const QSizeF& getGridSize(void) const { return m_gridSize; }
@@ -72,7 +73,8 @@ private:
 private:
 	QString			m_sceneName;
 	QRectF			m_sceneRect;
-	int				m_actorMapIndex;
+	uint32_t		m_actorMapIndex;
+	uint32_t		m_frameIndex;
 
 	bool			m_gridDefined;
 	QSizeF			m_gridSize;

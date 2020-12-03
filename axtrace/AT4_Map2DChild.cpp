@@ -71,7 +71,6 @@ QBrush*	Map2DChild::m_cachedBrush[Map2DChild::MAX_COLOR_COUNTS] = { nullptr };
 //--------------------------------------------------------------------------------------------
 Map2DChild::Map2DChild(const QString& title)
 	: m_pause(false)
-	, m_frameIndex(0)
 	, m_scene(nullptr)
 	, m_camera(nullptr)
 	, m_hasSelectedActor(false)
@@ -399,8 +398,8 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 	painter.setPen(m_infoTextPen);
 	painter.setFont(m_infoTextFont);
 
-	QString infoText = QString("Frame:%1\nSceneSize:%2,%3\nMouse:%4,%5\n%6")
-		.arg(m_frameIndex++)
+	QString infoText = QString("SceneFrame:%1\nSceneSize:%2,%3\nMouse:%4,%5\n%6")
+		.arg(m_scene->getFrameIndex())
 		.arg(abs(m_scene->getSceneRect().width()))
 		.arg(abs(m_scene->getSceneRect().height()))
 		.arg(m_cursorPosScene.x())
