@@ -35,6 +35,9 @@ public:
 	bool isPause(void) const { return m_pause; }
 	void switchPause(void);
 
+	bool hasSelectActor(void) const { return m_hasSelectedActor; }
+	QString getSelectActorBrief(void) const;
+
 protected:
 	void closeEvent(QCloseEvent *event) override;
 	void mousePressEvent(QMouseEvent *e) override;

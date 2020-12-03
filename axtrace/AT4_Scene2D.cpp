@@ -87,6 +87,17 @@ void Scene2D::endScene(const End2DSceneMessage* msg)
 }
 
 //--------------------------------------------------------------------------------------------
+QString Scene2D::getActorBriefInfo(qint64 id) const
+{
+	const ActorMap& currentMap = m_actorMap[m_actorMapIndex];
+
+	ActorMap::const_iterator it = currentMap.find(id);
+	if (it == currentMap.end()) return QString();
+
+	return getActorBriefInfo(it.value());
+}
+
+//--------------------------------------------------------------------------------------------
 void Scene2D::addActorLog(Add2DActorLogMessage* msg)
 {
 	ActorHistoryMap::iterator it = m_actorHistory.find(msg->getActorID());

@@ -27,7 +27,7 @@ public:
 	}
 
 	virtual bool copyAble(void) const {
-		return false;
+		return m_proxy->hasSelectActor();
 	}
 
 	virtual bool isPause(void) const {
@@ -39,7 +39,9 @@ public:
 	}
 
 	virtual void onCopy(void) const {
+		if (!(m_proxy->hasSelectActor())) return;
 
+		QApplication::clipboard()->setText(m_proxy->getSelectActorBrief());
 	}
 
 	virtual void clean(void) 
@@ -170,6 +172,16 @@ void Map2DChild::addActorLog(Add2DActorLogMessage* msg)
 	{
 		m_scene->addActorLog(msg);
 	}
+}
+
+//--------------------------------------------------------------------------------------------
+QString Map2DChild::getSelectActorBrief(void) const
+{
+	if (hasSelectActor()) {
+		return m_scene->getActorBriefInfo(m_selectActor);
+	}
+
+	return QString("");
 }
 
 //--------------------------------------------------------------------------------------------
@@ -398,10 +410,11 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 	painter.setPen(m_infoTextPen);
 	painter.setFont(m_infoTextFont);
 
-	QString infoText = QString("SceneFrame:%1\nSceneSize:%2,%3\nMouse:%4,%5\n%6")
+	QString infoText = QString("SceneFrame:%1\nSceneSize:%2,%3\nActorCounts:%4\nMouse:%5,%6\n%7")
 		.arg(m_scene->getFrameIndex())
 		.arg(abs(m_scene->getSceneRect().width()))
 		.arg(abs(m_scene->getSceneRect().height()))
+		.arg(m_scene->getActorCounts())
 		.arg(m_cursorPosScene.x())
 		.arg(m_cursorPosScene.y())
 		.arg(mouseTips);
@@ -536,8 +549,6 @@ void Map2DChild::_onMoseSelect(void)
 						break;
 					}
 				}
-				//wtf?
-				Q_ASSERT(false);
 			}
 			else
 			{
@@ -556,6 +567,8 @@ void Map2DChild::_onMoseSelect(void)
 		m_selectActor = *m_hovedActor.begin();
 		m_hasSelectedActor = true;
 	}
+
+	System::getSingleton()->getMainWindow()->notifySelectionChanged();
 }
 
 //--------------------------------------------------------------------------------------------
