@@ -291,13 +291,17 @@ void LogChild::init(void)
 	LogDataModel* model = new LogDataModel(config->getLogParser(m_title));
 	this->setModel(model);
 
-	model->getColumns().walk(true, [&](const LogColumn* column) {
-		if (column->getWidth() > 0)
-			this->header()->resizeSection(column->getIndex(), column->getWidth());
+	QHeaderView* header = this->header();
+
+	header->installEventFilter(this);
+	header->setSectionsMovable(false);
+	header->setSectionResizeMode(QHeaderView::Interactive);
+
+	model->getColumns().walk(true, [&, header](const LogColumn* column) {
+		if (column->isActive() && column->getWidth() > 0) {
+			header->resizeSection(column->getActiveIndex(), column->getWidth());
+		}
 	});
-
-
-	this->header()->installEventFilter(this);
 
 	this->setSortingEnabled(false);
 	this->setRootIsDecorated(false);

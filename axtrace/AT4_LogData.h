@@ -48,7 +48,7 @@ public:
 		return m_parserDefine->regExp.isEmpty(); 
 	}
 
-	const ColumnVector& getTitleList(void) const { 
+	const ColumnVector& getColumns(void) const { 
 		return m_parserDefine->columns; 
 	}
 
