@@ -98,6 +98,7 @@ private slots:
 	void _onDocumentPause();
 	void _onAutoScroll();
 	void _onShowGrid();
+	void _onShowTail();
     void _onCopy();
 	void _onClean();
 	void _onCleanAll();
@@ -131,6 +132,7 @@ private:
 
 	QAction* m_autoScrollAct;
 	QAction* m_showGridAct;
+	QAction* m_showTailAct;
 	QAction* m_copyAct;
 	QAction* m_cleanAct;
 	QAction* m_cleanAllAct;

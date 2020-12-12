@@ -31,17 +31,22 @@ public:
 		QString info;
 	};
 
-	struct PosHistory
+	struct PositionSnap
 	{
 		QPointF pos;
 		qreal dir;
 		MessageTime time;
 	};
 
+	struct PositionTail
+	{
+		qint64 actorID;
+		QQueue<PositionSnap> posTail;
+	};
+
 	struct ActorHistory
 	{
 		qint64 actorID;
-		QQueue<PosHistory> posHistory;
 		QQueue<QString> logHistory;
 	};
 
@@ -70,6 +75,9 @@ public:
 
 	QString getActorDetailInfo(const Actor& actor) const;
 
+	void enablePositionTail(qint64 id, bool enable);
+	const PositionTail* getPositionTail(qint64 id) const;
+
 private:
 	void _parserSceneDefine(const QJsonObject& sceneInfo);
 
@@ -93,6 +101,8 @@ private:
 	typedef QHash< qint64, ActorHistory > ActorHistoryMap;
 	ActorHistoryMap m_actorHistory;
 
+	typedef QHash< qint64, PositionTail > ActorTailMap;
+	ActorTailMap m_actorTail;
 public:
 	Scene2D(Begin2DSceneMessage* msg);
 	~Scene2D();

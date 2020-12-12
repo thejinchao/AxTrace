@@ -71,6 +71,23 @@ void Scene2D::updateActor(const Update2DActorMessage* msg, const Filter::Actor2D
 		actor.borderColor = filterResult.borderColor;
 		actor.info = msg->getActorInfo();
 	}
+
+	ActorTailMap::iterator it_tail = m_actorTail.find(msg->getActorID());
+	if (it_tail != m_actorTail.end()) {
+		PositionSnap posSnap;
+
+		posSnap.pos = msg->getActorPosition();
+		posSnap.dir = msg->getActorDir();
+		posSnap.time = msg->getTime();
+
+		QQueue<PositionSnap>& posTail = it_tail.value().posTail;
+		posTail.push_back(posSnap);
+
+		qint32 maxTailCounts = System::getSingleton()->getConfig()->getMaxActorTailCounts();
+		while (posTail.size() > maxTailCounts) {
+			posTail.pop_front();
+		}
+	}
 }
 
 //--------------------------------------------------------------------------------------------
@@ -221,4 +238,31 @@ QString Scene2D::getActorDetailInfo(const Actor& actor) const
 		}
 	}
 	return detailInfo;
+}
+
+//--------------------------------------------------------------------------------------------
+void Scene2D::enablePositionTail(qint64 id, bool enable)
+{
+	ActorTailMap::iterator it = m_actorTail.find(id);
+
+	if (enable && it == m_actorTail.end()) {
+		PositionTail posTail;
+		posTail.actorID = id;
+		m_actorTail.insert(id, posTail);
+	}
+
+	if (!enable && it != m_actorTail.end()) {
+		m_actorTail.remove(id);
+	}
+}
+
+//--------------------------------------------------------------------------------------------
+const Scene2D::PositionTail* Scene2D::getPositionTail(qint64 id) const
+{
+	ActorTailMap::const_iterator it = m_actorTail.find(id);
+
+	if (it == m_actorTail.end()) {
+		return nullptr;
+	}
+	return &(it.value());
 }

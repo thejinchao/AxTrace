@@ -81,6 +81,9 @@ void Config::_resetToDefaultSetting(void)
 	);
 	m_maxLogCounts = MAX_LOG_COUNTS_DEFAULT;
 
+	m_bShowTail = true;
+	m_maxActorTailCounts = MAX_ACTOR_TAIL_COUNTS_DEFAULT;
+
 	m_defaultLogParserDefineScript = m_logParserDefineScript = QString(
 		"[\r\n"
 		"  {\r\n"
@@ -123,6 +126,8 @@ void Config::copyFrom(const Config& other)
 	m_logParserDefineMap = other.m_logParserDefineMap;
 	m_maxActorLogCounts = other.m_maxActorLogCounts;
 	m_listenPort = other.m_listenPort;
+	m_bShowTail = other.m_bShowTail;
+	m_maxActorTailCounts = other.m_maxActorTailCounts;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -155,6 +160,14 @@ void Config::setMaxActorLogCounts(qint32 maxActorLogCounts)
 }
 
 //--------------------------------------------------------------------------------------------
+void Config::setMaxActorTailCounts(qint32 maxActorTailCounts)
+{
+	Q_ASSERT(maxActorTailCounts > MAX_ACTOR_TAIL_COUNTS_RANGE_MIN && maxActorTailCounts < MAX_ACTOR_TAIL_COUNTS_RANGE_MAX);
+
+	m_maxActorTailCounts = maxActorTailCounts;
+}
+
+//--------------------------------------------------------------------------------------------
 void Config::setListenPort(qint32 listenPort)
 {
 	Q_ASSERT(listenPort >= LISTEN_PORT_MIN && listenPort<= LISTEN_PORT_MAX);
@@ -178,6 +191,8 @@ bool Config::loadSetting(void)
 	m_maxLogCounts = settings.value("MaxLogCounts", m_maxLogCounts).toInt();
 	m_maxActorLogCounts = settings.value("MaxActorLogCounts", m_maxActorLogCounts).toInt();
 	m_listenPort = settings.value("ListenPort", m_listenPort).toInt();
+	m_bShowTail = settings.value("ShowTail", m_bShowTail).toBool();
+	m_maxActorTailCounts = settings.value("MaxActorTailCounts", m_maxActorTailCounts).toInt();
 	//load log parser define
 	QString logParserDefineScript = settings.value("LogParserScript", m_defaultLogParserDefineScript).toString();
 
@@ -204,6 +219,8 @@ void Config::saveSetting(void) const
 	settings.setValue("LogParserScript", m_logParserDefineScript);
 	settings.setValue("MaxActorLogCounts", m_maxActorLogCounts);
 	settings.setValue("ListenPort", m_listenPort);
+	settings.setValue("ShowTail", m_bShowTail);
+	settings.setValue("MaxActorTailCounts", m_maxActorTailCounts);
 }
 
 //--------------------------------------------------------------------------------------------

@@ -91,6 +91,12 @@ void SettingDialog::_initProperty(void)
 	maxActorLogCounts->setAttribute(QLatin1String("maximum"), Config::MAX_ACTOR_LOG_COUNTS_RANGE_MAX);
 	actor2DGroup->addSubProperty(maxActorLogCounts);
 
+	QtVariantProperty* maxActorTailCounts = variantManager->addProperty(QVariant::Int, QString("MaxActorTailCounts"));
+	maxActorTailCounts->setValue(config->getMaxActorTailCounts());
+	maxActorTailCounts->setAttribute(QLatin1String("minimum"), Config::MAX_ACTOR_TAIL_COUNTS_RANGE_MIN);
+	maxActorTailCounts->setAttribute(QLatin1String("maximum"), Config::MAX_ACTOR_TAIL_COUNTS_RANGE_MAX);
+	actor2DGroup->addSubProperty(maxActorTailCounts);
+
 	VariantEditorFactory *variantFactory = new VariantEditorFactory();
 	connect(variantFactory, SIGNAL(scriptEditButtonClicked(QtProperty *)), 
 		this, SLOT(scriptEditButtonClicked(QtProperty *)));
@@ -165,6 +171,10 @@ void SettingDialog::valueChanged(QtProperty *property, const QVariant &value)
 	else if (propertyName == "MaxActorLogCounts") {
 		qint32 maxActorLogCounts = value.toInt();
 		config->setMaxActorLogCounts(maxActorLogCounts);
+	}
+	else if (propertyName == "MaxActorTailCounts") {
+		qint32 maxActorTailCounts = value.toInt();
+		config->setMaxActorTailCounts(maxActorTailCounts);
 	}
 }
 

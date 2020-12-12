@@ -24,6 +24,9 @@ public:
 	bool getShowGrid(void) const { return m_bShowGrid; }
 	void setShowGrid(bool s) { m_bShowGrid = s; }
 
+	bool getShowTail(void) const { return m_bShowTail; }
+	void setShowTail(bool s) { m_bShowTail = s; }
+
 	const QString& getFilterScript(void) const { return m_filterScript; }
 	void setFilterScript(const QString& script);
 	const QString& getDefaultFilterScript(void) const { return m_defaultFilterScript; }
@@ -31,13 +34,19 @@ public:
 	const QByteArray& getMainGeometry(void) const { return m_mainGeometry; }
 	void setMainGeometry(const QByteArray& geometry);
 
-	enum { MAX_LOG_COUNTS_DEFAULT = 10000, MAX_LOG_COUNTS_RANGE_MIN=10, MAX_LOG_COUNTS_RANGE_MAX=10000000 };
+	enum {
+		MAX_LOG_COUNTS_DEFAULT = 10000, MAX_LOG_COUNTS_RANGE_MIN = 10, MAX_LOG_COUNTS_RANGE_MAX = 10000000
+	};
 	int getMaxLogCounts(void) const { return m_maxLogCounts; }
 	void setMaxLogCounts(int maxLogCounts);
 
 	enum { MAX_ACTOR_LOG_COUNTS_DEFAULT = 30, MAX_ACTOR_LOG_COUNTS_RANGE_MIN = 5, MAX_ACTOR_LOG_COUNTS_RANGE_MAX = 100 };
 	int getMaxActorLogCounts(void) const { return m_maxActorLogCounts; }
 	void setMaxActorLogCounts(qint32 maxActorLogCounts);
+
+	enum { MAX_ACTOR_TAIL_COUNTS_DEFAULT = 200, MAX_ACTOR_TAIL_COUNTS_RANGE_MIN = 10, MAX_ACTOR_TAIL_COUNTS_RANGE_MAX = 2000 };
+	int getMaxActorTailCounts(void) const { return m_maxActorTailCounts; }
+	void setMaxActorTailCounts(qint32 maxActorTailCounts);
 
 	enum { LISTEN_PORT_DEFAULT = 1978, LISTEN_PORT_MIN = 1025, LISTEN_PORT_MAX = 65535};
 	int getListenPort(void) const { return m_listenPort; }
@@ -67,6 +76,8 @@ private:
 	QString m_defaultFilterScript;
 	QByteArray m_mainGeometry;
 	qint32 m_maxLogCounts;
+	bool m_bShowTail;
+	qint32 m_maxActorTailCounts;
 
 	QString m_logParserDefineScript;
 	QString m_defaultLogParserDefineScript;

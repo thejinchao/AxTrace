@@ -73,8 +73,9 @@ private:
 private:
 	bool _getMouseTips(const QTransform& localMove, const Scene2D::Actor& actor, QString& mouseTips);
 	void _drawGrid(QPainter& painter);
-	void _onMoseSelect(void);
-
+	void _onMousePress(void);
+	void _selectActor(qint64 id);
+	void _unSelectActor(void);
 public:
 	static void initCachedObject(void);
 	static void deleteCachedObject(void);

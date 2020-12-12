@@ -296,6 +296,21 @@ void MainWindow::_onShowGrid()
 }
 
 //--------------------------------------------------------------------------------------------
+void MainWindow::_onShowTail()
+{
+	Config* config = System::getSingleton()->getConfig();
+	config->setShowTail(!(config->getShowTail()));
+
+	auto windows = m_mdiArea->subWindowList();
+
+	foreach(auto window, windows) {
+		IChild *child = (IChild *)(window->widget()->userData(0));
+		if (child && child->getType() == IChild::CT_2DMAP)
+			child->update();
+	}
+}
+
+//--------------------------------------------------------------------------------------------
 void MainWindow::_onCopy()
 {
 	IChild* activeChild = activeMdiChild();
@@ -384,6 +399,9 @@ void MainWindow::updateMenus()
 
 	m_showGridAct->setEnabled(activeChild && activeChild->getType() == IChild::CT_2DMAP);
 	m_showGridAct->setChecked(config->getShowGrid());
+
+	m_showTailAct->setEnabled(activeChild && activeChild->getType() == IChild::CT_2DMAP);
+	m_showTailAct->setChecked(config->getShowTail());
 
 	m_copyAct->setEnabled(activeChild && activeChild->copyAble());
 	m_cleanAct->setEnabled(hasMdiChild);
@@ -481,6 +499,12 @@ void MainWindow::createActions()
 	connect(m_showGridAct, &QAction::triggered, this, &MainWindow::_onShowGrid);
 	editMenu->addAction(m_showGridAct);
 
+	const QIcon showTailIcon = QIcon(":/images/tail.png");
+	m_showTailAct = new QAction(showTailIcon, tr("Show &Tail"), this);
+	m_showTailAct->setStatusTip(tr("Show/Hide actor tail"));
+	m_showTailAct->setCheckable(true);
+	connect(m_showTailAct, &QAction::triggered, this, &MainWindow::_onShowTail);
+	editMenu->addAction(m_showTailAct);
 
     const QIcon copyIcon = QIcon::fromTheme("edit-copy", QIcon(":/images/copy.png"));
     m_copyAct = new QAction(copyIcon, tr("&Copy"), this);
@@ -562,6 +586,7 @@ void MainWindow::createActions()
 	mainToolBar->addSeparator();
 	mainToolBar->addAction(m_autoScrollAct);
 	mainToolBar->addAction(m_showGridAct);
+	mainToolBar->addAction(m_showTailAct);
 	mainToolBar->addAction(m_copyAct);
 	mainToolBar->addAction(m_cleanAct);
 	mainToolBar->addAction(m_cleanAllAct);

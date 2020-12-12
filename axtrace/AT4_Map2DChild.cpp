@@ -207,7 +207,7 @@ void Map2DChild::mousePressEvent(QMouseEvent *e)
 		m_camera->beginDrag(e);
 	}
 	else if (e->button() == Qt::LeftButton) {
-		_onMoseSelect();
+		_onMousePress();
 		update();
 	}
 }
@@ -257,7 +257,9 @@ void Map2DChild::resizeGL(int w, int h)
 void Map2DChild::paintEvent(QPaintEvent *event)
 {
 	if (m_scene == nullptr) return;
-		
+	bool bShowGrid = System::getSingleton()->getConfig()->getShowGrid();
+	bool bShowTail = System::getSingleton()->getConfig()->getShowTail();
+
 	QPainter painter;
 
 	//Begin draw
@@ -277,7 +279,7 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 	painter.fillRect(m_scene->getSceneRect(), m_sceneBrush);
 
 	//1. draw scene grid
-	if (m_scene->isGridDefined() && System::getSingleton()->getConfig()->getShowGrid())
+	if (m_scene->isGridDefined() && bShowGrid)
 	{
 		m_sceneGridPen.setWidthF(1.0 / m_camera->getScale());
 		painter.setPen(m_sceneGridPen);
@@ -400,8 +402,18 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 			}
 		}
 
-
 		painter.restore();
+
+		//2.3 draw tail
+		if (bShowTail) {
+			const Scene2D::PositionTail* positionTail = m_scene->getPositionTail(actor.actorID);
+			if (positionTail) {
+				const QQueue<Scene2D::PositionSnap>& posQueue = positionTail->posTail;
+				for (const auto& posSnap : posQueue) {
+					painter.drawPoint(posSnap.pos);
+				}
+			}
+		}
 	});
 
 	painter.restore();
@@ -425,7 +437,7 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 
 	if (!findSelectedActor)
 	{
-		m_hasSelectedActor = false;
+		_unSelectActor();
 	}
 }
 
@@ -523,14 +535,14 @@ bool Map2DChild::_getMouseTips(const QTransform& localMove, const Scene2D::Actor
 }
 
 //--------------------------------------------------------------------------------------------
-void Map2DChild::_onMoseSelect(void)
+void Map2DChild::_onMousePress(void)
 {
 	if (m_hasSelectedActor)
 	{
 		if (m_hovedActor.empty())
 		{
 			//cancel select
-			m_hasSelectedActor = false;
+			_unSelectActor();
 		}
 		else
 		{
@@ -544,8 +556,7 @@ void Map2DChild::_onMoseSelect(void)
 						if (it_next == m_hovedActor.end()) {
 							it_next = m_hovedActor.begin();
 						}
-						m_selectActor = *it_next;
-						m_hasSelectedActor = true;
+						_selectActor(*it_next);
 						break;
 					}
 				}
@@ -553,8 +564,7 @@ void Map2DChild::_onMoseSelect(void)
 			else
 			{
 				//select first actor
-				m_selectActor = *m_hovedActor.begin();
-				m_hasSelectedActor = true;
+				_selectActor(*m_hovedActor.begin());
 			}
 		}
 
@@ -564,11 +574,27 @@ void Map2DChild::_onMoseSelect(void)
 		if (m_hovedActor.empty()) return;
 
 		//select first actor
-		m_selectActor = *m_hovedActor.begin();
-		m_hasSelectedActor = true;
+		_selectActor(*m_hovedActor.begin());
 	}
 
 	System::getSingleton()->getMainWindow()->notifySelectionChanged();
+}
+
+//--------------------------------------------------------------------------------------------
+void Map2DChild::_selectActor(qint64 id)
+{
+	m_selectActor = id;
+	m_hasSelectedActor = true;
+
+	m_scene->enablePositionTail(m_selectActor, true);
+}
+
+//--------------------------------------------------------------------------------------------
+void Map2DChild::_unSelectActor(void)
+{
+	m_hasSelectedActor = false;
+
+	m_scene->enablePositionTail(m_selectActor, false);
 }
 
 //--------------------------------------------------------------------------------------------
