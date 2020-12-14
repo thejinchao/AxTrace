@@ -72,15 +72,25 @@ void Scene2D::updateActor(const Update2DActorMessage* msg, const Filter::Actor2D
 		actor.info = msg->getActorInfo();
 	}
 
+	//add to position history
 	ActorTailMap::iterator it_tail = m_actorTail.find(msg->getActorID());
 	if (it_tail != m_actorTail.end()) {
-		PositionSnap posSnap;
 
+		QQueue<PositionSnap>& posTail = it_tail.value().posTail;
+
+		//is same position?
+		if (!posTail.empty()) {
+			const PositionSnap& lastPosition = posTail.front();
+			const QPointF& newPos = msg->getActorPosition();
+
+			if (lastPosition.pos == newPos) return;
+		}
+
+		PositionSnap posSnap;
 		posSnap.pos = msg->getActorPosition();
 		posSnap.dir = msg->getActorDir();
 		posSnap.time = msg->getTime();
 
-		QQueue<PositionSnap>& posTail = it_tail.value().posTail;
 		posTail.push_back(posSnap);
 
 		qint32 maxTailCounts = System::getSingleton()->getConfig()->getMaxActorTailCounts();
