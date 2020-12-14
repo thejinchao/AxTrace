@@ -408,6 +408,9 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 		if (bShowTail) {
 			const Scene2D::PositionTail* positionTail = m_scene->getPositionTail(actor.actorID);
 			if (positionTail) {
+				painter.setPen(m_selectBorder);
+				painter.setBrush(Qt::NoBrush);
+
 				const QQueue<Scene2D::PositionSnap>& posQueue = positionTail->posTail;
 				for (const auto& posSnap : posQueue) {
 					painter.drawPoint(posSnap.pos);
@@ -583,6 +586,11 @@ void Map2DChild::_onMousePress(void)
 //--------------------------------------------------------------------------------------------
 void Map2DChild::_selectActor(qint64 id)
 {
+	//unSelect old actor
+	if (m_hasSelectedActor) {
+		m_scene->enablePositionTail(m_selectActor, false);
+	}
+
 	m_selectActor = id;
 	m_hasSelectedActor = true;
 
