@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 **
 ** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
@@ -586,7 +586,7 @@ void QtTreePropertyBrowserPrivate::propertyInserted(QtBrowserItem *index, QtBrow
     m_indexToItem[index] = newItem;
 
     newItem->setFlags(newItem->flags() | Qt::ItemIsEditable);
-    m_treeWidget->setItemExpanded(newItem, true);
+    newItem->setExpanded(true);
 
     updateItem(newItem);
 }
