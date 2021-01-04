@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -15,6 +15,8 @@ int main(int argc, char *argv[])
 	QSurfaceFormat format;
 	format.setDepthBufferSize(24);
 	QSurfaceFormat::setDefaultFormat(format);
+
+	QApplication::setStyle(QStyleFactory::create("WindowsVista"));
 
 	System theSystem;
 	if (!theSystem.init(argc, argv)) {
