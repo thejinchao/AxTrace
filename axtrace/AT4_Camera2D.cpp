@@ -1,4 +1,4 @@
-/***************************************************
+﻿/***************************************************
 
 				AXIA|Trace4
 
@@ -78,14 +78,14 @@ QPointF Camera2D::screenToScene(const QPoint& pos)
 void Camera2D::onMouseWheel(QWheelEvent *e)
 {
 	qreal scale = 1.0;
-	if (e->delta() > 0) {
+	if (e->angleDelta().y() > 0) {
 		scale = 1.2;
 	}
 	else {
 		scale = 0.9;
 	}
 
-	QPoint mousePoint = e->pos();
+	QPoint mousePoint = e->position().toPoint();
 	m_transform *= QTransform::fromTranslate(-mousePoint.x(), -mousePoint.y());
 	m_transform *= QTransform::fromScale(scale, scale);
 	m_transform *= QTransform::fromTranslate(mousePoint.x(), mousePoint.y());

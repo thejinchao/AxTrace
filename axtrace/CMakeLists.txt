@@ -23,7 +23,8 @@ set(AT4_CPP_SOURCES
 	AT4_CodeEditor.cpp
 	AT4_ScriptVariant.cpp
 	AT4_ExtensionProperty.cpp
-	AT4_SessionDialog.cpp)
+	AT4_SessionDialog.cpp
+	AT4_ChildInterface.cpp)
 
 set(AT4_H_SOURCES
     stdafx.h
@@ -91,7 +92,7 @@ add_executable(AxTrace4 WIN32
 )
 
 target_link_libraries(AxTrace4 
-	Qt5::Widgets
+	PUBLIC Qt::Widgets
 	QtPropertyBrowser
 	lua51
 	cyclone 
@@ -141,4 +142,11 @@ install(FILES $ENV{QT5_SDK_ROOT}/bin/libGLESv2.dll
 	CONFIGURATIONS Release)
 install(FILES $ENV{QT5_SDK_ROOT}/bin/libGLESv2d.dll
 	DESTINATION .
+	CONFIGURATIONS Debug)
+
+install(FILES $ENV{QT5_SDK_ROOT}/plugins/platforms/qwindows.dll
+	DESTINATION ./platforms/
+	CONFIGURATIONS Release)
+install(FILES $ENV{QT5_SDK_ROOT}/plugins/platforms/qwindowsd.dll
+	DESTINATION ./platforms/
 	CONFIGURATIONS Debug)

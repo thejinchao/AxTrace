@@ -6,7 +6,7 @@
 ***************************************************/
 #pragma once
 
-class IChild : public QObjectUserData
+class IChild
 {
 public:
 	enum Type
@@ -15,6 +15,8 @@ public:
 		CT_VALUE,
 		CT_2DMAP,
 	};
+
+	const static char* PropertyName;// = "ChildInterface";
 
 	virtual Type getType(void) const = 0;
 	virtual QString getTitle(void) const = 0;
@@ -32,3 +34,13 @@ public:
 	virtual void update(void) = 0;
 };
 
+class ChildVariant
+{
+public:
+	IChild* child;
+
+	ChildVariant(IChild* _child = nullptr) : child(_child) {}
+	ChildVariant(const ChildVariant& other) : child(other.child) {}
+};
+
+Q_DECLARE_METATYPE(ChildVariant)

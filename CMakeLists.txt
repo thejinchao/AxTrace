@@ -1,10 +1,10 @@
-cmake_minimum_required(VERSION 3.1)
+﻿cmake_minimum_required(VERSION 3.1)
 
 project(AxTrace4)
 
 # find Qt5
 set(CMAKE_PREFIX_PATH $ENV{QT5_SDK_ROOT}/lib/cmake)
-find_package(Qt5Widgets CONFIG REQUIRED)
+find_package(Qt5 COMPONENTS Widgets)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

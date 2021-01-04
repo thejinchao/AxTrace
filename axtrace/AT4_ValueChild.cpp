@@ -113,15 +113,6 @@ QString ValueDataModel::data(int row, int column) const
 }
 
 //--------------------------------------------------------------------------------------------
-Qt::ItemFlags ValueDataModel::flags(const QModelIndex &index) const
-{
-	if (!index.isValid())
-		return 0;
-
-	return QAbstractItemModel::flags(index);
-}
-
-//--------------------------------------------------------------------------------------------
 QVariant ValueDataModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
 	if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
@@ -170,7 +161,7 @@ public:
 
 		QModelIndexList rows = m_proxy->selectionModel()->selectedRows();
 		//sort by id
-		qSort(rows.begin(), rows.end(), [model](const QModelIndex &s1, const QModelIndex &s2) {
+		std::sort(rows.begin(), rows.end(), [model](const QModelIndex &s1, const QModelIndex &s2) {
 			return s1.row() < s2.row();
 		});
 
@@ -244,16 +235,19 @@ ValueChild::ValueChild(const QString& title)
 	QString windowTitle = tr("Value:%1").arg(title);
 	setWindowTitle(windowTitle);
 
-	this->setUserData(0, new ValueChildInterface(this));
+	QVariant v;
+	v.setValue(ChildVariant(new ValueChildInterface(this)));
+	this->setProperty(ValueChildInterface::PropertyName, v);
 }
 
 //--------------------------------------------------------------------------------------------
 ValueChild::~ValueChild()
 {
-	ValueChildInterface* i = (ValueChildInterface*)(this->userData(0));
+	QVariant v = this->property(ValueChildInterface::PropertyName);
+	ValueChildInterface* i = (ValueChildInterface*)(v.value<ChildVariant>().child);
 	delete i;
 
-	this->setUserData(0, nullptr);
+	this->setProperty(ValueChildInterface::PropertyName, QVariant());
 }
 
 //--------------------------------------------------------------------------------------------

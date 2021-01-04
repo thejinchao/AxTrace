@@ -85,16 +85,20 @@ Map2DChild::Map2DChild(const QString& title)
 	setAutoFillBackground(false);
 
 	m_camera = new Camera2D();
-	this->setUserData(0, new Map2DChildInterface(this));
+
+	QVariant v;
+	v.setValue(ChildVariant(new Map2DChildInterface(this)));
+	this->setProperty(Map2DChildInterface::PropertyName, v);
 }
 
 //--------------------------------------------------------------------------------------------
 Map2DChild::~Map2DChild()
 {
-	Map2DChildInterface* i = (Map2DChildInterface*)(this->userData(0));
+	QVariant v = this->property(Map2DChildInterface::PropertyName);
+	Map2DChildInterface* i = (Map2DChildInterface*)(v.value<ChildVariant>().child);
 	delete i;
 
-	this->setUserData(0, nullptr);
+	this->setProperty(Map2DChildInterface::PropertyName, QVariant());
 	delete m_camera;
 	delete m_scene;
 }
@@ -264,7 +268,7 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 
 	//Begin draw
 	painter.begin(this);
-	painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
+	painter.setRenderHint(QPainter::Antialiasing, true);
 
 	painter.fillRect(event->rect(), m_backgroundBrush);
 

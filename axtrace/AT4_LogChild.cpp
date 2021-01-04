@@ -104,15 +104,6 @@ QString LogDataModel::data(int row, int column) const
 }
 
 //--------------------------------------------------------------------------------------------
-Qt::ItemFlags LogDataModel::flags(const QModelIndex &index) const
-{
-	if (!index.isValid())
-		return 0;
-
-	return QAbstractItemModel::flags(index);
-}
-
-//--------------------------------------------------------------------------------------------
 QVariant LogDataModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
 	if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
@@ -185,7 +176,7 @@ public:
 		QModelIndexList rows = m_proxy->selectionModel()->selectedRows();
 	
 		//sort by id
-		qSort(rows.begin(), rows.end(), [model](const QModelIndex &s1, const QModelIndex &s2){ 
+		std::sort(rows.begin(), rows.end(), [model](const QModelIndex &s1, const QModelIndex &s2){ 
 			return s1.row() < s2.row();
 		});
 
@@ -269,19 +260,22 @@ LogChild::LogChild(const QString& title)
 	m_title = title;
 	QString windowTitle = tr("Log:%1").arg(title);
 	setWindowTitle(windowTitle);
-
-	this->setUserData(0, new LogChildInterface(this));
 	
 	m_bNeedScrollDown = false;
+
+	QVariant v;
+	v.setValue(ChildVariant(new LogChildInterface(this)));
+	this->setProperty(LogChildInterface::PropertyName, v);
 }
 
 //--------------------------------------------------------------------------------------------
 LogChild::~LogChild()
 {
-	LogChildInterface* i = (LogChildInterface*)(this->userData(0));
+	QVariant v = this->property(LogChildInterface::PropertyName);
+	LogChildInterface* i = (LogChildInterface*)(v.value<ChildVariant>().child);
 	delete i;
 
-	this->setUserData(0, nullptr);
+	this->setProperty(LogChildInterface::PropertyName, QVariant());
 }
 
 //--------------------------------------------------------------------------------------------

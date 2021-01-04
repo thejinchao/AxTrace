@@ -289,8 +289,10 @@ void MainWindow::_onShowGrid()
 	auto windows = m_mdiArea->subWindowList();
 
 	foreach(auto window, windows) {
-		IChild *child = (IChild *)(window->widget()->userData(0));
-		if (child && child->getType()== IChild::CT_2DMAP)
+		QVariant v = window->widget()->property(IChild::PropertyName);
+		IChild* child = v.value<ChildVariant>().child;
+
+		if (child && child->getType() == IChild::CT_2DMAP)
 			child->update();
 	}
 }
@@ -304,7 +306,9 @@ void MainWindow::_onShowTail()
 	auto windows = m_mdiArea->subWindowList();
 
 	foreach(auto window, windows) {
-		IChild *child = (IChild *)(window->widget()->userData(0));
+		QVariant v = window->widget()->property(IChild::PropertyName);
+		IChild* child = v.value<ChildVariant>().child;
+
 		if (child && child->getType() == IChild::CT_2DMAP)
 			child->update();
 	}
@@ -332,9 +336,12 @@ void MainWindow::_onCleanAll()
 	auto windows = m_mdiArea->subWindowList();
 
 	foreach(auto window, windows) {
-		IChild *child = (IChild *)(window->widget()->userData(0));
-		if (child)
+		QVariant v = window->widget()->property(IChild::PropertyName);
+		IChild* child = v.value<ChildVariant>().child;
+
+		if (child) {
 			child->clean();
+		}
 	}
 }
 
@@ -435,7 +442,10 @@ void MainWindow::updateWindowMenu()
 	
     for (int i = 0; i < windows.size(); ++i) {
         QMdiSubWindow *mdiSubWindow = windows.at(i);
-		IChild *child = (IChild *)(mdiSubWindow->widget()->userData(0));
+
+		QVariant v = mdiSubWindow->widget()->property(IChild::PropertyName);
+		IChild* child = v.value<ChildVariant>().child;
+		if (!child) continue;
 
 		QString text = child->getTitle();
 
@@ -625,8 +635,10 @@ void MainWindow::_restoreSettings(void)
 //--------------------------------------------------------------------------------------------
 IChild *MainWindow::activeMdiChild() const
 {
-    if (QMdiSubWindow *activeSubWindow = m_mdiArea->activeSubWindow())
-        return (IChild *)(activeSubWindow->widget()->userData(0));
+	if (QMdiSubWindow* activeSubWindow = m_mdiArea->activeSubWindow()) {
+		QVariant v = activeSubWindow->widget()->property(IChild::PropertyName);
+		return v.value<ChildVariant>().child;
+	}
     return nullptr;
 }
 
