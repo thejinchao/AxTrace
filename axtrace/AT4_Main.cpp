@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	format.setDepthBufferSize(24);
 	QSurfaceFormat::setDefaultFormat(format);
 
-	QApplication::setStyle(QStyleFactory::create("WindowsVista"));
+	QApplication::setStyle(QStyleFactory::create("Fusion"));
 
 	System theSystem;
 	if (!theSystem.init(argc, argv)) {
