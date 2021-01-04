@@ -3,15 +3,15 @@
 set(AT4_CPP_SOURCES
     AT4_Main.cpp
     AT4_MainWindow.cpp
-    AT4_LogChild.cpp
+    AT4_ChildWnd_Log.cpp
 	AT4_Incoming.cpp
 	AT4_System.cpp
 	AT4_Config.cpp
 	AT4_MessageQueue.cpp
-	AT4_ValueChild.cpp
+	AT4_ChildWnd_Value.cpp
 	AT4_Message.cpp
 	AT4_Filter.cpp
-	AT4_Map2DChild.cpp
+	AT4_ChildWnd_Scene2D.cpp
 	AT4_Scene2D.cpp
 	AT4_Camera2D.cpp
 	AT4_SettingDialog.cpp
@@ -29,17 +29,17 @@ set(AT4_CPP_SOURCES
 set(AT4_H_SOURCES
     stdafx.h
 	AT4_MainWindow.h
-    AT4_LogChild.h
+    AT4_ChildWnd_Log.h
 	AT4_Incoming.h
 	AT4_Interface.h
 	AT4_System.h
 	AT4_Config.h
 	AT4_MessageQueue.h
-	AT4_ValueChild.h
+	AT4_ChildWnd_Value.h
 	AT4_Message.h
 	AT4_Filter.h
 	AT4_ChildInterface.h
-	AT4_Map2DChild.h
+	AT4_ChildWnd_Scene2D.h
 	AT4_Scene2D.h
 	AT4_Camera2D.h
 	AT4_SettingDialog.h

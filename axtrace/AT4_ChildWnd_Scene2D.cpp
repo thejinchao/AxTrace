@@ -6,7 +6,7 @@
 ***************************************************/
 #include "stdafx.h"
 
-#include "AT4_Map2DChild.h"
+#include "AT4_ChildWnd_Scene2D.h"
 #include "AT4_ChildInterface.h"
 #include "AT4_Scene2D.h"
 #include "AT4_Camera2D.h"

@@ -6,7 +6,7 @@
 ***************************************************/
 #include "stdafx.h"
 
-#include "AT4_ValueChild.h"
+#include "AT4_ChildWnd_Value.h"
 #include "AT4_Message.h"
 #include "AT4_ChildInterface.h"
 #include "AT4_System.h"
