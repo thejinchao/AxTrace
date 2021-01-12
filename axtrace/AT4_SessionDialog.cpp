@@ -30,6 +30,7 @@ SessionDialog::SessionDialog(QWidget *parent)
 	header->resizeSection(1, 100);
 	header->resizeSection(2, 80);
 	header->resizeSection(3, 80);
+	header->setSectionsMovable(false);
 
 	QVBoxLayout *mainLayout = new QVBoxLayout;
 	mainLayout->addWidget(m_sessionList);
