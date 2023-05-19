@@ -1,74 +1,18 @@
-/****************************************************************************
-**
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
-** All rights reserved.
-**
-** Contact: Nokia Corporation (qt-info@nokia.com)
-**
-** This file is part of a Qt Solutions component.
-**
-** You may use this file under the terms of the BSD license as follows:
-**
-** "Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are
-** met:
-**   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
-**   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
-**   * Neither the name of Nokia Corporation and its Subsidiary(-ies) nor
-**     the names of its contributors may be used to endorse or promote
-**     products derived from this software without specific prior written
-**     permission.
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-**
-****************************************************************************/
-
+// Copyright (C) 2016 The Qt Company Ltd.
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
 
 #ifndef QTPROPERTYBROWSER_H
 #define QTPROPERTYBROWSER_H
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
 #include <QtCore/QSet>
 
-#if QT_VERSION >= 0x040400
 QT_BEGIN_NAMESPACE
-#endif
-
-#if defined(Q_WS_WIN)
-#  if !defined(QT_QTPROPERTYBROWSER_EXPORT) && !defined(QT_QTPROPERTYBROWSER_IMPORT)
-#    define QT_QTPROPERTYBROWSER_EXPORT
-#  elif defined(QT_QTPROPERTYBROWSER_IMPORT)
-#    if defined(QT_QTPROPERTYBROWSER_EXPORT)
-#      undef QT_QTPROPERTYBROWSER_EXPORT
-#    endif
-#    define QT_QTPROPERTYBROWSER_EXPORT __declspec(dllimport)
-#  elif defined(QT_QTPROPERTYBROWSER_EXPORT)
-#    undef QT_QTPROPERTYBROWSER_EXPORT
-#    define QT_QTPROPERTYBROWSER_EXPORT __declspec(dllexport)
-#  endif
-#else
-#  define QT_QTPROPERTYBROWSER_EXPORT
-#endif
-
 
 class QtAbstractPropertyManager;
 class QtPropertyPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtProperty
+class QtProperty
 {
 public:
     virtual ~QtProperty();
@@ -77,11 +21,12 @@ public:
 
     QtAbstractPropertyManager *propertyManager() const;
 
-    QString toolTip() const;
+    QString toolTip() const { return valueToolTip(); } // Compatibility
+    QString valueToolTip() const;
+    QString descriptionToolTip() const;
     QString statusTip() const;
     QString whatsThis() const;
     QString propertyName() const;
-    QString propertyId() const;
     bool isEnabled() const;
     bool isModified() const;
 
@@ -89,17 +34,15 @@ public:
     QIcon valueIcon() const;
     QString valueText() const;
 
-    virtual bool compare(QtProperty* otherProperty)const;
-
-    void setToolTip(const QString &text);
+    void setToolTip(const QString &text) { setValueToolTip(text); }  // Compatibility
+    void setValueToolTip(const QString &text);
+    void setDescriptionToolTip(const QString &text);
     void setStatusTip(const QString &text);
     void setWhatsThis(const QString &text);
     void setPropertyName(const QString &text);
-    void setPropertyId(const QString &text);
     void setEnabled(bool enable);
     void setModified(bool modified);
 
-    bool isSubProperty()const;
     void addSubProperty(QtProperty *property);
     void insertSubProperty(QtProperty *property, QtProperty *afterProperty);
     void removeSubProperty(QtProperty *property);
@@ -108,12 +51,12 @@ protected:
     void propertyChanged();
 private:
     friend class QtAbstractPropertyManager;
-    QtPropertyPrivate *d_ptr;
+    QScopedPointer<QtPropertyPrivate> d_ptr;
 };
 
 class QtAbstractPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtAbstractPropertyManager : public QObject
+class QtAbstractPropertyManager : public QObject
 {
     Q_OBJECT
 public:
@@ -125,11 +68,8 @@ public:
     void clear() const;
 
     QtProperty *addProperty(const QString &name = QString());
-    QtProperty *qtProperty(const QString &id)const;
 Q_SIGNALS:
-
-    void propertyInserted(QtProperty *property,
-                QtProperty *parent, QtProperty *after);
+    void propertyInserted(QtProperty *property, QtProperty *parent, QtProperty *after);
     void propertyChanged(QtProperty *property);
     void propertyRemoved(QtProperty *property, QtProperty *parent);
     void propertyDestroyed(QtProperty *property);
@@ -142,12 +82,12 @@ protected:
     virtual QtProperty *createProperty();
 private:
     friend class QtProperty;
-    QtAbstractPropertyManagerPrivate *d_ptr;
+    QScopedPointer<QtAbstractPropertyManagerPrivate> d_ptr;
     Q_DECLARE_PRIVATE(QtAbstractPropertyManager)
-    Q_DISABLE_COPY(QtAbstractPropertyManager)
+    Q_DISABLE_COPY_MOVE(QtAbstractPropertyManager)
 };
 
-class QT_QTPROPERTYBROWSER_EXPORT QtAbstractEditorFactoryBase : public QObject
+class QtAbstractEditorFactoryBase : public QObject
 {
     Q_OBJECT
 public:
@@ -168,11 +108,9 @@ class QtAbstractEditorFactory : public QtAbstractEditorFactoryBase
 {
 public:
     explicit QtAbstractEditorFactory(QObject *parent) : QtAbstractEditorFactoryBase(parent) {}
-    QWidget *createEditor(QtProperty *property, QWidget *parent)
+    QWidget *createEditor(QtProperty *property, QWidget *parent) override
     {
-        QSetIterator<PropertyManager *> it(m_managers);
-        while (it.hasNext()) {
-            PropertyManager *manager = it.next();
+        for (PropertyManager *manager : std::as_const(m_managers)) {
             if (manager == property->propertyManager()) {
                 return createEditor(manager, property, parent);
             }
@@ -185,15 +123,15 @@ public:
             return;
         m_managers.insert(manager);
         connectPropertyManager(manager);
-        connect(manager, SIGNAL(destroyed(QObject *)),
-                    this, SLOT(managerDestroyed(QObject *)));
+        connect(manager, &QObject::destroyed,
+                this, &QtAbstractEditorFactory<PropertyManager>::managerDestroyed);
     }
     void removePropertyManager(PropertyManager *manager)
     {
         if (!m_managers.contains(manager))
             return;
-        disconnect(manager, SIGNAL(destroyed(QObject *)),
-                    this, SLOT(managerDestroyed(QObject *)));
+        disconnect(manager, &QObject::destroyed,
+                this, &QtAbstractEditorFactory<PropertyManager>::managerDestroyed);
         disconnectPropertyManager(manager);
         m_managers.remove(manager);
     }
@@ -204,9 +142,7 @@ public:
     PropertyManager *propertyManager(QtProperty *property) const
     {
         QtAbstractPropertyManager *manager = property->propertyManager();
-        QSetIterator<PropertyManager *> itManager(m_managers);
-        while (itManager.hasNext()) {
-            PropertyManager *m = itManager.next();
+        for (PropertyManager *m : std::as_const(m_managers)) {
             if (m == manager) {
                 return m;
             }
@@ -218,11 +154,9 @@ protected:
     virtual QWidget *createEditor(PropertyManager *manager, QtProperty *property,
                 QWidget *parent) = 0;
     virtual void disconnectPropertyManager(PropertyManager *manager) = 0;
-    void managerDestroyed(QObject *manager)
+    void managerDestroyed(QObject *manager) override
     {
-        QSetIterator<PropertyManager *> it(m_managers);
-        while (it.hasNext()) {
-            PropertyManager *m = it.next();
+        for (PropertyManager *m : std::as_const(m_managers)) {
             if (m == manager) {
                 m_managers.remove(m);
                 return;
@@ -230,11 +164,9 @@ protected:
         }
     }
 private:
-    void breakConnection(QtAbstractPropertyManager *manager)
+    void breakConnection(QtAbstractPropertyManager *manager) override
     {
-        QSetIterator<PropertyManager *> it(m_managers);
-        while (it.hasNext()) {
-            PropertyManager *m = it.next();
+        for (PropertyManager *m : std::as_const(m_managers)) {
             if (m == manager) {
                 removePropertyManager(m);
                 return;
@@ -249,7 +181,7 @@ private:
 class QtAbstractPropertyBrowser;
 class QtBrowserItemPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtBrowserItem
+class QtBrowserItem
 {
 public:
     QtProperty *property() const;
@@ -259,13 +191,13 @@ public:
 private:
     explicit QtBrowserItem(QtAbstractPropertyBrowser *browser, QtProperty *property, QtBrowserItem *parent);
     ~QtBrowserItem();
-    QtBrowserItemPrivate *d_ptr;
+    QScopedPointer<QtBrowserItemPrivate> d_ptr;
     friend class QtAbstractPropertyBrowserPrivate;
 };
 
 class QtAbstractPropertyBrowserPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtAbstractPropertyBrowser : public QWidget
+class QtAbstractPropertyBrowser : public QWidget
 {
     Q_OBJECT
 public:
@@ -316,20 +248,11 @@ private:
     bool addFactory(QtAbstractPropertyManager *abstractManager,
                 QtAbstractEditorFactoryBase *abstractFactory);
 
-    QtAbstractPropertyBrowserPrivate *d_ptr;
+    QScopedPointer<QtAbstractPropertyBrowserPrivate> d_ptr;
     Q_DECLARE_PRIVATE(QtAbstractPropertyBrowser)
-    Q_DISABLE_COPY(QtAbstractPropertyBrowser)
-    Q_PRIVATE_SLOT(d_func(), void slotPropertyInserted(QtProperty *,
-                            QtProperty *, QtProperty *))
-    Q_PRIVATE_SLOT(d_func(), void slotPropertyRemoved(QtProperty *,
-                            QtProperty *))
-    Q_PRIVATE_SLOT(d_func(), void slotPropertyDestroyed(QtProperty *))
-    Q_PRIVATE_SLOT(d_func(), void slotPropertyDataChanged(QtProperty *))
-
+    Q_DISABLE_COPY_MOVE(QtAbstractPropertyBrowser)
 };
 
-#if QT_VERSION >= 0x040400
 QT_END_NAMESPACE
-#endif
 
 #endif // QTPROPERTYBROWSER_H

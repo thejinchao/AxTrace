@@ -7,7 +7,7 @@
 struct ScriptVariant
 {
 	enum {
-		Type = QVariant::UserType + 100
+		Type = QMetaType::User + 100
 	};
 
 	operator QVariant() const {

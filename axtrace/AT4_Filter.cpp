@@ -42,7 +42,12 @@ bool Filter::init(Config* cfg)
 	Update2DActorMessage::_luaopen(L);
 
 	//reload script
-	if (!reloadScript(m_config->getFilterScript().toUtf8().toStdString().c_str()))
+	QString filterScript = m_config->getFilterScript();
+	//QByteArray byteArray = filterScript.toUtf8();
+	std::string strFilterScript = filterScript.toStdString();
+	qDebug() << strFilterScript;
+	const char* szFilterScript = strFilterScript.c_str();
+	if (!reloadScript(szFilterScript))
 		return false;
 
 	return true;

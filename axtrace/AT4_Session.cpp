@@ -107,7 +107,7 @@ void SessionManager::onSessionClose(cyclone::TcpConnectionPtr connPtr)
 //--------------------------------------------------------------------------------------------
 void SessionManager::walk(SessionManager::WalkCallback callback)
 {
-	for (auto& it = m_sessionMap.begin(); it != m_sessionMap.end(); it++) {
+	for (auto it = m_sessionMap.begin(); it != m_sessionMap.end(); it++) {
 		callback(it.key(), it.value());
 	}
 }

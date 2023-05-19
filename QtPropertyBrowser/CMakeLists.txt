@@ -20,8 +20,8 @@ set(_RESOURCES
   qtpropertybrowser.qrc
   )
   
-QT5_WRAP_UI(_UI_SRCS ${_UI_FORMS})
-QT5_ADD_RESOURCES(_QRC_SRCS ${_RESOURCES})
+QT6_WRAP_UI(_UI_SRCS ${_UI_FORMS})
+QT6_ADD_RESOURCES(_QRC_SRCS ${_RESOURCES})
 
 set(TARGET_NAME ${PROJECT_NAME})
 
@@ -32,5 +32,5 @@ add_library(QtPropertyBrowser
   ${_IMPL_HDRS}
   )
 
-target_link_libraries(QtPropertyBrowser Qt5::Widgets)
+target_link_libraries(QtPropertyBrowser Qt6::Widgets)
 

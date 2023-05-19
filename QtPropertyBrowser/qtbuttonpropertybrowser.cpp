@@ -1,55 +1,14 @@
-/****************************************************************************
-**
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
-** All rights reserved.
-**
-** Contact: Nokia Corporation (qt-info@nokia.com)
-**
-** This file is part of a Qt Solutions component.
-**
-** You may use this file under the terms of the BSD license as follows:
-**
-** "Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are
-** met:
-**   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
-**   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
-**   * Neither the name of Nokia Corporation and its Subsidiary(-ies) nor
-**     the names of its contributors may be used to endorse or promote
-**     products derived from this software without specific prior written
-**     permission.
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-**
-****************************************************************************/
-
+// Copyright (C) 2016 The Qt Company Ltd.
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
 
 #include "qtbuttonpropertybrowser.h"
-#include <QtCore/QSet>
-#include <QtCore/QTimer>
-#include <QtCore/QMap>
-#include <QGridLayout>
-#include <QLabel>
-#include <QToolButton>
-#include <QStyle>
 
-#if QT_VERSION >= 0x040400
+#include <QtCore/QMap>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QToolButton>
+
 QT_BEGIN_NAMESPACE
-#endif
 
 class QtButtonPropertyBrowserPrivate
 {
@@ -71,17 +30,15 @@ public:
 
     struct WidgetItem
     {
-        WidgetItem() : widget(0), label(0), widgetLabel(0),
-                button(0), container(0), layout(0), /*line(0), */parent(0), expanded(false) { }
-        QWidget *widget; // can be null
-        QLabel *label; // main label with property name
-        QLabel *widgetLabel; // label substitute showing the current value if there is no widget
-        QToolButton *button; // expandable button for items with children
-        QWidget *container; // container which is expanded when the button is clicked
-        QGridLayout *layout; // layout in container
-        WidgetItem *parent;
+        QWidget *widget{nullptr}; // can be null
+        QLabel *label{nullptr}; // main label with property name
+        QLabel *widgetLabel{nullptr}; // label substitute showing the current value if there is no widget
+        QToolButton *button{nullptr}; // expandable button for items with children
+        QWidget *container{nullptr}; // container which is expanded when the button is clicked
+        QGridLayout *layout{nullptr}; // layout in container
+        WidgetItem *parent{nullptr};
         QList<WidgetItem *> children;
-        bool expanded;
+        bool expanded{false};
     };
 private:
     void updateLater();
@@ -128,9 +85,7 @@ int QtButtonPropertyBrowserPrivate::gridRow(WidgetItem *item) const
         siblings = m_children;
 
     int row = 0;
-    QListIterator<WidgetItem *> it(siblings);
-    while (it.hasNext()) {
-        WidgetItem *sibling = it.next();
+    for (WidgetItem *sibling : std::as_const(siblings)) {
         if (sibling == item)
             return row;
         row += gridSpan(sibling);
@@ -167,13 +122,10 @@ void QtButtonPropertyBrowserPrivate::slotEditorDestroyed()
 
 void QtButtonPropertyBrowserPrivate::slotUpdate()
 {
-    QListIterator<WidgetItem *> itItem(m_recreateQueue);
-    while (itItem.hasNext()) {
-        WidgetItem *item = itItem.next();
-
+    for (WidgetItem *item : std::as_const(m_recreateQueue)) {
         WidgetItem *parent = item->parent;
-        QWidget *w = 0;
-        QGridLayout *l = 0;
+        QWidget *w = nullptr;
+        QGridLayout *l = nullptr;
         const int oldRow = gridRow(item);
         if (parent) {
             w = parent->container;
@@ -206,7 +158,7 @@ void QtButtonPropertyBrowserPrivate::setExpanded(WidgetItem *item, bool expanded
     item->expanded = expanded;
     const int row = gridRow(item);
     WidgetItem *parent = item->parent;
-    QGridLayout *l = 0;
+    QGridLayout *l = nullptr;
     if (parent)
         l = parent->layout;
     else
@@ -242,7 +194,7 @@ void QtButtonPropertyBrowserPrivate::slotToggled(bool checked)
 
 void QtButtonPropertyBrowserPrivate::updateLater()
 {
-    QTimer::singleShot(0, q_ptr, SLOT(slotUpdate()));
+    QMetaObject::invokeMethod(q_ptr, [this] { slotUpdate(); }, Qt::QueuedConnection);
 }
 
 void QtButtonPropertyBrowserPrivate::propertyInserted(QtBrowserItem *index, QtBrowserItem *afterIndex)
@@ -253,8 +205,8 @@ void QtButtonPropertyBrowserPrivate::propertyInserted(QtBrowserItem *index, QtBr
     WidgetItem *newItem = new WidgetItem();
     newItem->parent = parentItem;
 
-    QGridLayout *layout = 0;
-    QWidget *parentWidget = 0;
+    QGridLayout *layout = nullptr;
+    QWidget *parentWidget = nullptr;
     int row = -1;
     if (!afterItem) {
         row = 0;
@@ -277,14 +229,11 @@ void QtButtonPropertyBrowserPrivate::propertyInserted(QtBrowserItem *index, QtBr
         if (!parentItem->container) {
             m_recreateQueue.removeAll(parentItem);
             WidgetItem *grandParent = parentItem->parent;
-            QWidget *w = 0;
-            QGridLayout *l = 0;
+            QGridLayout *l = nullptr;
             const int oldRow = gridRow(parentItem);
             if (grandParent) {
-                w = grandParent->container;
                 l = grandParent->layout;
             } else {
-                w = q_ptr;
                 l = m_mainLayout;
             }
             QFrame *container = new QFrame();
@@ -293,13 +242,14 @@ void QtButtonPropertyBrowserPrivate::propertyInserted(QtBrowserItem *index, QtBr
             parentItem->container = container;
             parentItem->button = createButton();
             m_buttonToItem[parentItem->button] = parentItem;
-            q_ptr->connect(parentItem->button, SIGNAL(toggled(bool)), q_ptr, SLOT(slotToggled(bool)));
+            q_ptr->connect(parentItem->button, &QAbstractButton::toggled,
+                           q_ptr, [this](bool checked) { slotToggled(checked); });
             parentItem->layout = new QGridLayout();
             container->setLayout(parentItem->layout);
             if (parentItem->label) {
                 l->removeWidget(parentItem->label);
                 delete parentItem->label;
-                parentItem->label = 0;
+                parentItem->label = nullptr;
             }
             int span = 1;
             if (!parentItem->widget && !parentItem->widgetLabel)
@@ -315,7 +265,8 @@ void QtButtonPropertyBrowserPrivate::propertyInserted(QtBrowserItem *index, QtBr
     newItem->label->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
     newItem->widget = createEditor(index->property(), parentWidget);
     if (newItem->widget) {
-        QObject::connect(newItem->widget, SIGNAL(destroyed()), q_ptr, SLOT(slotEditorDestroyed()));
+        QObject::connect(newItem->widget, &QWidget::destroyed,
+                         q_ptr, [this] { slotEditorDestroyed(); });
         m_widgetToItem[newItem->widget] = newItem;
     } else if (index->property()->hasValue()) {
         newItem->widgetLabel = new QLabel(parentWidget);
@@ -373,13 +324,13 @@ void QtButtonPropertyBrowserPrivate::propertyRemoved(QtBrowserItem *index)
         removeRow(m_mainLayout, row);
         if (colSpan > 1)
             removeRow(m_mainLayout, row);
-    } else if (parentItem->children.count() != 0) {
+    } else if (parentItem->children.size() != 0) {
         removeRow(parentItem->layout, row);
         if (colSpan > 1)
             removeRow(parentItem->layout, row);
     } else {
         const WidgetItem *grandParent = parentItem->parent;
-        QGridLayout *l = 0;
+        QGridLayout *l = nullptr;
         if (grandParent) {
             l = grandParent->layout;
         } else {
@@ -393,9 +344,9 @@ void QtButtonPropertyBrowserPrivate::propertyRemoved(QtBrowserItem *index)
         l->removeWidget(parentItem->container);
         delete parentItem->button;
         delete parentItem->container;
-        parentItem->button = 0;
-        parentItem->container = 0;
-        parentItem->layout = 0;
+        parentItem->button = nullptr;
+        parentItem->container = nullptr;
+        parentItem->layout = nullptr;
         if (!m_recreateQueue.contains(parentItem))
             m_recreateQueue.append(parentItem);
         if (parentSpan > 1)
@@ -422,8 +373,7 @@ void QtButtonPropertyBrowserPrivate::insertRow(QGridLayout *layout, int row) con
         }
     }
 
-    const QMap<QLayoutItem *, QRect>::ConstIterator icend =  itemToPos.constEnd();
-    for(QMap<QLayoutItem *, QRect>::ConstIterator it = itemToPos.constBegin(); it != icend; ++it) {
+    for (auto it = itemToPos.constBegin(), icend = itemToPos.constEnd(); it != icend; ++it) {
         const QRect r = it.value();
         layout->addItem(it.key(), r.x(), r.y(), r.width(), r.height());
     }
@@ -443,8 +393,7 @@ void QtButtonPropertyBrowserPrivate::removeRow(QGridLayout *layout, int row) con
         }
     }
 
-    const QMap<QLayoutItem *, QRect>::ConstIterator icend =  itemToPos.constEnd();
-    for(QMap<QLayoutItem *, QRect>::ConstIterator it = itemToPos.constBegin(); it != icend; ++it) {
+    for (auto it = itemToPos.constBegin(), icend = itemToPos.constEnd(); it != icend; ++it) {
         const QRect r = it.value();
         layout->addItem(it.key(), r.x(), r.y(), r.width(), r.height());
     }
@@ -465,7 +414,7 @@ void QtButtonPropertyBrowserPrivate::updateItem(WidgetItem *item)
         font.setUnderline(property->isModified());
         item->button->setFont(font);
         item->button->setText(property->propertyName());
-        item->button->setToolTip(property->toolTip());
+        item->button->setToolTip(property->descriptionToolTip());
         item->button->setStatusTip(property->statusTip());
         item->button->setWhatsThis(property->whatsThis());
         item->button->setEnabled(property->isEnabled());
@@ -475,7 +424,7 @@ void QtButtonPropertyBrowserPrivate::updateItem(WidgetItem *item)
         font.setUnderline(property->isModified());
         item->label->setFont(font);
         item->label->setText(property->propertyName());
-        item->label->setToolTip(property->toolTip());
+        item->label->setToolTip(property->descriptionToolTip());
         item->label->setStatusTip(property->statusTip());
         item->label->setWhatsThis(property->whatsThis());
         item->label->setEnabled(property->isEnabled());
@@ -493,7 +442,8 @@ void QtButtonPropertyBrowserPrivate::updateItem(WidgetItem *item)
         font.setUnderline(false);
         item->widget->setFont(font);
         item->widget->setEnabled(property->isEnabled());
-        item->widget->setToolTip(property->valueText());
+        const QString valueToolTip = property->valueToolTip();
+        item->widget->setToolTip(valueToolTip.isEmpty() ? property->valueText() : valueToolTip);
     }
 }
 
@@ -501,6 +451,9 @@ void QtButtonPropertyBrowserPrivate::updateItem(WidgetItem *item)
 
 /*!
     \class QtButtonPropertyBrowser
+    \internal
+    \inmodule QtDesigner
+    \since 4.4
 
     \brief The QtButtonPropertyBrowser class provides a drop down QToolButton
     based property browser.
@@ -545,9 +498,8 @@ void QtButtonPropertyBrowserPrivate::updateItem(WidgetItem *item)
     Creates a property browser with the given \a parent.
 */
 QtButtonPropertyBrowser::QtButtonPropertyBrowser(QWidget *parent)
-    : QtAbstractPropertyBrowser(parent)
+    : QtAbstractPropertyBrowser(parent), d_ptr(new QtButtonPropertyBrowserPrivate)
 {
-    d_ptr = new QtButtonPropertyBrowserPrivate;
     d_ptr->q_ptr = this;
 
     d_ptr->init(this);
@@ -568,7 +520,6 @@ QtButtonPropertyBrowser::~QtButtonPropertyBrowser()
     const QMap<QtButtonPropertyBrowserPrivate::WidgetItem *, QtBrowserItem *>::ConstIterator icend = d_ptr->m_itemToIndex.constEnd();
     for (QMap<QtButtonPropertyBrowserPrivate::WidgetItem *, QtBrowserItem *>::ConstIterator  it =  d_ptr->m_itemToIndex.constBegin(); it != icend; ++it)
         delete it.key();
-    delete d_ptr;
 }
 
 /*!
@@ -622,8 +573,6 @@ bool QtButtonPropertyBrowser::isExpanded(QtBrowserItem *item) const
     return false;
 }
 
-#if QT_VERSION >= 0x040400
 QT_END_NAMESPACE
-#endif
 
 #include "moc_qtbuttonpropertybrowser.cpp"

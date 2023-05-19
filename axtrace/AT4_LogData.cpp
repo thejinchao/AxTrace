@@ -14,7 +14,7 @@ LogParser::LogParser(const DefinePtr parserDefine)
 {
 	if (isDefault()) return;
 
-	m_regExp = QRegExp(m_parserDefine->regExp);
+	m_regExp = QRegularExpression(m_parserDefine->regExp);
 	Q_ASSERT(m_regExp.captureCount() == m_parserDefine->columns.size());
 }
 
@@ -74,7 +74,7 @@ bool LogParser::tryLoadParserScript(const QString& script, QString& errorMsg, De
 			parser->columns.push_back(newColumn);
 		}
 
-		QRegExp regExp(parser->regExp);
+		QRegularExpression regExp(parser->regExp);
 		if (regExp.captureCount() != parser->columns.size())
 		{
 			errorMsg = QString("The capture counts is %1, but column counts is %2 in the parser %3 ")
@@ -94,13 +94,19 @@ bool LogParser::tryLoadParserScript(const QString& script, QString& errorMsg, De
 //--------------------------------------------------------------------------------------------
 QStringList LogParser::parserLog(const QString& logContent) const
 {
-	if (isDefault() || !m_regExp.exactMatch(logContent))
+	if (isDefault())
+	{
+		return QStringList(logContent);
+	}
+	
+	QRegularExpressionMatch match = m_regExp.match(logContent);
+	if (!match.hasMatch())
 	{
 		return QStringList(logContent);
 	}
 
 	QStringList ret;
-	QStringList captureTexts = m_regExp.capturedTexts();
+	QStringList captureTexts = match.capturedTexts();
 	for (qint32 i = 1; i < captureTexts.size(); i++)
 	{
 		ret << captureTexts[i];

@@ -56,7 +56,7 @@ public:
 
 private:
 	DefinePtr m_parserDefine;
-	QRegExp m_regExp;
+	QRegularExpression m_regExp;
 
 public:
 	LogParser(const DefinePtr parserDefine);

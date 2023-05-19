@@ -1,54 +1,14 @@
-/****************************************************************************
-**
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
-** All rights reserved.
-**
-** Contact: Nokia Corporation (qt-info@nokia.com)
-**
-** This file is part of a Qt Solutions component.
-**
-** You may use this file under the terms of the BSD license as follows:
-**
-** "Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are
-** met:
-**   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
-**   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
-**   * Neither the name of Nokia Corporation and its Subsidiary(-ies) nor
-**     the names of its contributors may be used to endorse or promote
-**     products derived from this software without specific prior written
-**     permission.
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-**
-****************************************************************************/
-
+// Copyright (C) 2016 The Qt Company Ltd.
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
 
 #include "qtgroupboxpropertybrowser.h"
-#include <QtCore/QSet>
-#include <QGridLayout>
-#include <QLabel>
-#include <QGroupBox>
-#include <QtCore/QTimer>
-#include <QtCore/QMap>
 
-#if QT_VERSION >= 0x040400
+#include <QtCore/QMap>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QGroupBox>
+#include <QtWidgets/QLabel>
+
 QT_BEGIN_NAMESPACE
-#endif
 
 class QtGroupBoxPropertyBrowserPrivate
 {
@@ -69,15 +29,13 @@ public:
 
     struct WidgetItem
     {
-        WidgetItem() : widget(0), label(0), widgetLabel(0),
-                groupBox(0), layout(0), line(0), parent(0) { }
-        QWidget *widget; // can be null
-        QLabel *label;
-        QLabel *widgetLabel;
-        QGroupBox *groupBox;
-        QGridLayout *layout;
-        QFrame *line;
-        WidgetItem *parent;
+        QWidget *widget{nullptr}; // can be null
+        QLabel *label{nullptr};
+        QLabel *widgetLabel{nullptr};
+        QGroupBox *groupBox{nullptr};
+        QGridLayout *layout{nullptr};
+        QFrame *line{nullptr};
+        WidgetItem *parent{nullptr};
         QList<WidgetItem *> children;
     };
 private:
@@ -118,13 +76,10 @@ void QtGroupBoxPropertyBrowserPrivate::slotEditorDestroyed()
 
 void QtGroupBoxPropertyBrowserPrivate::slotUpdate()
 {
-    QListIterator<WidgetItem *> itItem(m_recreateQueue);
-    while (itItem.hasNext()) {
-        WidgetItem *item = itItem.next();
-
+    for (WidgetItem *item : std::as_const(m_recreateQueue)) {
         WidgetItem *par = item->parent;
-        QWidget *w = 0;
-        QGridLayout *l = 0;
+        QWidget *w = nullptr;
+        QGridLayout *l = nullptr;
         int oldRow = -1;
         if (!par) {
             w = q_ptr;
@@ -144,8 +99,6 @@ void QtGroupBoxPropertyBrowserPrivate::slotUpdate()
             item->widgetLabel->setParent(w);
         } else {
             item->widgetLabel = new QLabel(w);
-            item->widgetLabel->setSizePolicy(QSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed));
-            item->widgetLabel->setTextFormat(Qt::PlainText);
         }
         int span = 1;
         if (item->widget)
@@ -165,7 +118,7 @@ void QtGroupBoxPropertyBrowserPrivate::slotUpdate()
 
 void QtGroupBoxPropertyBrowserPrivate::updateLater()
 {
-    QTimer::singleShot(0, q_ptr, SLOT(slotUpdate()));
+    QMetaObject::invokeMethod(q_ptr, [this] { slotUpdate(); }, Qt::QueuedConnection);
 }
 
 void QtGroupBoxPropertyBrowserPrivate::propertyInserted(QtBrowserItem *index, QtBrowserItem *afterIndex)
@@ -176,8 +129,8 @@ void QtGroupBoxPropertyBrowserPrivate::propertyInserted(QtBrowserItem *index, Qt
     WidgetItem *newItem = new WidgetItem();
     newItem->parent = parentItem;
 
-    QGridLayout *layout = 0;
-    QWidget *parentWidget = 0;
+    QGridLayout *layout = nullptr;
+    QWidget *parentWidget = nullptr;
     int row = -1;
     if (!afterItem) {
         row = 0;
@@ -204,8 +157,8 @@ void QtGroupBoxPropertyBrowserPrivate::propertyInserted(QtBrowserItem *index, Qt
         if (!parentItem->groupBox) {
             m_recreateQueue.removeAll(parentItem);
             WidgetItem *par = parentItem->parent;
-            QWidget *w = 0;
-            QGridLayout *l = 0;
+            QWidget *w = nullptr;
+            QGridLayout *l = nullptr;
             int oldRow = -1;
             if (!par) {
                 w = q_ptr;
@@ -224,7 +177,7 @@ void QtGroupBoxPropertyBrowserPrivate::propertyInserted(QtBrowserItem *index, Qt
             if (parentItem->label) {
                 l->removeWidget(parentItem->label);
                 delete parentItem->label;
-                parentItem->label = 0;
+                parentItem->label = nullptr;
             }
             if (parentItem->widget) {
                 l->removeWidget(parentItem->widget);
@@ -234,7 +187,7 @@ void QtGroupBoxPropertyBrowserPrivate::propertyInserted(QtBrowserItem *index, Qt
             } else if (parentItem->widgetLabel) {
                 l->removeWidget(parentItem->widgetLabel);
                 delete parentItem->widgetLabel;
-                parentItem->widgetLabel = 0;
+                parentItem->widgetLabel = nullptr;
             }
             if (parentItem->line) {
                 parentItem->line->setFrameShape(QFrame::HLine);
@@ -253,10 +206,9 @@ void QtGroupBoxPropertyBrowserPrivate::propertyInserted(QtBrowserItem *index, Qt
     newItem->widget = createEditor(index->property(), parentWidget);
     if (!newItem->widget) {
         newItem->widgetLabel = new QLabel(parentWidget);
-        newItem->widgetLabel->setSizePolicy(QSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed));
-        newItem->widgetLabel->setTextFormat(Qt::PlainText);
     } else {
-        QObject::connect(newItem->widget, SIGNAL(destroyed()), q_ptr, SLOT(slotEditorDestroyed()));
+        QObject::connect(newItem->widget, &QWidget::destroyed,
+                         q_ptr, [this] { slotEditorDestroyed(); });
         m_widgetToItem[newItem->widget] = newItem;
     }
 
@@ -308,25 +260,11 @@ void QtGroupBoxPropertyBrowserPrivate::propertyRemoved(QtBrowserItem *index)
 
     if (!parentItem) {
         removeRow(m_mainLayout, row);
-    } else if (parentItem->children.count() != 0) {
+    } else if (parentItem->children.size() != 0) {
         removeRow(parentItem->layout, row);
     } else {
         WidgetItem *par = parentItem->parent;
-        QWidget *w = 0;
-        QGridLayout *l = 0;
-        int oldRow = -1;
-        if (!par) {
-            w = q_ptr;
-            l = m_mainLayout;
-            oldRow = m_children.indexOf(parentItem);
-        } else {
-            w = par->groupBox;
-            l = par->layout;
-            oldRow = par->children.indexOf(parentItem);
-            if (hasHeader(par))
-                oldRow += 2;
-        }
-
+        QGridLayout *l = (par ? par->layout : m_mainLayout);
         if (parentItem->widget) {
             parentItem->widget->hide();
             parentItem->widget->setParent(0);
@@ -338,9 +276,9 @@ void QtGroupBoxPropertyBrowserPrivate::propertyRemoved(QtBrowserItem *index)
         }
         l->removeWidget(parentItem->groupBox);
         delete parentItem->groupBox;
-        parentItem->groupBox = 0;
-        parentItem->line = 0;
-        parentItem->layout = 0;
+        parentItem->groupBox = nullptr;
+        parentItem->line = nullptr;
+        parentItem->layout = nullptr;
         if (!m_recreateQueue.contains(parentItem))
             m_recreateQueue.append(parentItem);
         updateLater();
@@ -394,9 +332,7 @@ void QtGroupBoxPropertyBrowserPrivate::removeRow(QGridLayout *layout, int row) c
 
 bool QtGroupBoxPropertyBrowserPrivate::hasHeader(WidgetItem *item) const
 {
-    if (item->widget)
-        return true;
-    return false;
+    return item->widget;
 }
 
 void QtGroupBoxPropertyBrowserPrivate::propertyChanged(QtBrowserItem *index)
@@ -414,7 +350,7 @@ void QtGroupBoxPropertyBrowserPrivate::updateItem(WidgetItem *item)
         font.setUnderline(property->isModified());
         item->groupBox->setFont(font);
         item->groupBox->setTitle(property->propertyName());
-        item->groupBox->setToolTip(property->toolTip());
+        item->groupBox->setToolTip(property->descriptionToolTip());
         item->groupBox->setStatusTip(property->statusTip());
         item->groupBox->setWhatsThis(property->whatsThis());
         item->groupBox->setEnabled(property->isEnabled());
@@ -424,7 +360,7 @@ void QtGroupBoxPropertyBrowserPrivate::updateItem(WidgetItem *item)
         font.setUnderline(property->isModified());
         item->label->setFont(font);
         item->label->setText(property->propertyName());
-        item->label->setToolTip(property->toolTip());
+        item->label->setToolTip(property->descriptionToolTip());
         item->label->setStatusTip(property->statusTip());
         item->label->setWhatsThis(property->whatsThis());
         item->label->setEnabled(property->isEnabled());
@@ -434,7 +370,6 @@ void QtGroupBoxPropertyBrowserPrivate::updateItem(WidgetItem *item)
         font.setUnderline(false);
         item->widgetLabel->setFont(font);
         item->widgetLabel->setText(property->valueText());
-        item->widgetLabel->setToolTip(property->valueText());
         item->widgetLabel->setEnabled(property->isEnabled());
     }
     if (item->widget) {
@@ -442,7 +377,8 @@ void QtGroupBoxPropertyBrowserPrivate::updateItem(WidgetItem *item)
         font.setUnderline(false);
         item->widget->setFont(font);
         item->widget->setEnabled(property->isEnabled());
-        item->widget->setToolTip(property->valueText());
+        const QString valueToolTip = property->valueToolTip();
+        item->widget->setToolTip(valueToolTip.isEmpty() ? property->valueText() : valueToolTip);
     }
     //item->setIcon(1, property->valueIcon());
 }
@@ -451,6 +387,9 @@ void QtGroupBoxPropertyBrowserPrivate::updateItem(WidgetItem *item)
 
 /*!
     \class QtGroupBoxPropertyBrowser
+    \internal
+    \inmodule QtDesigner
+    \since 4.4
 
     \brief The QtGroupBoxPropertyBrowser class provides a QGroupBox
     based property browser.
@@ -479,9 +418,8 @@ void QtGroupBoxPropertyBrowserPrivate::updateItem(WidgetItem *item)
     Creates a property browser with the given \a parent.
 */
 QtGroupBoxPropertyBrowser::QtGroupBoxPropertyBrowser(QWidget *parent)
-    : QtAbstractPropertyBrowser(parent)
+    : QtAbstractPropertyBrowser(parent), d_ptr(new QtGroupBoxPropertyBrowserPrivate)
 {
-    d_ptr = new QtGroupBoxPropertyBrowserPrivate;
     d_ptr->q_ptr = this;
 
     d_ptr->init(this);
@@ -502,7 +440,6 @@ QtGroupBoxPropertyBrowser::~QtGroupBoxPropertyBrowser()
     const QMap<QtGroupBoxPropertyBrowserPrivate::WidgetItem *, QtBrowserItem *>::ConstIterator icend = d_ptr->m_itemToIndex.constEnd();
     for (QMap<QtGroupBoxPropertyBrowserPrivate::WidgetItem *, QtBrowserItem *>::ConstIterator it = d_ptr->m_itemToIndex.constBegin(); it != icend; ++it)
         delete it.key();
-    delete d_ptr;
 }
 
 /*!
@@ -529,8 +466,6 @@ void QtGroupBoxPropertyBrowser::itemChanged(QtBrowserItem *item)
     d_ptr->propertyChanged(item);
 }
 
-#if QT_VERSION >= 0x040400
 QT_END_NAMESPACE
-#endif
 
 #include "moc_qtgroupboxpropertybrowser.cpp"

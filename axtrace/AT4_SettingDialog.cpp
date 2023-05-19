@@ -59,7 +59,7 @@ void SettingDialog::_initProperty(void)
 	//==== General Group =====
 	QtProperty *generalGroup = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),QString("General"));
 
-	QtVariantProperty *listenPort = variantManager->addProperty(QVariant::Int, QString("ListenPort"));
+	QtVariantProperty *listenPort = variantManager->addProperty(QMetaType::Int, QString("ListenPort"));
 	listenPort->setValue(config->getListenPort());
 	listenPort->setAttribute(QLatin1String("minimum"), Config::LISTEN_PORT_MIN);
 	listenPort->setAttribute(QLatin1String("maximum"), Config::LISTEN_PORT_MAX);
@@ -76,7 +76,7 @@ void SettingDialog::_initProperty(void)
 	logParser->setValue(ScriptVariant("Parser", ""));
 	logGroup->addSubProperty(logParser);
 
-	QtVariantProperty* maxLogCounts = variantManager->addProperty(QVariant::Int, QString("MaxLogCounts"));
+	QtVariantProperty* maxLogCounts = variantManager->addProperty(QMetaType::Int, QString("MaxLogCounts"));
 	maxLogCounts->setValue(config->getMaxLogCounts());
 	maxLogCounts->setAttribute(QLatin1String("minimum"), Config::MAX_LOG_COUNTS_RANGE_MIN);
 	maxLogCounts->setAttribute(QLatin1String("maximum"), Config::MAX_LOG_COUNTS_RANGE_MAX);
@@ -85,13 +85,13 @@ void SettingDialog::_initProperty(void)
 	//==== 2D Actor Group
 	QtProperty *actor2DGroup = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(), QString("2D Actor"));
 
-	QtVariantProperty* maxActorLogCounts = variantManager->addProperty(QVariant::Int, QString("MaxActorLogCounts"));
+	QtVariantProperty* maxActorLogCounts = variantManager->addProperty(QMetaType::Int, QString("MaxActorLogCounts"));
 	maxActorLogCounts->setValue(config->getMaxActorLogCounts());
 	maxActorLogCounts->setAttribute(QLatin1String("minimum"), Config::MAX_ACTOR_LOG_COUNTS_RANGE_MIN);
 	maxActorLogCounts->setAttribute(QLatin1String("maximum"), Config::MAX_ACTOR_LOG_COUNTS_RANGE_MAX);
 	actor2DGroup->addSubProperty(maxActorLogCounts);
 
-	QtVariantProperty* maxActorTailCounts = variantManager->addProperty(QVariant::Int, QString("MaxActorTailCounts"));
+	QtVariantProperty* maxActorTailCounts = variantManager->addProperty(QMetaType::Int, QString("MaxActorTailCounts"));
 	maxActorTailCounts->setValue(config->getMaxActorTailCounts());
 	maxActorTailCounts->setAttribute(QLatin1String("minimum"), Config::MAX_ACTOR_TAIL_COUNTS_RANGE_MIN);
 	maxActorTailCounts->setAttribute(QLatin1String("maximum"), Config::MAX_ACTOR_TAIL_COUNTS_RANGE_MAX);

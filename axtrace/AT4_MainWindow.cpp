@@ -623,7 +623,8 @@ void MainWindow::_restoreSettings(void)
 	const QByteArray& geometry = System::getSingleton()->getConfig()->getMainGeometry();
 
     if (geometry.isEmpty()) {
-        const QRect availableGeometry = QApplication::desktop()->availableGeometry(this);
+		QScreen* screen = QGuiApplication::primaryScreen();
+        const QRect availableGeometry = screen->availableGeometry();
         resize(availableGeometry.width() / 2, availableGeometry.height() / 2);
         move((availableGeometry.width() - width()) / 2,
              (availableGeometry.height() - height()) / 2);

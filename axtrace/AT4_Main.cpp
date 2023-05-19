@@ -11,6 +11,7 @@
 int main(int argc, char *argv[])
 {
     Q_INIT_RESOURCE(AT4);
+	qputenv("QT_PLUGIN_PATH", QString("./plugins").toLocal8Bit());
 
 	QSurfaceFormat format;
 	format.setDepthBufferSize(24);

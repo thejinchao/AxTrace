@@ -161,13 +161,13 @@ bool LogMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
 	switch (logHead.code_page)
 	{
 	case ATC_UTF16:
-		m_log = QString::fromUtf16((const ushort*)cache.data());
+		m_log = QString::fromUtf16((const char16_t*)cache.data());
 		break;
 	case ATC_UTF8:
-		m_log = QString::fromUtf8(cache);
+		m_log = QString::fromUtf8((const char*)cache);
 		break;
 	case ATC_ACP:
-		m_log = QString::fromLocal8Bit(cache);
+		m_log = QString::fromLocal8Bit((const char*)cache);
 		break;
 	}
 
@@ -358,11 +358,11 @@ void ValueMessage::getValueAsString(QString& value) const
 		break;
 
 	case AXV_STR_UTF32:
-		value = QString::fromUcs4((const uint*)m_valueBuf);
+		value = QString::fromUcs4((const char32_t*)m_valueBuf);
 		break;
 
 	case AXV_STR_UTF16:
-		value = QString::fromUtf16((const ushort*)m_valueBuf);
+		value = QString::fromUtf16((const char16_t*)m_valueBuf);
 		break;
 
 	case AXV_STR_UTF8:

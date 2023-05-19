@@ -73,13 +73,13 @@ AxTrace使用了我的另外一个开源工程cyclone作为网络底层，使用
 ``` cmake -G "Visual Studio 15 2017 Win64" ../src  ```
 4.  打开生成的工程文件，编译cyclone，并执行其中的install工程，则"d:/cyclone/sdk"目录则会安装编译之后的cyclone，设置环境变量**CYCLONE_SDK_ROOT**到该目录
 
-### 安装QT5 SDK
-1. 下载Qt5 SDK，安装后设置环境变量**QT5_SDK_ROOT**指向安装路径
+### 安装QT6 SDK
+1. 下载Qt6 SDK，安装后设置环境变量`QT6_SDK_ROOT`指向安装路径
 
 ### 编译AxTrace
 1. 创建一个空目录作为AxTrace的根目录，例如"d:/AxTrace"
 2. 将AxTrace源码clone到该目录下的一个子目录中，例如"d:/AxTrace/src"
 3. 在AxTrace根目录下创建一个子目录作为工程目录，例如"d:/AxTrace/_sln"
-4. 在工程目录中使用cmake生成工程文件，命令行为```cmake -G "Visual Studio 15 2017 Win64" ../src ```
+4. 在工程目录中使用cmake生成工程文件，命令行为`cmake -G "Visual Studio 17 2022" ../src`
 5. 打开工程文件并编译
 

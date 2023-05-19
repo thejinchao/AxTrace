@@ -93,6 +93,7 @@ add_executable(AxTrace4 WIN32
 
 target_link_libraries(AxTrace4 
 	PUBLIC Qt::Widgets
+	PUBLIC Qt::OpenGLWidgets
 	QtPropertyBrowser
 	lua51
 	cyclone 
@@ -108,45 +109,45 @@ set_target_properties(AxTrace4
 install(TARGETS AxTrace4
     DESTINATION .)
 
-install(FILES $ENV{QT5_SDK_ROOT}/bin/Qt5Widgets.dll
+install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Widgets.dll
 	DESTINATION .
 	CONFIGURATIONS Release)
 	
-install(FILES $ENV{QT5_SDK_ROOT}/bin/Qt5Widgetsd.dll
+install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Widgetsd.dll
 	DESTINATION .
 	CONFIGURATIONS Debug)
 
-install(FILES $ENV{QT5_SDK_ROOT}/bin/Qt5Core.dll
+install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Core.dll
 	DESTINATION .
 	CONFIGURATIONS Release)
-install(FILES $ENV{QT5_SDK_ROOT}/bin/Qt5Cored.dll
+install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Cored.dll
 	DESTINATION .
 	CONFIGURATIONS Debug)
 
-install(FILES $ENV{QT5_SDK_ROOT}/bin/Qt5Gui.dll
+install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Gui.dll
 	DESTINATION .
 	CONFIGURATIONS Release)
-install(FILES $ENV{QT5_SDK_ROOT}/bin/Qt5Guid.dll
+install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Guid.dll
 	DESTINATION .
 	CONFIGURATIONS Debug)
 
-install(FILES $ENV{QT5_SDK_ROOT}/bin/libEGL.dll
+install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6OpenGL.dll
 	DESTINATION .
 	CONFIGURATIONS Release)
-install(FILES $ENV{QT5_SDK_ROOT}/bin/libEGLd.dll
+install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6OpenGLd.dll
 	DESTINATION .
 	CONFIGURATIONS Debug)
 
-install(FILES $ENV{QT5_SDK_ROOT}/bin/libGLESv2.dll
+install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6OpenGLWidgets.dll
 	DESTINATION .
 	CONFIGURATIONS Release)
-install(FILES $ENV{QT5_SDK_ROOT}/bin/libGLESv2d.dll
+install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6OpenGLWidgetsd.dll
 	DESTINATION .
 	CONFIGURATIONS Debug)
 
-install(FILES $ENV{QT5_SDK_ROOT}/plugins/platforms/qwindows.dll
-	DESTINATION ./platforms/
+install(FILES $ENV{QT6_SDK_ROOT}/plugins/platforms/qwindows.dll
+	DESTINATION ./plugins/platforms/
 	CONFIGURATIONS Release)
-install(FILES $ENV{QT5_SDK_ROOT}/plugins/platforms/qwindowsd.dll
-	DESTINATION ./platforms/
+install(FILES $ENV{QT6_SDK_ROOT}/plugins/platforms/qwindowsd.dll
+	DESTINATION ./plugins/platforms/
 	CONFIGURATIONS Debug)
