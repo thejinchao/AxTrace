@@ -1,7 +1,7 @@
 # AxTrace
 实时日志查看工具
 
-![](http://thecodeway.com/blog/wp-content/uploads/2016/05/axtrace01.gif)
+![main_window](https://github.com/thejinchao/AxTrace/wiki/images/main_window.png)  
 
 简单来说，AxTrace是给程序员在开发期间使用的一个日志工具，类似于[DebugView](https://technet.microsoft.com/en-us/sysinternals/debugview)，比如在程序中添加下面的语句：
 ```C++
@@ -14,11 +14,12 @@ axvalue(AXV_INT32, "TestValue", &v);
 ```
 那么在AxTrace程序中就会显示出这条日志和变量值。
 
-![](http://thecodeway.com/blog/wp-content/uploads/2016/05/axtrace02.gif)
+![]((https://github.com/thejinchao/AxTrace/wiki/images/axtrace02.png)  
 
 和DebugView相比，AxTrace是专门为程序研发阶段而设计的日志工具，有一些很有用的特性：
 * 跨平台，输出端支持**Windows**(C/C++)、**Linux**(C/C++)、**.NET**(C#)、**Android**(C#)、**JVM**(JAVA)、**Unity**(C#)、**Unreal4**(C++)后续还会再添加更多平台
 * 提供axlog和axvalue两个主要输出函数，其中axlog用于输出日志，axvalue函数用于输出变量值，随时将所需要打印的变量值输出到窗口的固定位置
+* 提供ax2d_*系列函数，用于将调试场景中的角色位置以及方向等信息，这对于实时查看游戏服务器中角色数据很有帮助
 * 线程安全，无阻塞，最大程度减少对发送程序的效率影响
 * 使用TCP/IP协议，支持远程接收日志
 * 多窗口显示日志
@@ -71,7 +72,7 @@ AxTrace使用了我的另外一个开源工程cyclone作为网络底层，使用
 ``` git clone https://github.com/thejinchao/cyclone.git src ```
 3.  在根目录下创建一个工程目录用来作为编译使用，例如"d:/cyclone/_sln"，在该目录中使用cmake生成工程文件，例如下面的命令行
 ``` cmake -G "Visual Studio 15 2017 Win64" ../src  ```
-4.  打开生成的工程文件，编译cyclone，并执行其中的install工程，则"d:/cyclone/sdk"目录则会安装编译之后的cyclone，设置环境变量**CYCLONE_SDK_ROOT**到该目录
+4.  打开生成的工程文件，编译cyclone，并执行其中的install工程，则"d:/cyclone/sdk"目录则会安装编译之后的cyclone，设置环境变量`CYCLONE_SDK_ROOT`到该目录
 
 ### 安装QT6 SDK
 1. 下载Qt6 SDK，安装后设置环境变量`QT6_SDK_ROOT`指向安装路径
@@ -83,3 +84,7 @@ AxTrace使用了我的另外一个开源工程cyclone作为网络底层，使用
 4. 在工程目录中使用cmake生成工程文件，命令行为`cmake -G "Visual Studio 17 2022" ../src`
 5. 打开工程文件并编译
 
+### 运行AxTrace
+1. 在使用CMake生成AxTrace工程的时候，通过`CCMAKE_INSTALL_PREFIX`来指定安装目录
+2. 编译工程后，执行其中的`INSTALL`工程来将生成的exe和必须的QT动态库拷贝到安装目录
+3. 打开安装目录，运行其中的AxTrace4.exe
