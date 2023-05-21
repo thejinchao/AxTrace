@@ -84,23 +84,25 @@ link_directories(
 )
 
 add_executable(AxTrace4 WIN32 
-    ${AT4_RC_SOURCES}
-    ${AT4_CPP_SOURCES}
-    ${AT4_H_SOURCES}
-    ${AT4_PRECOMPILE_FILE}
-    AxTrace.rc
+	${AT4_RC_SOURCES}
+	${AT4_CPP_SOURCES}
+	${AT4_H_SOURCES}
+	${AT4_PRECOMPILE_FILE}
+	AxTrace.rc
 )
 
 target_link_libraries(AxTrace4 
-	PUBLIC Qt::Widgets
-	PUBLIC Qt::OpenGLWidgets
+    Qt6::Core
+    Qt6::Gui
+	Qt6::Widgets
+	Qt6::OpenGLWidgets
 	QtPropertyBrowser
 	lua51
 	cyclone 
 	ws2_32 
 	Shlwapi
 )
-add_dependencies(AxTrace4 lua51)
+add_dependencies(AxTrace4 lua51 QtPropertyBrowser)
 set_target_properties(AxTrace4 
     PROPERTIES LINK_FLAGS "${CMAKE_CURRENT_BINARY_DIR}/../luajit/_build/lj_vm.obj"
 )
