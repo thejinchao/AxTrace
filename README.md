@@ -14,7 +14,7 @@ axvalue(AXV_INT32, "TestValue", &v);
 ```
 那么在AxTrace程序中就会显示出这条日志和变量值。
 
-![]((https://github.com/thejinchao/AxTrace/wiki/images/axtrace02.png)  
+![axtrace2](https://github.com/thejinchao/AxTrace/wiki/images/axtrace02.png)  
 
 和DebugView相比，AxTrace是专门为程序研发阶段而设计的日志工具，有一些很有用的特性：
 * 跨平台，输出端支持**Windows**(C/C++)、**Linux**(C/C++)、**.NET**(C#)、**Android**(C#)、**JVM**(JAVA)、**Unity**(C#)、**Unreal4**(C++)后续还会再添加更多平台
