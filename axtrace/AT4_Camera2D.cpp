@@ -67,7 +67,7 @@ QPointF Camera2D::screenToScene(const QPoint& pos)
 	bool invertAble;
 	QTransform inv = m_transform.inverted(&invertAble);
 	if (invertAble) {
-		QPointF scenePos = inv * QPointF(pos);
+		QPointF scenePos = inv.map(QPointF(pos));
 		return scenePos;
 	}
 	

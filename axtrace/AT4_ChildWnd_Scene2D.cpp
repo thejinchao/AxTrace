@@ -500,7 +500,7 @@ bool Map2DChild::_getMouseTips(const QTransform& localMove, const Scene2D::Actor
 	QTransform localMoveInvert = localMove.inverted(&invertible);
 	if (!invertible) return false;
 	
-	QPointF pos = localMoveInvert * m_cursorPosView;
+	QPointF pos = localMoveInvert.map(m_cursorPosView);
 
 	switch (actor.type)
 	{
