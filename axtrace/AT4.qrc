@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE RCC><RCC version="1.0">
 <qresource>
   <file>images/AxTrace.ico</file>
+  <file>images/AxTrace.png</file>
   <file>images/capture.png</file>
   <file>images/doc-pause.png</file>
   <file>images/save.png</file>

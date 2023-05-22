@@ -355,10 +355,13 @@ void MainWindow::_onSetting()
 //--------------------------------------------------------------------------------------------
 void MainWindow::_onAbout()
 {
+	QPixmap iconPix(tr(":/images/AxTrace.png"));
+
 	QMessageBox msgBox;
 	msgBox.setWindowTitle(tr("About AxTrace"));
 	msgBox.setTextFormat(Qt::RichText); 
 	msgBox.setText(tr("AXIA|Trace 4<br/>Copyright <a href=\"http://www.thecodeway.com\">www.thecodeway.com</a>"));
+	msgBox.setIconPixmap(iconPix);
 	msgBox.exec();
 }
 
