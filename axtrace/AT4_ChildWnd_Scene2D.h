@@ -61,6 +61,8 @@ private:
 	QPen m_infoTextPen;
 	QFont m_infoTextFont;
 	QPen m_selectBorder;
+	QPen m_axisXPen;
+	QPen m_axisYPen;
 
 	Scene2D* m_scene;
 	Camera2D* m_camera;
@@ -76,6 +78,7 @@ private:
 private:
 	bool _getMouseTips(const QTransform& localMove, const Scene2D::Actor& actor, QString& mouseTips);
 	void _drawGrid(QPainter& painter);
+	void _drawAxis(QPainter& painter);
 	void _onMousePress(void);
 	void _selectActor(qint64 id);
 	void _unSelectActor(void);

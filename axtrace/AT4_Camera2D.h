@@ -20,6 +20,7 @@ public:
 
 	qreal getScale(void) const { return m_scale; }
 	const QTransform& getTransform(void) const { return m_transform; }
+	const QTransform& getFlipAndRotateTransform(void) const { return m_flipAndRotateTransform; }
 
 	void onMouseWheel(QWheelEvent *e);
 	void beginDrag(QMouseEvent *e);
@@ -39,6 +40,7 @@ private:
 
 	qreal m_scale;
 	QTransform m_transform;
+	QTransform m_flipAndRotateTransform;
 
 	bool m_draging;
 	QPoint m_beginDragPoint;

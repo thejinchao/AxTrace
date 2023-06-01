@@ -125,6 +125,8 @@ void Camera2D::flipX()
 	m_transform *= QTransform::fromTranslate(-m_viewSize.width()/2, 0);
 	m_transform *= QTransform::fromScale(-1.0, 1.0);
 	m_transform *= QTransform::fromTranslate(m_viewSize.width()/2, 0);
+
+	m_flipAndRotateTransform *= QTransform::fromScale(-1.0, 1.0);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -137,4 +139,6 @@ void Camera2D::rotateCW()
 	m_transform *= rotate;
 
 	m_transform *= QTransform::fromTranslate(m_viewSize.width() / 2, m_viewSize.height() / 2);
+
+	m_flipAndRotateTransform *= rotate;
 }

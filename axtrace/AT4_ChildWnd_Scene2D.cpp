@@ -124,6 +124,8 @@ void Map2DChild::init(QWidget* parent)
 	m_sceneGridPen = QPen(Qt::gray);
 	m_infoTextPen = QPen(Qt::white);
 	m_selectBorder = QPen(Qt::yellow);
+	m_axisXPen = QPen(Qt::red);
+	m_axisYPen = QPen(Qt::green);
 	m_infoTextFont.setPixelSize(16);
 	setMouseTracking(true);
 }
@@ -449,7 +451,10 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 		.arg(mouseTips);
 	painter.drawText(QRect(0, 0, m_camera->getViewSize().width(), m_camera->getViewSize().height()), Qt::AlignLeft | Qt::AlignTop, infoText);
 
-	//4. end
+	//4. draw axis
+	_drawAxis(painter);
+
+	//5. end
 	painter.end();
 
 	if (!findSelectedActor)
@@ -500,6 +505,46 @@ void Map2DChild::_drawGrid(QPainter& painter)
 			painter.drawLine(QPointF(sceneRect.left(), y), QPointF(sceneRect.right(), y));
 		}
 	}
+}
+
+//--------------------------------------------------------------------------------------------
+void Map2DChild::_drawAxis(QPainter& painter)
+{
+	const int kAxisOffset = 10;
+	const int kAxisLength = 20;
+	//const int kArrowLength = 5;
+	//const float arrowDegrees = float(M_PI/8.f);
+	const static float kArrawLengthX = 4.61939764f; // kArrowLength* qCos(arrowDegrees);
+	const static float kArrowLengthY = 1.91341734f; // kArrowLength* qSin(arrowDegrees);
+
+	const QSize viewSize = size();
+
+	//get flip and rotate transform
+	QTransform transform = m_camera->getFlipAndRotateTransform();
+
+	//caculate test point (1, 1)
+	QPointF testPoint = transform.map(QPointF(1.f, 1.f));
+	int originPointX = testPoint.x() > 0 ? kAxisOffset : kAxisOffset+ kAxisLength;
+	int originPointY = testPoint.y() > 0 ? viewSize.height() - kAxisOffset - kAxisLength : viewSize.height() - kAxisOffset;
+	transform *= QTransform::fromTranslate(originPointX, originPointY);
+
+	//begin draw
+	painter.save();
+	painter.setTransform(transform);
+
+	//draw x axis
+	painter.setPen(m_axisXPen);
+	painter.drawLine(QPoint(0, 0), QPoint(kAxisLength, 0));
+	painter.drawLine(QPointF(kAxisLength, 0), QPointF(kAxisLength - kArrawLengthX,  kArrowLengthY));
+	painter.drawLine(QPointF(kAxisLength, 0), QPointF(kAxisLength - kArrawLengthX, -kArrowLengthY));
+
+	//draw y axis
+	painter.setPen(m_axisYPen);
+	painter.drawLine(QPoint(0, 0), QPoint(0, kAxisLength));
+	painter.drawLine(QPointF(0, kAxisLength), QPointF( kArrowLengthY, kAxisLength - kArrawLengthX));
+	painter.drawLine(QPointF(0, kAxisLength), QPointF(-kArrowLengthY, kAxisLength - kArrawLengthX));
+
+	painter.restore();
 }
 
 //--------------------------------------------------------------------------------------------
