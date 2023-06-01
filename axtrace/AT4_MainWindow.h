@@ -99,7 +99,9 @@ private slots:
 	void _onAutoScroll();
 	void _onShowGrid();
 	void _onShowTail();
-    void _onCopy();
+	void _onFlipX();
+	void _onRotateCW();
+	void _onCopy();
 	void _onClean();
 	void _onCleanAll();
 	void _onSetting();
@@ -133,6 +135,8 @@ private:
 	QAction* m_autoScrollAct;
 	QAction* m_showGridAct;
 	QAction* m_showTailAct;
+	QAction* m_flipXAct;
+	QAction* m_rotateCWAct;
 	QAction* m_copyAct;
 	QAction* m_cleanAct;
 	QAction* m_cleanAllAct;

@@ -442,7 +442,8 @@ bool Begin2DSceneMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ri
 	size_t len = ringBuf->peek(0, &begin_scene_head, sizeof(begin_scene_head));
 	assert(len == sizeof(begin_scene_head));
 
-	m_sceneRect = QRectF(begin_scene_head.left, begin_scene_head.top, begin_scene_head.right- begin_scene_head.left, begin_scene_head.bottom- begin_scene_head.top);
+	m_sceneRect = QRectF(begin_scene_head.x_min, begin_scene_head.y_min, 
+		begin_scene_head.x_max-begin_scene_head.x_min, begin_scene_head.y_max - begin_scene_head.y_min);
 
 	//check scene name
 	qint32 name_length = begin_scene_head.name_len;

@@ -32,6 +32,11 @@ public:
 	virtual void saveAs(void) = 0;
 
 	virtual void update(void) = 0;
+
+	//for map2d only
+	virtual void flipX(void) { }
+
+	virtual void rotateCW(void) { }
 };
 
 class ChildVariant

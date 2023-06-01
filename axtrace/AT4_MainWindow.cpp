@@ -315,6 +315,26 @@ void MainWindow::_onShowTail()
 }
 
 //--------------------------------------------------------------------------------------------
+void MainWindow::_onFlipX()
+{
+	IChild* activeChild = activeMdiChild();
+	if (activeChild && activeChild->getType() == IChild::CT_2DMAP)
+	{
+		activeChild->flipX();
+	}
+}
+
+//--------------------------------------------------------------------------------------------
+void MainWindow::_onRotateCW()
+{
+	IChild* activeChild = activeMdiChild();
+	if (activeChild && activeChild->getType() == IChild::CT_2DMAP)
+	{
+		activeChild->rotateCW();
+	}
+}
+
+//--------------------------------------------------------------------------------------------
 void MainWindow::_onCopy()
 {
 	IChild* activeChild = activeMdiChild();
@@ -412,6 +432,9 @@ void MainWindow::updateMenus()
 
 	m_showTailAct->setEnabled(activeChild && activeChild->getType() == IChild::CT_2DMAP);
 	m_showTailAct->setChecked(config->getShowTail());
+
+	m_flipXAct->setEnabled(activeChild && activeChild->getType() == IChild::CT_2DMAP);
+	m_rotateCWAct->setEnabled(activeChild && activeChild->getType() == IChild::CT_2DMAP);
 
 	m_copyAct->setEnabled(activeChild && activeChild->copyAble());
 	m_cleanAct->setEnabled(hasMdiChild);
@@ -519,6 +542,18 @@ void MainWindow::createActions()
 	connect(m_showTailAct, &QAction::triggered, this, &MainWindow::_onShowTail);
 	editMenu->addAction(m_showTailAct);
 
+	const QIcon flipXIcon = QIcon(":/images/flip-x.png");
+	m_flipXAct = new QAction(flipXIcon, tr("Flip &Horizontal"), this);
+	m_flipXAct->setStatusTip(tr("Flip Horizontal"));
+	connect(m_flipXAct, &QAction::triggered, this, &MainWindow::_onFlipX);
+	editMenu->addAction(m_flipXAct);
+
+	const QIcon rotateCWIcon = QIcon(":/images/rotate-cw.png");
+	m_rotateCWAct = new QAction(rotateCWIcon, tr("Rotate 90° CW"), this);
+	m_rotateCWAct->setStatusTip(tr("Rotate 90° CW"));
+	connect(m_rotateCWAct, &QAction::triggered, this, &MainWindow::_onRotateCW);
+	editMenu->addAction(m_rotateCWAct);
+
     const QIcon copyIcon = QIcon::fromTheme("edit-copy", QIcon(":/images/copy.png"));
     m_copyAct = new QAction(copyIcon, tr("&Copy"), this);
     m_copyAct->setShortcuts(QKeySequence::Copy);
@@ -600,6 +635,8 @@ void MainWindow::createActions()
 	mainToolBar->addAction(m_autoScrollAct);
 	mainToolBar->addAction(m_showGridAct);
 	mainToolBar->addAction(m_showTailAct);
+	mainToolBar->addAction(m_flipXAct);
+	mainToolBar->addAction(m_rotateCWAct);
 	mainToolBar->addAction(m_copyAct);
 	mainToolBar->addAction(m_cleanAct);
 	mainToolBar->addAction(m_cleanAllAct);

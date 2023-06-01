@@ -38,6 +38,9 @@ public:
 	bool hasSelectActor(void) const { return m_hasSelectedActor; }
 	QString getSelectActorBrief(void) const;
 
+	void flipX();
+	void rotateCW();
+
 protected:
 	void closeEvent(QCloseEvent *event) override;
 	void mousePressEvent(QMouseEvent *e) override;

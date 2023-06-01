@@ -58,6 +58,16 @@ public:
 		m_proxy->update();
 	}
 
+	virtual void flipX(void) 
+	{
+		m_proxy->flipX();
+	}
+
+	virtual void rotateCW(void) 
+	{ 
+		m_proxy->rotateCW();
+	}
+
 private:
 	Map2DChild* m_proxy;
 
@@ -647,4 +657,22 @@ QBrush& Map2DChild::getCachedBrush(uint16_t color)
 	brushColor.setAlpha(128);
 	brush = m_cachedBrush[color & 0xFFF] = new QBrush(brushColor);
 	return *brush;
+}
+
+//--------------------------------------------------------------------------------------------
+void Map2DChild::flipX()
+{
+	if (!m_camera) return;
+
+	m_camera->flipX();
+	update();
+}
+
+//--------------------------------------------------------------------------------------------
+void Map2DChild::rotateCW()
+{
+	if (!m_camera) return;
+
+	m_camera->rotateCW();
+	update();
 }

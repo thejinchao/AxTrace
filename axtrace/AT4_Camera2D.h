@@ -27,6 +27,9 @@ public:
 	void endDrag(QMouseEvent *e);
 	bool isDraging(void) const { return m_draging; }
 
+	void flipX();
+	void rotateCW();
+
 private:
 	void _updateTransform(void);
 

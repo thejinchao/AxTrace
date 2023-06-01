@@ -118,3 +118,23 @@ void Camera2D::endDrag(QMouseEvent *e)
 	QPoint move = e->pos() - m_beginDragPoint;
 	m_transform = m_tragingTransform * QTransform::fromTranslate(move.x(), move.y());
 }
+
+//--------------------------------------------------------------------------------------------
+void Camera2D::flipX()
+{
+	m_transform *= QTransform::fromTranslate(-m_viewSize.width()/2, 0);
+	m_transform *= QTransform::fromScale(-1.0, 1.0);
+	m_transform *= QTransform::fromTranslate(m_viewSize.width()/2, 0);
+}
+
+//--------------------------------------------------------------------------------------------
+void Camera2D::rotateCW()
+{
+	m_transform *= QTransform::fromTranslate(-m_viewSize.width() / 2, -m_viewSize.height() / 2);
+
+	QTransform rotate;
+	rotate.rotateRadians(M_PI_2);
+	m_transform *= rotate;
+
+	m_transform *= QTransform::fromTranslate(m_viewSize.width() / 2, m_viewSize.height() / 2);
+}
