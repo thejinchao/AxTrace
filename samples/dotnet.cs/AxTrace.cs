@@ -127,10 +127,10 @@ namespace com.thecodeway
 		private struct axtrace_2d_begin_scene_s
 		{
 			public axtrace_head_s head;     /* common head */
-			public double left;             /* left of scene*/
-			public double top;              /* top of scene*/
-			public double right;            /* right of scene*/
-			public double bottom;           /* bottom of scene*/
+			public double x_min;            /* left of scene*/
+			public double y_min;            /* top of scene*/
+			public double x_max;            /* right of scene*/
+			public double y_max;            /* bottom of scene*/
 			public ushort name_len;         /* length of scene name */
 			public ushort define_len;       /* length of scene define */
 			                                /* [scene name buf  with '\0' ended]*/
@@ -404,7 +404,7 @@ namespace com.thecodeway
 				withNull);
 		}
 
-		static public void Scene2DBegin(string sceneName, double left, double top, double right, double bottom, string sceneDefine)
+		static public void Scene2DBegin(string sceneName, double xMin, double yMin, double xMax, double yMax, string sceneDefine)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
@@ -425,10 +425,10 @@ namespace com.thecodeway
 			head.head.flag = (byte)'A';
 			head.head.type = AXTRACE_CMD_TYPE_2D_BEGIN_SCENE;
 
-			head.left = left;
-			head.top = top;
-			head.right = right;
-			head.bottom = bottom;
+			head.x_min = xMin;
+			head.y_min = yMin;
+			head.x_max = xMax;
+			head.y_max = yMax;
 			head.name_len = (ushort)sceneNameLength;
 			head.define_len = (ushort)sceneDefineLength;
 

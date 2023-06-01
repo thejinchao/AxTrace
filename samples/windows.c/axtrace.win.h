@@ -21,10 +21,6 @@
 #define AXT_FATAL	(5)
 #define AXT_USERDEF	(10)
 
-#define ATC_ACP		(0)	//Default Windows ANSI code page.
-#define ATC_UTF8	(1)	//Unicode 8
-#define ATC_UTF16	(2)	//Unicode 16
-
 #define AXV_INT8		(0)
 #define AXV_UINT8		(1)
 #define AXV_INT16		(2)
@@ -61,14 +57,14 @@ AXTRACE_EXTERN_C void axvalue(unsigned int value_type, const char* value_name, c
 /**
 * begin draw a 2d scene
 
-left                         right
-+----------------------------+  top
+x_min                         x_max
++----------------------------+  y_min
 |                            |
 |                            |
 |                            |
 |                            |
 |                            |
-+----------------------------+  bottom
++----------------------------+  y_max
 
 @param scene_name the name of scene(id)
 @param x_min left of scene
@@ -77,7 +73,7 @@ left                         right
 @param y_max bottom of scene
 @param scene_define extra define of scene, It's json object
 */
-AXTRACE_EXTERN_C void ax2d_begin_scene(const char* scene_name, double left, double top, double right, double bottom, const char* scene_define);
+AXTRACE_EXTERN_C void ax2d_begin_scene(const char* scene_name, double x_min, double y_min, double x_max, double y_max, const char* scene_define);
 
 /*
 create/update a actor in the scene
