@@ -117,7 +117,11 @@ void UAxTraceValueNode::ExpandNode(FKismetCompilerContext& CompilerContext, UEdG
 		static const FName AxTrace_Internal_FunctionName = GET_FUNCTION_NAME_CHECKED(UAxTrace, Value_Int64);
 		InternalFunctionName = AxTrace_Internal_FunctionName;
 	}
-	else if (valuePinLink->PinType.PinCategory == UEdGraphSchema_K2::PC_Float)
+	else if (valuePinLink->PinType.PinCategory == UEdGraphSchema_K2::PC_Float
+#if ENGINE_MAJOR_VERSION>=5
+		|| valuePinLink->PinType.PinCategory == UEdGraphSchema_K2::PC_Real
+#endif
+		)
 	{
 		static const FName AxTrace_Internal_FunctionName = GET_FUNCTION_NAME_CHECKED(UAxTrace, Value_Float);
 		InternalFunctionName = AxTrace_Internal_FunctionName;
@@ -135,7 +139,7 @@ void UAxTraceValueNode::ExpandNode(FKismetCompilerContext& CompilerContext, UEdG
 	else
 	{
 		//compile error
-		CompilerContext.MessageLog.Error(TEXT("Only accept these types: Boolean, Byte, Int, Int64, Float, Name and String. @@"), this);
+		CompilerContext.MessageLog.Error(TEXT("Only accept these types: Boolean, Byte, Int, Int64, Float(Real), Name and String. @@"), this);
 		BreakAllNodeLinks();
 		return;
 	}
