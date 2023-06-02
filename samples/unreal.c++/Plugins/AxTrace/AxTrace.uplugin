@@ -1,0 +1,33 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "4.0",
+	"FriendlyName": "AxTrace",
+	"Description": "",
+	"Category": "Debug",
+	"CreatedBy": "JinChao",
+	"CreatedByURL": "http://www.thecodeway.com",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"EnabledByDefault": false,
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "AxTrace",
+			"Type": "DeveloperTool",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "AxTraceEditor",
+			"Type": "UncookedOnly",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Mac"
+			]
+		}
+	]
+}
