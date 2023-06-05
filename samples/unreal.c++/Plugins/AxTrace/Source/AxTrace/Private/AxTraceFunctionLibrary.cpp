@@ -10,6 +10,7 @@
 #include "AxTraceModule.h"
 #include "Networking.h"
 #include "Templates/SharedPointer.h"
+#include <string>
 
 //---------------------------------------------------------------------------------------------------------
 #define AXTRACE_MAX_PROCESSNAME_LENGTH	(512)
@@ -231,10 +232,10 @@ void UAxTrace::SendShakehandMessage(UAxTrace::AxTraceContext* ctx)
 	char* sname_string = (char*)(buf + sizeof(axtrace_shakehand_s));
 
 	// get game name
-	const char* projectName = TCHAR_TO_UTF8(FApp::GetProjectName());
-	size_t prjNameLen = strlen(projectName);
+	std::string projectName = TCHAR_TO_UTF8(FApp::GetProjectName());
+	size_t prjNameLen = projectName.size();
 
-	FMemory::Memcpy(sname_string, projectName, prjNameLen);
+	FMemory::Memcpy(sname_string, projectName.c_str(), prjNameLen);
 	/* add '\0' ended */
 	prjNameLen += 1;
 
@@ -407,10 +408,11 @@ void UAxTrace::_Value(const FString& Name, const void* Value, unsigned int Value
 	char* value_name_buf = (char*)(buf + sizeof(axtrace_value_s));
 
 	//get name length
-	const char* nameMemory = (const char*)TCHAR_TO_UTF8(Name.GetCharArray().GetData());
-	int32 name_byte_size = strlen(nameMemory);
+	std::string nameMemory = (const char*)TCHAR_TO_UTF8(*Name);
+	int32 name_byte_size = nameMemory.size();
 	name_byte_size += 1; // add '\0' ended
 	if (name_byte_size <= 0 || name_byte_size >= AXTRACE_MAX_VALUENAME_LENGTH) return;
+	FMemory::Memcpy(value_name_buf, nameMemory.c_str(), name_byte_size);
 
 	//check value length
 	int value_byte_size = ValueSize;
@@ -427,7 +429,6 @@ void UAxTrace::_Value(const FString& Name, const void* Value, unsigned int Value
 	trace_head->name_len = (unsigned short)name_byte_size;
 	trace_head->value_len = (unsigned short)value_byte_size;
 
-	FMemory::Memcpy(value_name_buf, nameMemory, name_byte_size);
 	FMemory::Memcpy(value_name_buf + name_byte_size, Value, value_byte_size);
 
 	int32 sent = 0;
@@ -447,21 +448,21 @@ void UAxTrace::Scene2DBegin(const FString& SceneName, float xMin, float yMin, fl
 	char* scene_name_buf = (char*)(buf + sizeof(axtrace_2d_begin_scene_s));
 
 	//get name length
-	const char *nameMemory = (const char*)TCHAR_TO_UTF8(SceneName.GetCharArray().GetData());
-	if (nameMemory == nullptr) return;
-	int32 name_byte_size = strlen(nameMemory);
+	std::string nameMemory = (const char*)TCHAR_TO_UTF8(*SceneName);
+	int32 name_byte_size = nameMemory.size();
 	name_byte_size += 1; // add '\0' ended
 	if (name_byte_size <= 0 || name_byte_size >= AXTRACE_MAX_SCENE_NAME_LENGTH) return;
+	FMemory::Memcpy(scene_name_buf, nameMemory.c_str(), name_byte_size);
 
 	//get define length
 	int32 define_byte_size = 0;
-	
-	#define SCENEDEFINE_TCHAR_TO_UTF8(str) (ANSICHAR*)TStringConversion<FTCHARToUTF8_Convert, AXTRACE_MAX_SCENE_DEFINE_LENGTH>((const TCHAR*)str).Get()
-	const char *defineMemory = (const char*)SCENEDEFINE_TCHAR_TO_UTF8(*SceneDefine);
-	if (defineMemory) {
-		define_byte_size = strlen(defineMemory);
+	if (SceneDefine.Len() > 0) 
+	{
+		std::string defineMemory = (const char*)TCHAR_TO_UTF8(*SceneDefine);
+		define_byte_size = defineMemory.size();
 		define_byte_size += 1; // add '\0' ended
 		if (define_byte_size <= 0 || define_byte_size >= AXTRACE_MAX_SCENE_DEFINE_LENGTH) return;
+		FMemory::Memcpy(scene_name_buf + name_byte_size, defineMemory.c_str(), define_byte_size);
 	}
 
 	/*calc final length */
@@ -478,11 +479,6 @@ void UAxTrace::Scene2DBegin(const FString& SceneName, float xMin, float yMin, fl
 	trace_head->name_len = (unsigned short)name_byte_size;
 	trace_head->define_len = (unsigned short)define_byte_size;
 
-	FMemory::Memcpy(scene_name_buf, nameMemory, name_byte_size);
-	if (defineMemory) {
-		FMemory::Memcpy(scene_name_buf + name_byte_size, defineMemory, define_byte_size);
-	}
-
 	int32 sent = 0;
 	ctx->socket->Send((const uint8*)buf, final_length, sent);
 }
@@ -498,20 +494,21 @@ void UAxTrace::Scene2DActor(const FString& SceneName, int64 ActorID, const FVect
 	char* scene_name_buf = (char*)(buf + sizeof(axtrace_2d_actor_s));
 
 	//get name length
-	const char *nameMemory = (const char*)TCHAR_TO_UTF8(SceneName.GetCharArray().GetData());
-	if (nameMemory == nullptr) return;
-	int32 name_byte_size = strlen(nameMemory);
+	std::string nameMemory = (const char*)TCHAR_TO_UTF8(*SceneName);
+	int32 name_byte_size = nameMemory.size();
 	name_byte_size += 1; // add '\0' ended
 	if (name_byte_size <= 0 || name_byte_size >= AXTRACE_MAX_SCENE_NAME_LENGTH) return;
+	FMemory::Memcpy(scene_name_buf, nameMemory.c_str(), name_byte_size);
 
 	//get actor info length
 	int32 info_byte_size = 0;
-	#define ACTORINFO_TCHAR_TO_UTF8(str) (ANSICHAR*)TStringConversion<FTCHARToUTF8_Convert, AXTRACE_MAX_ACTOR_INFO_LENGTH>((const TCHAR*)str).Get()
-	const char *infoMemory = (const char*)ACTORINFO_TCHAR_TO_UTF8(ActorInfo.GetCharArray().GetData());
-	if (infoMemory) {
-		info_byte_size = strlen(infoMemory);
+	if (ActorInfo.Len() > 0)
+	{
+		std::string infoMemory = (const char*)TCHAR_TO_UTF8(*ActorInfo);
+		info_byte_size = infoMemory.size();
 		info_byte_size += 1; // add '\0' ended
 		if (info_byte_size <= 0 || info_byte_size >= AXTRACE_MAX_ACTOR_INFO_LENGTH) return;
+		FMemory::Memcpy(scene_name_buf + name_byte_size, infoMemory.c_str(), info_byte_size);
 	}
 
 	/*calc final length */
@@ -529,11 +526,6 @@ void UAxTrace::Scene2DActor(const FString& SceneName, int64 ActorID, const FVect
 	trace_head->name_len = (unsigned short)name_byte_size;
 	trace_head->info_len = (unsigned short)info_byte_size;
 
-	FMemory::Memcpy(scene_name_buf, nameMemory, name_byte_size);
-	if (infoMemory) {
-		FMemory::Memcpy(scene_name_buf + name_byte_size, infoMemory, info_byte_size);
-	}
-
 	int32 sent = 0;
 	ctx->socket->Send((const uint8*)buf, final_length, sent);
 }
@@ -549,11 +541,11 @@ void UAxTrace::Scene2DEnd(const FString& SceneName)
 	char* scene_name_buf = (char*)(buf + sizeof(axtrace_2d_end_scene_s));
 
 	//get name length
-	const char *nameMemory = (const char*)TCHAR_TO_UTF8(SceneName.GetCharArray().GetData());
-	if (nameMemory == nullptr) return;
-	int32 name_byte_size = strlen(nameMemory);
+	std::string nameMemory = (const char*)TCHAR_TO_UTF8(*SceneName);
+	int32 name_byte_size = nameMemory.size();
 	name_byte_size += 1; // add '\0' ended
 	if (name_byte_size <= 0 || name_byte_size >= AXTRACE_MAX_SCENE_NAME_LENGTH) return;
+	FMemory::Memcpy(scene_name_buf, nameMemory.c_str(), name_byte_size);
 
 	/*calc final length */
 	size_t final_length = sizeof(axtrace_2d_end_scene_s) + name_byte_size;
@@ -563,8 +555,6 @@ void UAxTrace::Scene2DEnd(const FString& SceneName)
 	trace_head->head.type = AXTRACE_CMD_TYPE_2D_END_SCENE;
 
 	trace_head->name_len = (unsigned short)name_byte_size;
-
-	FMemory::Memcpy(scene_name_buf, nameMemory, name_byte_size);
 
 	int32 sent = 0;
 	ctx->socket->Send((const uint8*)buf, final_length, sent);
