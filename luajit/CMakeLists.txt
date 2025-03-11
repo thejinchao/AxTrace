@@ -1,5 +1,3 @@
-cmake_minimum_required (VERSION 3.0)
-
 set(TARGET_NAME lua51)
 
 set(CMAKE_DEBUG_POSTFIX d)

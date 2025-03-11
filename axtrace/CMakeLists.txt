@@ -1,6 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.1)
-
-set(AT4_CPP_SOURCES
+﻿set(AT4_CPP_SOURCES
     AT4_Main.cpp
     AT4_MainWindow.cpp
     AT4_ChildWnd_Log.cpp
