@@ -6,6 +6,10 @@ project(AxTrace4)
 set(CMAKE_PREFIX_PATH $ENV{QT6_SDK_ROOT}/lib/cmake)
 find_package(Qt6 COMPONENTS Widgets OpenGLWidgets)
 
+# cyclone
+set(CYCLONE_SOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cyclone)
+set(CY_AUTO_INCLUDE_PATH ${CMAKE_CURRENT_BINARY_DIR}/cyclone)
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -14,6 +18,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
 # add subdirectory
+add_subdirectory(cyclone)
 add_subdirectory(luajit)
 add_subdirectory(QtPropertyBrowser)
 add_subdirectory(axtrace)

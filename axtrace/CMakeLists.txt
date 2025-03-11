@@ -72,14 +72,16 @@ set_source_files_properties(${AT4_PRECOMPILE_FILE}
 )
 
 include_directories(
-	$ENV{CYCLONE_SDK_ROOT}/include
+	${CY_AUTO_INCLUDE_PATH}
+	${CYCLONE_SOURCE_PATH}/source/cyCore
+	${CYCLONE_SOURCE_PATH}/source/cyCrypt
+	${CYCLONE_SOURCE_PATH}/source/cyEvent
+	${CYCLONE_SOURCE_PATH}/source/cyNetwork
+	${CYCLONE_SOURCE_PATH}/source/cyUtility
 	../luajit
 	../QtPropertyBrowser
 )
 
-link_directories(
-	$ENV{CYCLONE_SDK_ROOT}/lib
-)
 
 add_executable(AxTrace4 WIN32 
 	${AT4_RC_SOURCES}
