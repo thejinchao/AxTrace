@@ -109,45 +109,20 @@ set_target_properties(AxTrace4
 install(TARGETS AxTrace4
     DESTINATION .)
 
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Widgets.dll
-	DESTINATION .
-	CONFIGURATIONS Release)
+install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Widgets$<$<CONFIG:Debug>:d>.dll
+	DESTINATION .)
 	
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Widgetsd.dll
-	DESTINATION .
-	CONFIGURATIONS Debug)
+install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Core$<$<CONFIG:Debug>:d>.dll
+	DESTINATION .)
 
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Core.dll
-	DESTINATION .
-	CONFIGURATIONS Release)
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Cored.dll
-	DESTINATION .
-	CONFIGURATIONS Debug)
+install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Gui$<$<CONFIG:Debug>:d>.dll
+	DESTINATION .)
 
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Gui.dll
-	DESTINATION .
-	CONFIGURATIONS Release)
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Guid.dll
-	DESTINATION .
-	CONFIGURATIONS Debug)
+install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6OpenGL$<$<CONFIG:Debug>:d>.dll
+	DESTINATION .)
 
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6OpenGL.dll
-	DESTINATION .
-	CONFIGURATIONS Release)
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6OpenGLd.dll
-	DESTINATION .
-	CONFIGURATIONS Debug)
+install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6OpenGLWidgets$<$<CONFIG:Debug>:d>.dll
+	DESTINATION .)
 
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6OpenGLWidgets.dll
-	DESTINATION .
-	CONFIGURATIONS Release)
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6OpenGLWidgetsd.dll
-	DESTINATION .
-	CONFIGURATIONS Debug)
-
-install(FILES $ENV{QT6_SDK_ROOT}/plugins/platforms/qwindows.dll
-	DESTINATION ./plugins/platforms/
-	CONFIGURATIONS Release)
-install(FILES $ENV{QT6_SDK_ROOT}/plugins/platforms/qwindowsd.dll
-	DESTINATION ./plugins/platforms/
-	CONFIGURATIONS Debug)
+install(FILES $ENV{QT6_SDK_ROOT}/plugins/platforms/qwindows$<$<CONFIG:Debug>:d>.dll
+	DESTINATION plugins/platforms)
