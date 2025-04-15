@@ -9,17 +9,27 @@
 #include "AT4_LogData.h"
 
 //--------------------------------------------------------------------------------------------
-LogParser::LogParser(const DefinePtr parserDefine)
+LogParser::LogParser()
+{
+	//default define
+	m_parserDefine.titleRegular = "";
+	m_parserDefine.logRegular = "";
+	m_parserDefine.columns.push_back({ "Log", 0 });
+}
+
+//--------------------------------------------------------------------------------------------
+LogParser::LogParser(const Define& parserDefine)
 	: m_parserDefine(parserDefine)
 {
 	if (isDefault()) return;
 
-	m_regExp = QRegularExpression(m_parserDefine->regExp);
-	Q_ASSERT(m_regExp.captureCount() == m_parserDefine->columns.size());
+	m_titleRegular = QRegularExpression(m_parserDefine.titleRegular);
+	m_logRegular = QRegularExpression(m_parserDefine.logRegular);
+	Q_ASSERT(m_logRegular.captureCount() == m_parserDefine.columns.size());
 }
 
 //--------------------------------------------------------------------------------------------
-bool LogParser::tryLoadParserScript(const QString& script, QString& errorMsg, DefineMap& logParserDefineMap)
+bool LogParser::tryLoadParserScript(const QString& script, QString& errorMsg, LogParserVector& logParserVector)
 {
 	QJsonParseError json_error;
 	QJsonDocument jsonDoc(QJsonDocument::fromJson(script.toUtf8(), &json_error));
@@ -30,23 +40,23 @@ bool LogParser::tryLoadParserScript(const QString& script, QString& errorMsg, De
 		return false;
 	}
 
-	DefineMap defineMap;
+	LogParserVector tempVector;
 	QJsonArray arrayObj = jsonDoc.array();
 	for (int i = 0; i < arrayObj.size(); i++)
 	{
-		DefinePtr parser(new Define());
+		Define parserDefine;
 
 		QJsonObject obj = arrayObj.at(i).toObject();
 
-		parser->title = obj.value("title").toString();
-		parser->regExp = obj.value("regex").toString();
+		parserDefine.titleRegular = obj.value("title").toString();
+		parserDefine.logRegular = obj.value("regex").toString();
 
-		if (parser->title == "") {
+		if (parserDefine.titleRegular == "") {
 			errorMsg = QString("Can't find 'title' in the parser %1").arg(i);
 			return false;
 		}
 
-		if (parser->regExp == "") {
+		if (parserDefine.logRegular == "") {
 			errorMsg = QString("Can't find 'regex' in the parser %1").arg(i);
 			return false;
 		}
@@ -71,23 +81,30 @@ bool LogParser::tryLoadParserScript(const QString& script, QString& errorMsg, De
 			}
 
 			newColumn.width = width.toInt();
-			parser->columns.push_back(newColumn);
+			parserDefine.columns.push_back(newColumn);
 		}
 
-		QRegularExpression regExp(parser->regExp);
-		if (regExp.captureCount() != parser->columns.size())
+		QRegularExpression titleRegular(parserDefine.titleRegular);
+		if (!titleRegular.isValid())
+		{
+			errorMsg = QString("The title regular is invalid");
+			return false;
+		}
+
+		QRegularExpression logRegular(parserDefine.logRegular);
+		if (logRegular.captureCount() != parserDefine.columns.size())
 		{
 			errorMsg = QString("The capture counts is %1, but column counts is %2 in the parser %3 ")
-				.arg(regExp.captureCount())
-				.arg(parser->columns.size())
+				.arg(logRegular.captureCount())
+				.arg(parserDefine.columns.size())
 				.arg(i);
 			return false;
 		}
 
-		defineMap.insert(parser->title, parser);
+		tempVector.push_back(QSharedPointer<LogParser>::create(parserDefine));
 	}
 
-	logParserDefineMap = defineMap;
+	logParserVector = tempVector;
 	return true;
 }
 
@@ -99,7 +116,7 @@ QStringList LogParser::parserLog(const QString& logContent) const
 		return QStringList(logContent);
 	}
 	
-	QRegularExpressionMatch match = m_regExp.match(logContent);
+	QRegularExpressionMatch match = m_logRegular.match(logContent);
 	if (!match.hasMatch())
 	{
 		return QStringList(logContent);
@@ -112,4 +129,11 @@ QStringList LogParser::parserLog(const QString& logContent) const
 		ret << captureTexts[i];
 	}
 	return ret;
+}
+
+//--------------------------------------------------------------------------------------------
+bool LogParser::isTitleMatch(const QString& title) const 
+{
+	QRegularExpressionMatch isMatch = m_titleRegular.match(title);
+	return isMatch.hasMatch();
 }

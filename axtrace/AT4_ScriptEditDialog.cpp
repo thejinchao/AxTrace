@@ -125,8 +125,8 @@ void ScriptEditorDialog_LogParser::verify(void)
 	m_script = m_editor->toPlainText();
 
 	QString errorMsg;
-	LogParser::DefineMap logParserDefineMap;
-	if (!LogParser::tryLoadParserScript(m_script, errorMsg, logParserDefineMap))
+	LogParserVector logParserVector;
+	if (!LogParser::tryLoadParserScript(m_script, errorMsg, logParserVector))
 	{
 		QMessageBox::critical(this, tr("Axtrace 4"), tr("Load log parser script error:%1").arg(errorMsg), QMessageBox::Ok);
 		return;

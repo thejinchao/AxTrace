@@ -21,7 +21,7 @@ class LogDataModel : public QAbstractItemModel
 	Q_OBJECT
 
 public:
-	explicit LogDataModel(const Config::LogParserDefinePtr logParserDefine, QObject *parent = 0);
+	explicit LogDataModel(LogParserPtr logParser, QObject *parent = 0);
 	~LogDataModel();
 
 	void insertLog(const LogMessage* logMessage, const Filter::ListResult& filterResult);
@@ -58,7 +58,7 @@ private:
 	LogDataVector m_logVector;
 	quint32 m_currentIndex;
 	qint32 m_maxOverflowCounts;
-	LogParser m_logParser;
+	LogParserPtr m_logParser;
 };
 
 class LogChild : public QTreeView

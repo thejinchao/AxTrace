@@ -107,8 +107,7 @@ void Config::_resetToDefaultSetting(void)
 		"]\r\n"
 	);
 
-	m_emptyLogParser = LogParserDefinePtr(new LogParser::Define());
-	m_emptyLogParser->columns.push_back({"Log", 0});
+	m_defaultLogParser = QSharedPointer<LogParser>::create();
 
 	m_maxActorLogCounts = MAX_ACTOR_LOG_COUNTS_DEFAULT;
 
@@ -123,7 +122,7 @@ void Config::copyFrom(const Config& other)
 	m_filterScript = other.m_filterScript;
 	m_maxLogCounts = other.m_maxLogCounts;
 	m_logParserDefineScript = other.m_logParserDefineScript;
-	m_logParserDefineMap = other.m_logParserDefineMap;
+	m_logParserVector = other.m_logParserVector;
 	m_maxActorLogCounts = other.m_maxActorLogCounts;
 	m_listenPort = other.m_listenPort;
 	m_bShowTail = other.m_bShowTail;
@@ -197,7 +196,7 @@ bool Config::loadSetting(void)
 	QString logParserDefineScript = settings.value("LogParserScript", m_defaultLogParserDefineScript).toString();
 
 	QString errorMsg;
-	if (!LogParser::tryLoadParserScript(logParserDefineScript, errorMsg, m_logParserDefineMap))
+	if (!LogParser::tryLoadParserScript(logParserDefineScript, errorMsg, m_logParserVector))
 	{
 		return false;
 	}
@@ -224,15 +223,18 @@ void Config::saveSetting(void) const
 }
 
 //--------------------------------------------------------------------------------------------
-const LogParser::DefinePtr Config::getLogParser(const QString& title) const
+const LogParserPtr Config::getLogParser(const QString& title) const
 {
-	LogParser::DefineMap::const_iterator it = m_logParserDefineMap.find(title);
-	if (it == m_logParserDefineMap.end())
+	LogParserVector::const_iterator it;
+	
+	for (it = m_logParserVector.begin(); it != m_logParserVector.end(); it++)
 	{
-		return m_emptyLogParser;
+		if ((*it)->isTitleMatch(title)) 
+		{
+			return *it;
+		}
 	}
-
-	return it.value();
+	return m_defaultLogParser;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -241,8 +243,8 @@ void Config::setLogParserScript(const QString& logParserScript)
 	Q_ASSERT(System::getSingleton()->getMainWindow()->getLogChildCounts() == 0);
 
 	QString errorMsg;
-	LogParserDefineMap logParserDefineMap;
-	bool success = LogParser::tryLoadParserScript(logParserScript, errorMsg, logParserDefineMap);
+	LogParserVector logParserVector;
+	bool success = LogParser::tryLoadParserScript(logParserScript, errorMsg, logParserVector);
 	Q_ASSERT(success);
 	if (!success)
 	{
@@ -250,5 +252,5 @@ void Config::setLogParserScript(const QString& logParserScript)
 	}
 
 	m_logParserDefineScript = logParserScript;
-	m_logParserDefineMap = logParserDefineMap;
+	m_logParserVector = logParserVector;
 }

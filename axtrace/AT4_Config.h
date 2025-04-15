@@ -53,10 +53,7 @@ public:
 	void setListenPort(qint32 listenPort);
 
 public:
-	typedef LogParser::DefineMap LogParserDefineMap;
-	typedef LogParser::DefinePtr LogParserDefinePtr;
-
-	const LogParserDefinePtr getLogParser(const QString& title) const;
+	const LogParserPtr getLogParser(const QString& title) const;
 	const QString& getLoaParserScript(void) const {
 		return m_logParserDefineScript;
 	}
@@ -81,8 +78,9 @@ private:
 
 	QString m_logParserDefineScript;
 	QString m_defaultLogParserDefineScript;
-	LogParserDefineMap m_logParserDefineMap;
-	LogParserDefinePtr m_emptyLogParser;
+
+	LogParserVector m_logParserVector;
+	LogParserPtr m_defaultLogParser;
 
 	qint32 m_maxActorLogCounts;
 

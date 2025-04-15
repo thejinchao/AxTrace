@@ -14,13 +14,13 @@
 #include "AT4_MainWindow.h"
 
 //--------------------------------------------------------------------------------------------
-LogDataModel::LogDataModel(const Config::LogParserDefinePtr logParserDefine, QObject *parent)
+LogDataModel::LogDataModel(LogParserPtr logParserPtr, QObject *parent)
 	: QAbstractItemModel(parent)
 	, m_currentIndex(LOG_INDEX_START_FROM)
 	, m_maxOverflowCounts(DEFAULT_MAX_OVERFLOW_COUNTS)
-	, m_logParser(logParserDefine)
+	, m_logParser(logParserPtr)
 {
-	m_logColumnGroup.initDefaulGroup(m_logParser);
+	m_logColumnGroup.initDefaulGroup(*m_logParser);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ void LogDataModel::insertLog(const LogMessage* logMessage, const Filter::ListRes
 	logData.logType = logMessage->getLogType();
 	logData.backColor = Filter::toQColor(filterResult.backColor);
 	logData.frontColor = Filter::toQColor(filterResult.fontColor);
-	logData.logContent = m_logParser.parserLog(logMessage->getLog());
+	logData.logContent = m_logParser->parserLog(logMessage->getLog());
 
 	beginInsertRows(QModelIndex(), rowCount(), rowCount()+1);
 

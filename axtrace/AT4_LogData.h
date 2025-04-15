@@ -22,6 +22,10 @@ struct LogData
 
 typedef QQueue<LogData> LogDataVector;
 
+class LogParser;
+typedef QSharedPointer<LogParser> LogParserPtr;
+typedef QVector<LogParserPtr> LogParserVector;
+
 class LogParser
 {
 public:
@@ -34,30 +38,32 @@ public:
 
 	struct Define
 	{
-		QString title;
-		QString regExp;
+		QString titleRegular;
+		QString logRegular;
 		ColumnVector columns;
 	};
-	typedef QSharedPointer<Define> DefinePtr;
-	typedef QHash<QString, DefinePtr> DefineMap;
 
-	static bool tryLoadParserScript(const QString& script, QString& errorMsg, DefineMap& defineMap);
+	static bool tryLoadParserScript(const QString& script, QString& errorMsg, LogParserVector& logParserVector);
 
 public:
 	bool isDefault(void) const { 
-		return m_parserDefine->regExp.isEmpty(); 
+		return m_parserDefine.logRegular.isEmpty();
 	}
 
+	bool isTitleMatch(const QString& title) const;
+
 	const ColumnVector& getColumns(void) const { 
-		return m_parserDefine->columns; 
+		return m_parserDefine.columns; 
 	}
 
 	QStringList parserLog(const QString& logContent) const;
 
 private:
-	DefinePtr m_parserDefine;
-	QRegularExpression m_regExp;
+	Define m_parserDefine;
+	QRegularExpression m_titleRegular;
+	QRegularExpression m_logRegular;
 
 public:
-	LogParser(const DefinePtr parserDefine);
+	LogParser();
+	LogParser(const Define& parserDefine);
 };
