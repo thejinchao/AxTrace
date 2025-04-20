@@ -630,8 +630,8 @@ void MainWindow::createActions()
 	QToolBar *mainToolBar = addToolBar(tr("Main"));
 	mainToolBar->addAction(m_saveAsAct);
 	mainToolBar->addAction(m_captureAct);
-	mainToolBar->addAction(m_docPauseAct);
 	mainToolBar->addSeparator();
+	mainToolBar->addAction(m_docPauseAct);
 	mainToolBar->addAction(m_autoScrollAct);
 	mainToolBar->addAction(m_showGridAct);
 	mainToolBar->addAction(m_showTailAct);
