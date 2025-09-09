@@ -1,15 +1,22 @@
-﻿set(AT4_CPP_SOURCES
+﻿set(AT4_CHILDWND_SOURCES
+	ChildWindow/AT4_ChildWnd_Log.h
+	ChildWindow/AT4_ChildWnd_Log.cpp
+	ChildWindow/AT4_ChildWnd_Value.h
+	ChildWindow/AT4_ChildWnd_Value.cpp
+	ChildWindow/AT4_ChildWnd_Scene2D.h
+	ChildWindow/AT4_ChildWnd_Scene2D.cpp
+)
+source_group("ChildWindow" FILES ${AT4_CHILDWND_SOURCES})
+
+set(AT4_CPP_SOURCES
     AT4_Main.cpp
     AT4_MainWindow.cpp
-    AT4_ChildWnd_Log.cpp
 	AT4_Incoming.cpp
 	AT4_System.cpp
 	AT4_Config.cpp
 	AT4_MessageQueue.cpp
-	AT4_ChildWnd_Value.cpp
 	AT4_Message.cpp
 	AT4_Filter.cpp
-	AT4_ChildWnd_Scene2D.cpp
 	AT4_Scene2D.cpp
 	AT4_Camera2D.cpp
 	AT4_SettingDialog.cpp
@@ -27,17 +34,14 @@
 set(AT4_H_SOURCES
     stdafx.h
 	AT4_MainWindow.h
-    AT4_ChildWnd_Log.h
 	AT4_Incoming.h
 	AT4_Interface.h
 	AT4_System.h
 	AT4_Config.h
 	AT4_MessageQueue.h
-	AT4_ChildWnd_Value.h
 	AT4_Message.h
 	AT4_Filter.h
 	AT4_ChildInterface.h
-	AT4_ChildWnd_Scene2D.h
 	AT4_Scene2D.h
 	AT4_Camera2D.h
 	AT4_SettingDialog.h
@@ -58,12 +62,16 @@ set(AT4_RC_SOURCES
 set(AT4_PRECOMPILE_FILE
 	stdafx.cpp)
 
-foreach(src_file ${AT4_CPP_SOURCES})
-	set_source_files_properties(
-		${src_file}
-		PROPERTIES
-		COMPILE_FLAGS "/Yustdafx.h"
-	)
+foreach(filename ${AT4_CHILDWND_SOURCES} ${AT4_CPP_SOURCES})
+	get_filename_component(ext ${filename} LAST_EXT ABSOLUTE)
+	string(TOLOWER ${ext} ext_lower)
+	if(${ext_lower} STREQUAL ".cpp" )
+		set_source_files_properties(
+			${filename}
+			PROPERTIES
+			COMPILE_FLAGS "/Yustdafx.h"
+		)
+	endif()
 endforeach()
     
 set_source_files_properties(${AT4_PRECOMPILE_FILE}
@@ -83,6 +91,7 @@ link_directories(
 
 add_executable(AxTrace4 WIN32 
 	${AT4_RC_SOURCES}
+	${AT4_CHILDWND_SOURCES}
 	${AT4_CPP_SOURCES}
 	${AT4_H_SOURCES}
 	${AT4_PRECOMPILE_FILE}
