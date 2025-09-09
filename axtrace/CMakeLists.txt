@@ -8,6 +8,14 @@
 )
 source_group("ChildWindow" FILES ${AT4_CHILDWND_SOURCES})
 
+set(AT4_SETTINGWND_SOURCES
+	SettingWindow/AT4_SettingDialog.h
+	SettingWindow/AT4_SettingDialog.cpp
+	SettingWindow/AT4_ExtensionProperty.h
+	SettingWindow/AT4_ExtensionProperty.cpp
+)
+source_group("SettingWindow" FILES ${AT4_SETTINGWND_SOURCES})
+
 set(AT4_CPP_SOURCES
     AT4_Main.cpp
     AT4_MainWindow.cpp
@@ -19,7 +27,6 @@ set(AT4_CPP_SOURCES
 	AT4_Filter.cpp
 	AT4_Scene2D.cpp
 	AT4_Camera2D.cpp
-	AT4_SettingDialog.cpp
 	AT4_LuaHighlighter.cpp
 	AT4_Session.cpp
 	AT4_LogColumn.cpp
@@ -27,7 +34,6 @@ set(AT4_CPP_SOURCES
 	AT4_ScriptEditDialog.cpp
 	AT4_CodeEditor.cpp
 	AT4_ScriptVariant.cpp
-	AT4_ExtensionProperty.cpp
 	AT4_SessionDialog.cpp
 	AT4_ChildInterface.cpp)
 
@@ -44,7 +50,6 @@ set(AT4_H_SOURCES
 	AT4_ChildInterface.h
 	AT4_Scene2D.h
 	AT4_Camera2D.h
-	AT4_SettingDialog.h
 	AT4_LuaHighlighter.h
 	AT4_Session.h
 	AT4_LogColumn.h
@@ -52,7 +57,6 @@ set(AT4_H_SOURCES
 	AT4_ScriptEditDialog.h
 	AT4_CodeEditor.h
 	AT4_ScriptVariant.h
-	AT4_ExtensionProperty.h
 	AT4_SessionDialog.h)
 
 set(AT4_RC_SOURCES
@@ -62,7 +66,7 @@ set(AT4_RC_SOURCES
 set(AT4_PRECOMPILE_FILE
 	stdafx.cpp)
 
-foreach(filename ${AT4_CHILDWND_SOURCES} ${AT4_CPP_SOURCES})
+foreach(filename ${AT4_CHILDWND_SOURCES} ${AT4_CPP_SOURCES} ${AT4_SETTINGWND_SOURCES})
 	get_filename_component(ext ${filename} LAST_EXT ABSOLUTE)
 	string(TOLOWER ${ext} ext_lower)
 	if(${ext_lower} STREQUAL ".cpp" )
@@ -92,6 +96,7 @@ link_directories(
 add_executable(AxTrace4 WIN32 
 	${AT4_RC_SOURCES}
 	${AT4_CHILDWND_SOURCES}
+	${AT4_SETTINGWND_SOURCES}
 	${AT4_CPP_SOURCES}
 	${AT4_H_SOURCES}
 	${AT4_PRECOMPILE_FILE}

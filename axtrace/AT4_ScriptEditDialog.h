@@ -6,7 +6,7 @@
 ***************************************************/
 #pragma once
 
-#include "AT4_SettingDialog.h"
+#include "SettingWindow/AT4_SettingDialog.h"
 
 class CodeEditor;
 class LuaHighlighter;

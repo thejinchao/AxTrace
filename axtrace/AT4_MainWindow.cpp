@@ -17,7 +17,7 @@
 #include "AT4_Config.h"
 #include "ChildWindow/AT4_ChildWnd_Scene2D.h"
 #include "AT4_Scene2D.h"
-#include "AT4_SettingDialog.h"
+#include "SettingWindow/AT4_SettingDialog.h"
 #include "AT4_Session.h"
 #include "AT4_SessionDialog.h"
 
