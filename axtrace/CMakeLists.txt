@@ -1,4 +1,4 @@
-﻿set(AT4_CHILDWND_SOURCES
+﻿set(AT4_CHILD_WND_SOURCES
 	ChildWindow/AT4_ChildWnd_Log.h
 	ChildWindow/AT4_ChildWnd_Log.cpp
 	ChildWindow/AT4_ChildWnd_Value.h
@@ -6,15 +6,27 @@
 	ChildWindow/AT4_ChildWnd_Scene2D.h
 	ChildWindow/AT4_ChildWnd_Scene2D.cpp
 )
-source_group("ChildWindow" FILES ${AT4_CHILDWND_SOURCES})
+source_group("ChildWindow" FILES ${AT4_CHILD_WND_SOURCES})
 
-set(AT4_SETTINGWND_SOURCES
+set(AT4_SETTING_WND_SOURCES
 	SettingWindow/AT4_SettingDialog.h
 	SettingWindow/AT4_SettingDialog.cpp
 	SettingWindow/AT4_ExtensionProperty.h
 	SettingWindow/AT4_ExtensionProperty.cpp
+	SettingWindow/AT4_ScriptVariant.h
+	SettingWindow/AT4_ScriptVariant.cpp
 )
-source_group("SettingWindow" FILES ${AT4_SETTINGWND_SOURCES})
+source_group("SettingWindow" FILES ${AT4_SETTING_WND_SOURCES})
+
+set(AT4_SCRIPT_EDITOR_WND_SOURCES
+	ScriptEditorWindow/AT4_CodeEditor.h
+	ScriptEditorWindow/AT4_CodeEditor.cpp
+	ScriptEditorWindow/AT4_LuaHighlighter.h
+	ScriptEditorWindow/AT4_LuaHighlighter.cpp
+	ScriptEditorWindow/AT4_ScriptEditDialog.h
+	ScriptEditorWindow/AT4_ScriptEditDialog.cpp
+)
+source_group("ScriptEditorWindow" FILES ${AT4_SCRIPT_EDITOR_WND_SOURCES})
 
 set(AT4_CPP_SOURCES
     AT4_Main.cpp
@@ -27,15 +39,12 @@ set(AT4_CPP_SOURCES
 	AT4_Filter.cpp
 	AT4_Scene2D.cpp
 	AT4_Camera2D.cpp
-	AT4_LuaHighlighter.cpp
 	AT4_Session.cpp
 	AT4_LogColumn.cpp
 	AT4_LogData.cpp
-	AT4_ScriptEditDialog.cpp
-	AT4_CodeEditor.cpp
-	AT4_ScriptVariant.cpp
 	AT4_SessionDialog.cpp
-	AT4_ChildInterface.cpp)
+	AT4_ChildInterface.cpp
+)
 
 set(AT4_H_SOURCES
     stdafx.h
@@ -50,14 +59,11 @@ set(AT4_H_SOURCES
 	AT4_ChildInterface.h
 	AT4_Scene2D.h
 	AT4_Camera2D.h
-	AT4_LuaHighlighter.h
 	AT4_Session.h
 	AT4_LogColumn.h
 	AT4_LogData.h
-	AT4_ScriptEditDialog.h
-	AT4_CodeEditor.h
-	AT4_ScriptVariant.h
-	AT4_SessionDialog.h)
+	AT4_SessionDialog.h
+)
 
 set(AT4_RC_SOURCES
     AT4.qrc
@@ -66,7 +72,7 @@ set(AT4_RC_SOURCES
 set(AT4_PRECOMPILE_FILE
 	stdafx.cpp)
 
-foreach(filename ${AT4_CHILDWND_SOURCES} ${AT4_CPP_SOURCES} ${AT4_SETTINGWND_SOURCES})
+foreach(filename ${AT4_CHILD_WND_SOURCES} ${AT4_CPP_SOURCES} ${AT4_SETTING_WND_SOURCES} ${AT4_SCRIPT_EDITOR_WND_SOURCES})
 	get_filename_component(ext ${filename} LAST_EXT ABSOLUTE)
 	string(TOLOWER ${ext} ext_lower)
 	if(${ext_lower} STREQUAL ".cpp" )
@@ -95,8 +101,9 @@ link_directories(
 
 add_executable(AxTrace4 WIN32 
 	${AT4_RC_SOURCES}
-	${AT4_CHILDWND_SOURCES}
-	${AT4_SETTINGWND_SOURCES}
+	${AT4_CHILD_WND_SOURCES}
+	${AT4_SETTING_WND_SOURCES}
+	${AT4_SCRIPT_EDITOR_WND_SOURCES}
 	${AT4_CPP_SOURCES}
 	${AT4_H_SOURCES}
 	${AT4_PRECOMPILE_FILE}

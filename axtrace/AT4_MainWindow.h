@@ -31,6 +31,7 @@ class QMdiArea;
 class QMdiSubWindow;
 class QCustomEvent;
 class QButton;
+class QPushButton;
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
