@@ -6,7 +6,7 @@
 ***************************************************/
 #include "stdafx.h"
 
-#include "AT4_LogColumn.h"
+#include "AT4_LogWndColumn.h"
 
 //--------------------------------------------------------------------------------------------
 QString LogColumn_Index::getString(const LogData& logData) const
