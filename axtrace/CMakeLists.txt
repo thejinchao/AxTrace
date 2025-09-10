@@ -9,6 +9,8 @@
 	ChildWindow/AT4_ChildInterface.cpp
 	ChildWindow/AT4_Camera2D.h
 	ChildWindow/AT4_Camera2D.cpp
+	ChildWindow/AT4_Scene2D.h
+	ChildWindow/AT4_Scene2D.cpp
 )
 source_group("ChildWindow" FILES ${AT4_CHILD_WND_SOURCES})
 
@@ -41,7 +43,6 @@ set(AT4_CPP_SOURCES
 	AT4_MessageQueue.cpp
 	AT4_Message.cpp
 	AT4_Filter.cpp
-	AT4_Scene2D.cpp
 	AT4_Session.cpp
 	AT4_LogColumn.cpp
 	AT4_LogData.cpp
@@ -58,7 +59,6 @@ set(AT4_H_SOURCES
 	AT4_MessageQueue.h
 	AT4_Message.h
 	AT4_Filter.h
-	AT4_Scene2D.h
 	AT4_Session.h
 	AT4_LogColumn.h
 	AT4_LogData.h
