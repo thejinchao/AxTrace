@@ -12,6 +12,7 @@
 #include "AT4_System.h"
 #include "AT4_Config.h"
 #include "AT4_Incoming.h"
+#include "Session/AT4_Session.h"
 
 //--------------------------------------------------------------------------------------------
 SettingDialog::SettingDialog(QWidget *parent)

@@ -11,7 +11,7 @@
 #include "AT4_System.h"
 #include "AT4_Config.h"
 #include "AT4_MessageQueue.h"
-#include "AT4_Session.h"
+#include "Session/AT4_Session.h"
 #include "AT4_MainWindow.h"
 
 //--------------------------------------------------------------------------------------------

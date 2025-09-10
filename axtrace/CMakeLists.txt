@@ -36,6 +36,15 @@ set(AT4_SCRIPT_EDITOR_WND_SOURCES
 )
 source_group("ScriptEditorWindow" FILES ${AT4_SCRIPT_EDITOR_WND_SOURCES})
 
+
+set(AT4_SESSION_SOURCES
+	Session/AT4_Session.h
+	Session/AT4_Session.cpp
+	Session/AT4_SessionDialog.h
+	Session/AT4_SessionDialog.cpp
+)
+source_group("Session" FILES ${AT4_SESSION_SOURCES})
+
 set(AT4_CPP_SOURCES
     AT4_Main.cpp
     AT4_MainWindow.cpp
@@ -45,9 +54,7 @@ set(AT4_CPP_SOURCES
 	AT4_MessageQueue.cpp
 	AT4_Message.cpp
 	AT4_MessageFilter.cpp
-	AT4_Session.cpp
 	AT4_LogParser.cpp
-	AT4_SessionDialog.cpp
 )
 
 set(AT4_H_SOURCES
@@ -60,9 +67,7 @@ set(AT4_H_SOURCES
 	AT4_MessageQueue.h
 	AT4_Message.h
 	AT4_MessageFilter.h
-	AT4_Session.h
 	AT4_LogParser.h
-	AT4_SessionDialog.h
 )
 
 set(AT4_RC_SOURCES
@@ -72,7 +77,8 @@ set(AT4_RC_SOURCES
 set(AT4_PRECOMPILE_FILE
 	stdafx.cpp)
 
-foreach(filename ${AT4_CHILD_WND_SOURCES} ${AT4_CPP_SOURCES} ${AT4_SETTING_WND_SOURCES} ${AT4_SCRIPT_EDITOR_WND_SOURCES})
+foreach(filename ${AT4_CHILD_WND_SOURCES} ${AT4_CPP_SOURCES} 
+	${AT4_SETTING_WND_SOURCES} ${AT4_SCRIPT_EDITOR_WND_SOURCES} ${AT4_SESSION_SOURCES})
 	get_filename_component(ext ${filename} LAST_EXT ABSOLUTE)
 	string(TOLOWER ${ext} ext_lower)
 	if(${ext_lower} STREQUAL ".cpp" )
@@ -104,6 +110,7 @@ add_executable(AxTrace4 WIN32
 	${AT4_CHILD_WND_SOURCES}
 	${AT4_SETTING_WND_SOURCES}
 	${AT4_SCRIPT_EDITOR_WND_SOURCES}
+	${AT4_SESSION_SOURCES}
 	${AT4_CPP_SOURCES}
 	${AT4_H_SOURCES}
 	${AT4_PRECOMPILE_FILE}

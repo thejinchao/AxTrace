@@ -9,10 +9,12 @@
 #include <QTreeView>
 #include <QItemDelegate>
 #include <QQueue>
+
 #include "AT4_MessageFilter.h"
 #include "AT4_LogParser.h"
 #include "AT4_LogWndColumn.h"
 #include "AT4_Config.h"
+#include "Session/AT4_Session.h"
 
 class LogMessage;
 

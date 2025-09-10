@@ -12,7 +12,7 @@
 #include "AT4_MessageQueue.h"
 #include "AT4_MessageFilter.h"
 #include "ChildWindow/AT4_ChildWnd_Scene2D.h"
-#include "AT4_Session.h"
+#include "Session/AT4_Session.h"
 
 //--------------------------------------------------------------------------------------------
 System* System::s_singleton = nullptr;

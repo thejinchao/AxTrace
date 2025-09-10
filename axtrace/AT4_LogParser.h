@@ -7,7 +7,6 @@
 #pragma once
 
 #include "AT4_Interface.h"
-#include "AT4_Session.h"
 
 class LogParser;
 typedef QSharedPointer<LogParser> LogParserPtr;
