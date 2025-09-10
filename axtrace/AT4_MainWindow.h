@@ -8,7 +8,7 @@
 
 #include <QMainWindow>
 #include <QEvent>
-#include "AT4_ChildInterface.h"
+#include "ChildWindow/AT4_ChildInterface.h"
 
 class IChild;
 class LogChild;

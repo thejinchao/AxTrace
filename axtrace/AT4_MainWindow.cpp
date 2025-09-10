@@ -7,19 +7,19 @@
 #include "stdafx.h"
 
 #include "AT4_MainWindow.h"
-#include "ChildWindow/AT4_ChildWnd_Log.h"
-#include "ChildWindow/AT4_ChildWnd_Value.h"
 #include "AT4_System.h"
 #include "AT4_MessageQueue.h"
 #include "AT4_Message.h"
 #include "AT4_Filter.h"
-#include "AT4_ChildInterface.h"
 #include "AT4_Config.h"
-#include "ChildWindow/AT4_ChildWnd_Scene2D.h"
 #include "AT4_Scene2D.h"
-#include "SettingWindow/AT4_SettingDialog.h"
 #include "AT4_Session.h"
 #include "AT4_SessionDialog.h"
+#include "ChildWindow/AT4_ChildInterface.h"
+#include "ChildWindow/AT4_ChildWnd_Log.h"
+#include "ChildWindow/AT4_ChildWnd_Value.h"
+#include "ChildWindow/AT4_ChildWnd_Scene2D.h"
+#include "SettingWindow/AT4_SettingDialog.h"
 
 //--------------------------------------------------------------------------------------------
 MainWindow::MainWindow()
