@@ -37,7 +37,7 @@ public:
 	explicit LogDataModel(LogParserPtr logParser, QObject *parent = 0);
 	~LogDataModel();
 
-	void insertLog(const LogMessage* logMessage, const Filter::ListResult& filterResult);
+	void insertLog(const LogMessage* logMessage, const MessageFilter::ListResult& filterResult);
 	void clearAllLog(void);
 	void autoCheckOverflow(void);
 	void switchColumn(qint32 index);
@@ -80,7 +80,7 @@ class LogChild : public QTreeView
 
 public:
 	void init(void);
-	void insertLog(const LogMessage* logMessage, const Filter::ListResult& filterResult);
+	void insertLog(const LogMessage* logMessage, const MessageFilter::ListResult& filterResult);
 	bool isPause(void) const { return m_pause; }
 	void switchPause(void);
 

@@ -24,7 +24,7 @@ public:
 		qint64 actorID;
 		QPointF pos;
 		qreal dir;
-		Filter::Actor2DType type;
+		MessageFilter::Actor2DType type;
 		quint16 borderColor;
 		quint16 fillColor;
 		qreal size;
@@ -52,7 +52,7 @@ public:
 
 public:
 	void beginScene(const Begin2DSceneMessage* msg);
-	void updateActor(const Update2DActorMessage* msg, const Filter::Actor2DResult& filterResult);
+	void updateActor(const Update2DActorMessage* msg, const MessageFilter::Actor2DResult& filterResult);
 	void endScene(const End2DSceneMessage* msg);
 	void addActorLog(Add2DActorLogMessage* msg);
 

@@ -30,15 +30,15 @@ LogDataModel::~LogDataModel()
 }
 
 //--------------------------------------------------------------------------------------------
-void LogDataModel::insertLog(const LogMessage* logMessage, const Filter::ListResult& filterResult)
+void LogDataModel::insertLog(const LogMessage* logMessage, const MessageFilter::ListResult& filterResult)
 {
 	LogData logData;
 	logData.logIndex = m_currentIndex++;
 	logData.logTime = logMessage->getTime();
 	logData.session = logMessage->getSession();
 	logData.logType = logMessage->getLogType();
-	logData.backColor = Filter::toQColor(filterResult.backColor);
-	logData.frontColor = Filter::toQColor(filterResult.fontColor);
+	logData.backColor = MessageFilter::toQColor(filterResult.backColor);
+	logData.frontColor = MessageFilter::toQColor(filterResult.fontColor);
 	logData.logContent = m_logParser->parserLog(logMessage->getLog());
 
 	beginInsertRows(QModelIndex(), rowCount(), rowCount()+1);
@@ -336,7 +336,7 @@ void LogChild::timerEvent(QTimerEvent *event)
 }
 
 //--------------------------------------------------------------------------------------------
-void LogChild::insertLog(const LogMessage* logMessage, const Filter::ListResult& filterResult)
+void LogChild::insertLog(const LogMessage* logMessage, const MessageFilter::ListResult& filterResult)
 {
 	if (m_pause) return;
 

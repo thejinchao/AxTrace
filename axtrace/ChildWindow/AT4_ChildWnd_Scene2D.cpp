@@ -155,7 +155,7 @@ void Map2DChild::beginScene(Begin2DSceneMessage* msg)
 }
 
 //--------------------------------------------------------------------------------------------
-void Map2DChild::updateActor(Update2DActorMessage* msg, const Filter::Actor2DResult& filterResult)
+void Map2DChild::updateActor(Update2DActorMessage* msg, const MessageFilter::Actor2DResult& filterResult)
 {
 	if (m_pause) return;
 
@@ -303,7 +303,7 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 		_drawGrid(painter);
 	}
 
-	Filter* filter = System::getSingleton()->getFilter();
+	MessageFilter* filter = System::getSingleton()->getFilter();
 
 	m_hovedActor.clear();
 	QString mouseTips;
@@ -355,7 +355,7 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 		//2.1 draw actor
 		switch (actor.type)
 		{
-		case Filter::AT_CIRCLE:
+		case MessageFilter::AT_CIRCLE:
 		{
 			painter.drawEllipse(QPointF(0.0, 0.0), actor.size, actor.size);
 			if(idDirNormal)
@@ -363,7 +363,7 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 		}
 		break;
 
-		case Filter::AT_QUAD:
+		case MessageFilter::AT_QUAD:
 		{
 			painter.drawRect(QRectF(-actor.size, -actor.size, actor.size * 2, actor.size * 2));
 			if(idDirNormal)
@@ -371,7 +371,7 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 		}
 		break;
 
-		case Filter::AT_TRIANGLE:
+		case MessageFilter::AT_TRIANGLE:
 		{
 			float l = -0.866025*actor.size; // sqrt(0.75)
 			float t = 0.5*actor.size;
@@ -398,18 +398,18 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 
 			switch (actor.type)
 			{
-				case Filter::AT_CIRCLE:
+				case MessageFilter::AT_CIRCLE:
 				{
 					painter.drawRect(QRectF(-actor.size, -actor.size, actor.size * 2, actor.size * 2));
 				}
 				break;
-				case Filter::AT_QUAD:
+				case MessageFilter::AT_QUAD:
 				{
 					painter.drawRect(QRectF(-actor.size*1.1, -actor.size*1.1, actor.size * 2.2, actor.size * 2.2));
 				}
 				break;
 
-				case Filter::AT_TRIANGLE:
+				case MessageFilter::AT_TRIANGLE:
 				{
 					float l = 0.866025*actor.size; // sqrt(0.75)
 					float t = 0.5*actor.size;
@@ -559,19 +559,19 @@ bool Map2DChild::_getMouseTips(const QTransform& localMove, const Scene2D::Actor
 
 	switch (actor.type)
 	{
-	case Filter::AT_CIRCLE:
+	case MessageFilter::AT_CIRCLE:
 	{
 		if (QPointF::dotProduct(pos, pos) > (actor.size*actor.size)) return false;
 	}
 	break;
 
-	case Filter::AT_QUAD:
+	case MessageFilter::AT_QUAD:
 	{
 		if (pos.x() < -actor.size || pos.x() > actor.size || pos.y() < -actor.size || pos.y() > actor.size) return false;
 	}
 	break;
 
-	case Filter::AT_TRIANGLE:
+	case MessageFilter::AT_TRIANGLE:
 	{
 		const float sqrt_0_75 = 0.866025f; //sqrt(0.75)
 		const float s1_len = 1.93185165258f; //sqrt(2+2*sqrt(0.75)) 
@@ -688,7 +688,7 @@ QPen& Map2DChild::getCachedPen(uint16_t color)
 	QPen* pen = m_cachedPen[color & 0xFFF];
 	if (pen != nullptr) return *pen;
 
-	pen = m_cachedPen[color & 0xFFF] = new QPen(Filter::toQColor(color));
+	pen = m_cachedPen[color & 0xFFF] = new QPen(MessageFilter::toQColor(color));
 	return *pen;
 }
 
@@ -698,7 +698,7 @@ QBrush& Map2DChild::getCachedBrush(uint16_t color)
 	QBrush* brush = m_cachedBrush[color & 0xFFF];
 	if (brush != nullptr) return *brush;
 
-	QColor brushColor = Filter::toQColor(color);
+	QColor brushColor = MessageFilter::toQColor(color);
 	brushColor.setAlpha(128);
 	brush = m_cachedBrush[color & 0xFFF] = new QBrush(brushColor);
 	return *brush;

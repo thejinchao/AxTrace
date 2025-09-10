@@ -40,7 +40,7 @@ void Scene2D::beginScene(const Begin2DSceneMessage* msg)
 }
 
 //--------------------------------------------------------------------------------------------
-void Scene2D::updateActor(const Update2DActorMessage* msg, const Filter::Actor2DResult& filterResult)
+void Scene2D::updateActor(const Update2DActorMessage* msg, const MessageFilter::Actor2DResult& filterResult)
 {
 	if (!m_updating) return;
 	ActorMap& updatingActorsMap = m_actorMap[1 - m_actorMapIndex];

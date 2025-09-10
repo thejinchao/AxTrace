@@ -10,7 +10,7 @@
 #include "AT4_Message.h"
 
 //--------------------------------------------------------------------------------------------
-Filter::Filter()
+MessageFilter::MessageFilter()
 	: m_config(nullptr)
 	, L(nullptr)
 {
@@ -18,14 +18,14 @@ Filter::Filter()
 }
 
 //--------------------------------------------------------------------------------------------
-Filter::~Filter()
+MessageFilter::~MessageFilter()
 {
 	if(L)
 		lua_close(L);
 }
 
 //--------------------------------------------------------------------------------------------
-bool Filter::init(Config* cfg)
+bool MessageFilter::init(Config* cfg)
 {
 	assert(cfg);
 
@@ -54,7 +54,7 @@ bool Filter::init(Config* cfg)
 }
 
 //--------------------------------------------------------------------------------------------
-bool Filter::reloadScript(const char* script)
+bool MessageFilter::reloadScript(const char* script)
 {
 	//run init lua script
 	if (luaL_dostring(L, script)) {
@@ -70,7 +70,7 @@ bool Filter::reloadScript(const char* script)
 }
 
 //--------------------------------------------------------------------------------------------
-bool Filter::tryLoadScript(const char* script, QString& errorMsg)
+bool MessageFilter::tryLoadScript(const char* script, QString& errorMsg)
 {
 	lua_State* L2 = luaL_newstate();
 	luaL_openlibs(L2);
@@ -91,7 +91,7 @@ bool Filter::tryLoadScript(const char* script, QString& errorMsg)
 }
 
 //--------------------------------------------------------------------------------------------
-void Filter::_luaopen(lua_State* L)
+void MessageFilter::_luaopen(lua_State* L)
 {
 	lua_pushinteger(L, 0x000); 	lua_setglobal(L, "COL_BLACK");
 	lua_pushinteger(L, 0xFFF); 	lua_setglobal(L, "COL_WHITE");
@@ -117,7 +117,7 @@ void Filter::_luaopen(lua_State* L)
 }
 
 //--------------------------------------------------------------------------------------------
-void Filter::onLogMessage(const LogMessage* message, ListResult& result)
+void MessageFilter::onLogMessage(const LogMessage* message, ListResult& result)
 {
 	lua_getglobal(L, "onLogMessage");
 
@@ -138,7 +138,7 @@ void Filter::onLogMessage(const LogMessage* message, ListResult& result)
 }
 
 //--------------------------------------------------------------------------------------------
-void Filter::onValueMessage(const ValueMessage* message, ListResult& result)
+void MessageFilter::onValueMessage(const ValueMessage* message, ListResult& result)
 {
 	lua_getglobal(L, "onValueMessage");
 	lua_pushlightuserdata(L, (void*)message);
@@ -157,7 +157,7 @@ void Filter::onValueMessage(const ValueMessage* message, ListResult& result)
 }
 
 //--------------------------------------------------------------------------------------------
-void Filter::onActor2DMessage(const Update2DActorMessage* message, Actor2DResult& result)
+void MessageFilter::onActor2DMessage(const Update2DActorMessage* message, Actor2DResult& result)
 {
 	lua_getglobal(L, "onActor2DMessage");
 	lua_pushlightuserdata(L, (void*)message);

@@ -143,7 +143,7 @@ void MainWindow::_onShakeHand(ShakehandMessage* msg)
 //--------------------------------------------------------------------------------------------
 void MainWindow::_insertLog(LogMessage* msg)
 {
-	Filter::ListResult filterResult;
+	MessageFilter::ListResult filterResult;
 	System::getSingleton()->getFilter()->onLogMessage(msg, filterResult);
 	if (!filterResult.display) return;
 
@@ -156,7 +156,7 @@ void MainWindow::_insertLog(LogMessage* msg)
 //--------------------------------------------------------------------------------------------
 void MainWindow::_insertValue(ValueMessage* msg)
 {
-	Filter::ListResult filterResult;
+	MessageFilter::ListResult filterResult;
 	System::getSingleton()->getFilter()->onValueMessage(msg, filterResult);
 	if (!filterResult.display) return;
 
@@ -174,7 +174,7 @@ void MainWindow::_begin2DScene(Begin2DSceneMessage* msg)
 //--------------------------------------------------------------------------------------------
 void MainWindow::_update2DActor(Update2DActorMessage* msg)
 {
-	Filter::Actor2DResult filterResult;
+	MessageFilter::Actor2DResult filterResult;
 	System::getSingleton()->getFilter()->onActor2DMessage(msg, filterResult);
 	if (!filterResult.display) return;
 

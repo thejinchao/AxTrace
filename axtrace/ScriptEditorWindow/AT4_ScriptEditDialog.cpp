@@ -63,7 +63,7 @@ void ScriptEditorDialog_Filter::verify(void)
 {
 	QString errorMsg;
 	std::string plainText = m_editor->toPlainText().toUtf8().toStdString();
-	if (!Filter::tryLoadScript(plainText.c_str(), errorMsg))
+	if (!MessageFilter::tryLoadScript(plainText.c_str(), errorMsg))
 	{
 		QMessageBox::critical(this, tr("LoadScript Error"), errorMsg, QMessageBox::Ok);
 		return;

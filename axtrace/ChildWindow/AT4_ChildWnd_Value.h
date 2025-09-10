@@ -19,7 +19,7 @@ public:
 	explicit ValueDataModel(QObject *parent = 0);
 	~ValueDataModel();
 
-	void insertValue(const ValueMessage* valueMessage, const Filter::ListResult& filterResult);
+	void insertValue(const ValueMessage* valueMessage, const MessageFilter::ListResult& filterResult);
 	void clearAllValue(void);
 
 	QVariant data(const QModelIndex &index, int role) const override;
@@ -62,7 +62,7 @@ class ValueChild : public QTreeView
 
 public:
 	void init(void);
-	void insertValue(const ValueMessage* valueMessage, const Filter::ListResult& filterResult);
+	void insertValue(const ValueMessage* valueMessage, const MessageFilter::ListResult& filterResult);
 	void clearAllValue(void);
 	bool isPause(void) const { return m_pause; }
 	void switchPause(void);

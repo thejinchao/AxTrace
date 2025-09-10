@@ -68,7 +68,7 @@ bool System::init(int argc, char *argv[])
 	m_config = new Config();
 	m_incoming = new Incoming();
 	m_messageQueue = new MessageQueue();
-	m_filter = new Filter();
+	m_filter = new MessageFilter();
 	m_sessionManager = new SessionManager();
 
 	Map2DChild::initCachedObject();

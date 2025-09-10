@@ -12,7 +12,7 @@ class ValueMessage;
 class Update2DActorMessage;
 struct lua_State;
 
-class Filter
+class MessageFilter
 {
 public:
 	struct ListResult
@@ -62,6 +62,6 @@ private:
 	lua_State*	L;
 
 public:
-	Filter();
-	virtual ~Filter();
+	MessageFilter();
+	virtual ~MessageFilter();
 };

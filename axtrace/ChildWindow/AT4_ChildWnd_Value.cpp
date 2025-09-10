@@ -26,7 +26,7 @@ ValueDataModel::~ValueDataModel()
 }
 
 //--------------------------------------------------------------------------------------------
-void ValueDataModel::insertValue(const ValueMessage* valueMessage, const Filter::ListResult& filterResult)
+void ValueDataModel::insertValue(const ValueMessage* valueMessage, const MessageFilter::ListResult& filterResult)
 {
 	const QString& name = valueMessage->getName();
 	int idx;
@@ -62,8 +62,8 @@ void ValueDataModel::insertValue(const ValueMessage* valueMessage, const Filter:
 	valueMessage->getValueAsString(valueData);
 	value.valueData = valueData;
 
-	value.backColor = Filter::toQColor(filterResult.backColor);
-	value.frontColor = Filter::toQColor(filterResult.fontColor);
+	value.backColor = MessageFilter::toQColor(filterResult.backColor);
+	value.frontColor = MessageFilter::toQColor(filterResult.fontColor);
 	endInsertRows();
 
 	dataChanged(index(idx, 0), index(idx, COLUMN_COUNTS));
@@ -266,7 +266,7 @@ void ValueChild::init(void)
 }
 
 //--------------------------------------------------------------------------------------------
-void ValueChild::insertValue(const ValueMessage* valueMessage, const Filter::ListResult& filterResult)
+void ValueChild::insertValue(const ValueMessage* valueMessage, const MessageFilter::ListResult& filterResult)
 {
 	if (m_pause) return;
 

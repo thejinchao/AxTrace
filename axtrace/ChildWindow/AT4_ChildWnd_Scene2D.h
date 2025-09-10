@@ -29,7 +29,7 @@ public:
 	void init(QWidget* parent);
 	void clean(void);
 	void beginScene(Begin2DSceneMessage* msg);
-	void updateActor(Update2DActorMessage* msg, const Filter::Actor2DResult& filterResult);
+	void updateActor(Update2DActorMessage* msg, const MessageFilter::Actor2DResult& filterResult);
 	void endScene(End2DSceneMessage* msg);
 	void addActorLog(Add2DActorLogMessage* msg);
 	bool isPause(void) const { return m_pause; }
