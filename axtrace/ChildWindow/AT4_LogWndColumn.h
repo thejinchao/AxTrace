@@ -6,7 +6,8 @@
 ***************************************************/
 #pragma once
 
-#include "AT4_LogParser.h"
+class LogParser;
+struct LogData;
 
 class LogColumn
 {

@@ -9,12 +9,25 @@
 #include <QTreeView>
 #include <QItemDelegate>
 #include <QQueue>
-#include "AT4_Filter.h"
+#include "AT4_MessageFilter.h"
 #include "AT4_LogParser.h"
 #include "AT4_LogWndColumn.h"
 #include "AT4_Config.h"
 
 class LogMessage;
+
+struct LogData
+{
+	quint32			logIndex;
+	MessageTime		logTime;
+	SessionPtr		session;
+	quint32			logType;
+	QColor			backColor;
+	QColor			frontColor;
+	QStringList		logContent;
+};
+
+typedef QQueue<LogData> LogDataVector;
 
 class LogDataModel : public QAbstractItemModel
 {

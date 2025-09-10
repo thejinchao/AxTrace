@@ -7,7 +7,7 @@
 #pragma once
 
 #include <QTreeView>
-#include "AT4_Filter.h"
+#include "AT4_MessageFilter.h"
 
 class ValueMessage;
 

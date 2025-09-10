@@ -9,19 +9,6 @@
 #include "AT4_Interface.h"
 #include "AT4_Session.h"
 
-struct LogData
-{
-	quint32			logIndex;
-	MessageTime		logTime;
-	SessionPtr		session;
-	quint32			logType;
-	QColor			backColor;
-	QColor			frontColor;
-	QStringList		logContent;
-};
-
-typedef QQueue<LogData> LogDataVector;
-
 class LogParser;
 typedef QSharedPointer<LogParser> LogParserPtr;
 typedef QVector<LogParserPtr> LogParserVector;

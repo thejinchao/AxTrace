@@ -10,7 +10,7 @@
 #include "AT4_System.h"
 #include "AT4_MessageQueue.h"
 #include "AT4_Message.h"
-#include "AT4_Filter.h"
+#include "AT4_MessageFilter.h"
 #include "AT4_Config.h"
 #include "AT4_Session.h"
 #include "AT4_SessionDialog.h"

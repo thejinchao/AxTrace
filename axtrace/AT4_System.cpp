@@ -10,7 +10,7 @@
 #include "AT4_Config.h"
 #include "AT4_Incoming.h"
 #include "AT4_MessageQueue.h"
-#include "AT4_Filter.h"
+#include "AT4_MessageFilter.h"
 #include "ChildWindow/AT4_ChildWnd_Scene2D.h"
 #include "AT4_Session.h"
 

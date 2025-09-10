@@ -5,7 +5,7 @@
 	(C) Copyright thecodeway.com 2023
 ***************************************************/
 #include "stdafx.h"
-#include "AT4_Filter.h"
+#include "AT4_MessageFilter.h"
 #include "AT4_Config.h"
 #include "AT4_Message.h"
 

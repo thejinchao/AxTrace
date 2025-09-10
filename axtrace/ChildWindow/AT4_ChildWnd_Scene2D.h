@@ -13,7 +13,7 @@
 #include <QPen>
 #include "AT4_Scene2D.h"
 
-#include "AT4_Filter.h"
+#include "AT4_MessageFilter.h"
 
 class Camera2D;
 class Begin2DSceneMessage;

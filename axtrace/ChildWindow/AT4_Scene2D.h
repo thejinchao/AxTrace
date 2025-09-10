@@ -13,7 +13,7 @@ class Update2DActorMessage;
 class End2DSceneMessage;
 class Add2DActorLogMessage;
 
-#include "AT4_Filter.h"
+#include "AT4_MessageFilter.h"
 #include "AT4_Interface.h"
 
 class Scene2D

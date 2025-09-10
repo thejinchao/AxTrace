@@ -8,7 +8,7 @@
 #include "AT4_ScriptEditDialog.h"
 #include "AT4_System.h"
 #include "AT4_Config.h"
-#include "AT4_Filter.h"
+#include "AT4_MessageFilter.h"
 #include "AT4_LuaHighlighter.h"
 #include "AT4_CodeEditor.h"
 #include "AT4_MainWindow.h"
