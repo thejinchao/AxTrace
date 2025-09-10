@@ -10,7 +10,7 @@
 #include <QItemDelegate>
 #include <QQueue>
 #include "AT4_Filter.h"
-#include "AT4_LogData.h"
+#include "AT4_LogParser.h"
 #include "AT4_LogColumn.h"
 #include "AT4_Config.h"
 

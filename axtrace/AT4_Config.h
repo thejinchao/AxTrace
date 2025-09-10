@@ -6,7 +6,7 @@
 ***************************************************/
 #pragma once
 
-#include "AT4_LogData.h"
+#include "AT4_LogParser.h"
 
 class Config
 {

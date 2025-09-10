@@ -45,7 +45,7 @@ set(AT4_CPP_SOURCES
 	AT4_Filter.cpp
 	AT4_Session.cpp
 	AT4_LogColumn.cpp
-	AT4_LogData.cpp
+	AT4_LogParser.cpp
 	AT4_SessionDialog.cpp
 )
 
@@ -61,7 +61,7 @@ set(AT4_H_SOURCES
 	AT4_Filter.h
 	AT4_Session.h
 	AT4_LogColumn.h
-	AT4_LogData.h
+	AT4_LogParser.h
 	AT4_SessionDialog.h
 )
 
