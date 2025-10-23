@@ -55,7 +55,7 @@ void Config::_resetToDefaultSetting(void)
 		"\t\tfrontColor=COL_RED; \r\n"
 		"\t\tbackColor=COL_YELLOW; \r\n"
 		"\telseif(logType==AXT_USERDEF+1) then \r\n"
-		"\t\treturn true, \"Talk\", frontColor, backColor; \r\n"
+		"\t\treturn true, \"Talk\"..msg:get_pid(), frontColor, backColor; \r\n"
 		"\tend; \r\n"
 		"\treturn true, \"defult\", frontColor, backColor; \r\n"
 		"end;\n\r\n"
