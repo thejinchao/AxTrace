@@ -1,5 +1,7 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
+#include <limits>
+
 #include "ctpl.h"
 #include "axtrace.win.h"
 
@@ -85,8 +87,7 @@ int main(int argc, char* argv[])
 {
 	printf("============= AxTrace4 Test(C++) ================\n");
 	srand((unsigned int)::time(0));
-#if 0
-
+	
 	//--------------------------
 	{
 		printf("AxTrace Test\n");
@@ -326,7 +327,7 @@ int main(int argc, char* argv[])
 		}
 
 	}
-#endif
+
 	{
 		printf("AxMap2D Test\n");
 		system("pause");
@@ -336,7 +337,7 @@ int main(int argc, char* argv[])
 
 		const double MAP_X_MIN = -256.0;
 		const double MAP_Y_MIN = -256.0;
-		const double MAP_X_MAX = 256.0;
+		const double MAP_X_MAX = 512.0;
 		const double MAP_Y_MAX = 256.0;
 		const double MOVE_STEP = 1.0;
 		const double PI = 3.14159265;
@@ -345,13 +346,21 @@ int main(int argc, char* argv[])
 		double MAP_HEIGHT = MAP_Y_MAX - MAP_Y_MIN;
 		AxActor2D allActors[ACTOR_COUNTS];
 	
-		//ax2d_shape_grid("test", 32.0, 32.0, 0.0, 0.0);
+		//define scene grid
+		ax2d_shape_grid("test", 32.0, 32.0, 0.0, 0.0);
 
-		//ax2d_shape_square("test", 0.0, 0.0, 32.0, 32.0);
+		//add square shape
+		ax2d_shape_square("test", -30.0, -20.0, -12.0, -2.0);
 		ax2d_shape_square("test", 32.0, 0.0, 70.0, 40.0);
-		ax2d_shape_circle("test", -10.0, -20.0, 30.0);
-		//system("pause");
+		ax2d_shape_square("test", 132.0, 100.0, 270.0, 140.0);
+		ax2d_shape_square("test", 200.0, -100.0, 270.0, -40.0);
 
+		//add circle shape
+		ax2d_shape_circle("test", -10.0, -20.0, 30.0);
+		ax2d_shape_circle("test", 10.0, 20.0, 50.0);
+		ax2d_shape_circle("test", 250.0, 120.0, 100.0);
+
+		//begin draw scene
 		ax2d_begin_scene("test", MAP_X_MIN, MAP_Y_MIN, MAP_X_MAX, MAP_Y_MAX);
 		for (int i = 0; i < ACTOR_COUNTS; i++)
 		{
@@ -371,7 +380,7 @@ int main(int argc, char* argv[])
 
 		for (int i = 0; i < MOVE_COUNTS; i++)
 		{
-			ax2d_begin_scene("test", MAP_X_MIN, MAP_Y_MIN, MAP_X_MAX, MAP_Y_MAX);// , "{\"gridSize\":[32.0,32.0], \"gridPoint\":[-256.0, 256.0]}");
+			ax2d_begin_scene("test", MAP_X_MIN, MAP_Y_MIN, MAP_X_MAX, MAP_Y_MAX);
 
 			for (int j = 0; j < ACTOR_COUNTS; j++)
 			{
@@ -402,17 +411,15 @@ int main(int argc, char* argv[])
 
 		for (int i = 0; i < ACTOR_COUNTS; i++)
 		{
-			char temp[256] = { 0 };
 			double gridPointX = -256.0;
 			double gridPointY = 256;
-			_snprintf(temp, 256, "{\"gridSize\":[32.0,32.0], \"gridPoint\":[%f,%f]}", gridPointX+i, gridPointY-i);
 			ax2d_shape_grid("test", 32.0, 32.0, gridPointX+i, gridPointY-i);
 
-			ax2d_begin_scene("test", MAP_X_MIN, MAP_Y_MIN, MAP_X_MAX, MAP_Y_MAX);// , temp);
+			ax2d_begin_scene("test", MAP_X_MIN, MAP_Y_MIN, MAP_X_MAX, MAP_Y_MAX);
 			for (int j = 0; j < ACTOR_COUNTS-i; j++)
 			{
 				AxActor2D& actor = allActors[j];
-				ax2d_actor("test", actor.id, actor.x, actor.y, actor.dir, actor.type, actor.info);
+				ax2d_actor("test", actor.id, actor.x, actor.y, std::numeric_limits<double>::quiet_NaN(), actor.type, actor.info);
 			}
 			ax2d_end_scene("test");
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));

@@ -110,9 +110,60 @@ push log to a actor, It can be called any time, not necessarily between begin_sc
 */
 AXTRACE_EXTERN_C void ax2d_actor_log(const char* scene_name, __int64 actor_id, const char* actor_log);
 
-
+/*
+add 2D grid-shape packet for a named scene
+                             width                   
+                    ──►│   │◄─────                   
+         ┌─┬───┬───┬───┬───┬───┬───┬──┐              
+         ┼─o───┼───┼───┼───┼───┼───┼──┼   │          
+         │ │origin point   │   │   │  │   ▼          
+         ┼─┼───┼───┼───┼───┼───┼───┼──┼ ───         
+         │ │   │   │   │   │   │   │  │              
+         ┼─┼───┼───┼───┼───┼───┼───┼──┤ ───         
+         │ │   │   │   │   │   │   │  │   ▲          
+         ┼─┼───┼───┼───┼───┼───┼───┼──┼   │ height   
+         │ │   │   │   │   │   │   │  │              
+         ┼─┼───┼───┼───┼───┼───┼───┼──┼              
+         └─┴───┴───┴───┴───┴───┴───┴──┘              
+@param scene_name the name of scene(id)
+@param grid_width the width of grid cell
+@param grid_height the height of grid cell
+@param grid_point_x the x position of grid origin point(the top-left cross point)
+@param grid_point_y the y position of grid origin point(the top-left cross point)
+*/
 AXTRACE_EXTERN_C void ax2d_shape_grid(const char* scene_name, double grid_width, double grid_height, double grid_point_x, double grid_point_y);
+/*
+add a circle-shape for a named scene
+@param scene_name the name of scene(id)
+@param center_x the x position of circle center
+@param center_y the y position of circle center
+@param radius the radius of circle
+*/
 AXTRACE_EXTERN_C void ax2d_shape_circle(const char* scene_name, double center_x, double center_y, double radius);
+/*
+add a square-shape for a named scene
+                                                             
+         ┌──────────────────────────────────────────────┐    
+         │              ▲               ▲               │    
+         │              │ y_min         │               │    
+         │              ▼               │               │    
+         │  x_min  ┌───────────────┐    │               │    
+         │◄───────►│               │    │y_max          │    
+         │         │               │    │               │    
+         │         │               │    │               │    
+         │         │               │    ▼               │    
+         │         └───────────────┘   ───              │    
+         │        x_max                                 │    
+         ├◄───────────────────────►│                    │    
+         │                                              │    
+         └──────────────────────────────────────────────┘    
+
+@param scene_name the name of scene(id)
+@param x_min the left position of square
+@param y_min the top position of square
+@param x_max the right position of square
+@param y_max the bottom position of square
+*/
 AXTRACE_EXTERN_C void ax2d_shape_square(const char* scene_name, double x_min, double y_min, double x_max, double y_max);
 
 #endif
