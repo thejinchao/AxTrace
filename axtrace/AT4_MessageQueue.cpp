@@ -118,6 +118,23 @@ Message* MessageQueue::_popMessage(void)
 	}
 	break;
 
+	case AXTRACE_CMD_TYPE_2D_SHAPE_GRID:
+	{
+		message = Add2DGridShapeMessage::allocMessage(session, traceTime);
+	}
+	break;
+
+	case AXTRACE_CMD_TYPE_2D_SHAPE_CIRCLE:
+	{
+		message = Add2DCircleShapeMessage::allocMessage(session, traceTime);
+	}
+	break;
+
+	case AXTRACE_CMD_TYPE_2D_SHAPE_SQUARE:
+	{
+		message = Add2DSquareShapeMessage::allocMessage(session, traceTime);
+	}
+	break;
 	default:
 		return message;
 	}

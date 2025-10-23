@@ -10,6 +10,7 @@ class Config;
 class LogMessage;
 class ValueMessage;
 class Update2DActorMessage;
+class Scene2DMessage;
 struct lua_State;
 
 class MessageFilter
@@ -48,6 +49,7 @@ public:
 	void onLogMessage(const LogMessage* message, ListResult& result);
 	void onValueMessage(const ValueMessage* message, ListResult& result);
 	void onActor2DMessage(const Update2DActorMessage* msg, Actor2DResult& result);
+	QString get2DSceneWndTitle(const Scene2DMessage* msg);
 
 	static QColor toQColor(uint16_t col) {
 		#define MAKE_DOUBLE(c)  (((c)&0xF)<<4|((c)&0xF))

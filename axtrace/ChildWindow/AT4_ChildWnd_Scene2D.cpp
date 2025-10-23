@@ -191,6 +191,41 @@ void Map2DChild::addActorLog(Add2DActorLogMessage* msg)
 }
 
 //--------------------------------------------------------------------------------------------
+void Map2DChild::addGridShape(Add2DGridShapeMessage* msg)
+{
+	if (m_pause) return;
+
+	if (!m_scene)
+	{
+		m_scene = new Scene2D(msg);
+	}
+	m_scene->addGridDefine(msg->getGridSize(), msg->getGridPoint());
+}
+//--------------------------------------------------------------------------------------------
+void Map2DChild::addCircleShape(Add2DCircleShapeMessage* msg)
+{
+	if (m_pause) return;
+
+	if (!m_scene)
+	{
+		m_scene = new Scene2D(msg);
+	}
+	m_scene->addCircleShape(msg->getCenter(), msg->getRadius());
+}
+
+//--------------------------------------------------------------------------------------------
+void Map2DChild::addSquareShape(Add2DSquareShapeMessage* msg)
+{
+	if (m_pause) return;
+
+	if (!m_scene)
+	{
+		m_scene = new Scene2D(msg);
+	}
+	m_scene->addSquareShape(msg->getSquare());
+}
+
+//--------------------------------------------------------------------------------------------
 QString Map2DChild::getSelectActorBrief(void) const
 {
 	if (hasSelectActor()) {
@@ -294,7 +329,7 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 	painter.setPen(m_sceneBorderPen);
 	painter.fillRect(m_scene->getSceneRect(), m_sceneBrush);
 
-	//1. draw scene grid
+	//1.1 draw scene shapes(grid)
 	if (m_scene->isGridDefined() && bShowGrid)
 	{
 		m_sceneGridPen.setWidthF(1.0 / m_camera->getScale());
@@ -303,6 +338,31 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 		_drawGrid(painter);
 	}
 
+	//1.2 draw scene shapes(square)
+	m_scene->squareShapeWalk([&](const QRectF& square)
+	{
+		QPen& squarePen = getCachedPen(0x777);
+		squarePen.setWidthF(1.0 / m_camera->getScale());
+		painter.setPen(squarePen);
+
+		QBrush& squareBrush = getCachedBrush(0xFFF);
+		painter.setBrush(squareBrush);
+
+		painter.drawRect(square);
+	});
+
+	//1.3 draw scene shapes(circle)
+	m_scene->circleShapeWalk([&](const QPointF& center, qreal radius)
+	{
+		QPen& squarePen = getCachedPen(0x777);
+		squarePen.setWidthF(1.0 / m_camera->getScale());
+		painter.setPen(squarePen);
+
+		QBrush& squareBrush = getCachedBrush(0xFFF);
+		painter.setBrush(squareBrush);
+
+		painter.drawEllipse(center, radius, radius);
+	});
 	MessageFilter* filter = System::getSingleton()->getFilter();
 
 	m_hovedActor.clear();
@@ -310,7 +370,7 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 	bool findSelectedActor = false;
 
 	//2. draw actor
-	m_scene->walk([&](const Scene2D::Actor& actor)
+	m_scene->actorWalk([&](const Scene2D::Actor& actor)
 	{
 		painter.setBrush(getCachedBrush(actor.fillColor));
 

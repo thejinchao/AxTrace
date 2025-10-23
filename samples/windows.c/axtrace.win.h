@@ -71,9 +71,8 @@ x_min                         x_max
 @param y_min top of scene
 @param x_max right of scene
 @param y_max bottom of scene
-@param scene_define extra define of scene, It's json object
 */
-AXTRACE_EXTERN_C void ax2d_begin_scene(const char* scene_name, double x_min, double y_min, double x_max, double y_max, const char* scene_define);
+AXTRACE_EXTERN_C void ax2d_begin_scene(const char* scene_name, double x_min, double y_min, double x_max, double y_max);
 
 /*
 create/update a actor in the scene
@@ -91,7 +90,7 @@ create/update a actor in the scene
 @param actor_id actor id
 @param x actor position(x)
 @param y actor position(y)
-@param dir actor direction(0~2pi)
+@param dir actor direction(0~2pi), passing nan real value mean does not display direction
 @param actor_style user define style
 @param actor_info extra information of actor
 */
@@ -110,4 +109,10 @@ push log to a actor, It can be called any time, not necessarily between begin_sc
 @param actor_log actor log
 */
 AXTRACE_EXTERN_C void ax2d_actor_log(const char* scene_name, __int64 actor_id, const char* actor_log);
+
+
+AXTRACE_EXTERN_C void ax2d_shape_grid(const char* scene_name, double grid_width, double grid_height, double grid_point_x, double grid_point_y);
+AXTRACE_EXTERN_C void ax2d_shape_circle(const char* scene_name, double center_x, double center_y, double radius);
+AXTRACE_EXTERN_C void ax2d_shape_square(const char* scene_name, double x_min, double y_min, double x_max, double y_max);
+
 #endif

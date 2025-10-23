@@ -7,7 +7,7 @@
 #pragma once
 
 /*---------------------------------------------------------------------------------------------*/
-#define AXTRACE_PROTO_VERSION	(4)
+#define AXTRACE_PROTO_VERSION	(5)
 
 #define AXT_TRACE	(0)
 #define AXT_DEBUG	(1)
@@ -37,20 +37,22 @@
 #define AXV_STR_UTF32	(13)
 #define AXV_USER_DEF	(100)
 
-#define AXTRACE_CMD_TYPE_SHAKEHAND		(0)
-#define AXTRACE_CMD_TYPE_LOG			(1)
-#define AXTRACE_CMD_TYPE_VALUE			(2)
-#define AXTRACE_CMD_TYPE_2D_BEGIN_SCENE	(3)
-#define AXTRACE_CMD_TYPE_2D_ACTOR		(4)
-#define AXTRACE_CMD_TYPE_2D_END_SCENE	(5)
-#define AXTRACE_CMD_TYPE_2D_ACTOR_LOG	(6)
+#define AXTRACE_CMD_TYPE_SHAKEHAND			(0)
+#define AXTRACE_CMD_TYPE_LOG				(1)
+#define AXTRACE_CMD_TYPE_VALUE				(2)
+#define AXTRACE_CMD_TYPE_2D_BEGIN_SCENE		(3)
+#define AXTRACE_CMD_TYPE_2D_ACTOR			(4)
+#define AXTRACE_CMD_TYPE_2D_END_SCENE		(5)
+#define AXTRACE_CMD_TYPE_2D_ACTOR_LOG		(6)
+#define AXTRACE_CMD_TYPE_2D_SHAPE_GRID		(7)
+#define AXTRACE_CMD_TYPE_2D_SHAPE_CIRCLE	(8)
+#define AXTRACE_CMD_TYPE_2D_SHAPE_SQUARE	(9)
 
 #define AXTRACE_MAX_PROCESSNAME_LENGTH	(512)
 #define AXTRACE_MAX_LOG_STRING_LENGTH	(0x8000)
 #define AXTRACE_MAX_VALUENAME_LENGTH	(128)
 #define AXTRACE_MAX_VALUE_LENGTH		(1024)
 #define AXTRACE_MAX_SCENE_NAME_LENGTH	(128)
-#define AXTRACE_MAX_SCENE_DEFINE_LENGTH	(2048)
 #define AXTRACE_MAX_ACTOR_INFO_LENGTH	(2048)
 #define AXTRACE_MAX_ACTOR_LOG_LENGTH	(2048)
 
@@ -106,10 +108,8 @@ typedef struct
 	double			x_max;			/* right of scene*/
 	double			y_max;			/* bottom of scene*/
 	unsigned short	name_len;		/* length of scene name */
-	unsigned short	define_len;		/* length of scene define */
 
 									/* [scene name buf  with '\0' ended]*/
-									/* [scene define buf  with '\0' ended]*/
 } axtrace_2d_begin_scene_s;
 
 typedef struct
@@ -120,10 +120,10 @@ typedef struct
 	double			y;				/* position (y)*/
 	double			dir;			/* direction */
 	unsigned int	style;			/* user define style */
-	unsigned short	name_len;		/* length of actor name */
+	unsigned short	name_len;		/* length of scene name */
 	unsigned short	info_len;		/* length of actor information */
 
-									/* [actor name buf  with '\0' ended]*/
+									/* [scene name buf  with '\0' ended]*/
 									/* [actor information buf  with '\0' ended]*/
 } axtrace_2d_actor_s;
 
@@ -145,6 +145,41 @@ typedef struct
 									/* [scene name buf  with '\0' ended]*/
 									/* [actor log(utf8) buf  with '\0' ended]*/
 } axtrace_2d_actor_log_s;
+
+typedef struct
+{
+	axtrace_head_s	head;			/* common head */
+	double			grid_width;		/* grid width*/
+	double			grid_height;	/* grid height*/
+	double			grid_point_x;	/* grid position x */
+	double			grid_point_y;	/* grid position y */
+	unsigned short	name_len;		/* length of scene name */
+
+									/* [scene name buf  with '\0' ended]*/
+} axtrace_2d_shape_grid_s;
+
+typedef struct
+{
+	axtrace_head_s	head;			/* common head */
+	double			center_x;		/* center x*/
+	double			center_y;		/* center y*/
+	double			radius;			/* radius of circle*/
+	unsigned short	name_len;		/* length of scene name */
+
+									/* [scene name buf  with '\0' ended]*/
+} axtrace_2d_shape_circle_s;
+
+typedef struct
+{
+	axtrace_head_s	head;			/* common head */
+	double			x_min;			/* left of square*/
+	double			y_min;			/* top of square*/
+	double			x_max;			/* right of square*/
+	double			y_max;			/* bottom of square*/
+	unsigned short	name_len;		/* length of scene name */
+
+									/* [scene name buf  with '\0' ended]*/
+} axtrace_2d_shape_square_s;
 
 struct MessageTime
 {

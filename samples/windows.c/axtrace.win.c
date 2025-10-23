@@ -25,7 +25,6 @@
 #define AXTRACE_MAX_VALUENAME_LENGTH	(128)
 #define AXTRACE_MAX_VALUE_LENGTH		(1024)
 #define AXTRACE_MAX_SCENE_NAME_LENGTH	(128)
-#define AXTRACE_MAX_SCENE_DEFINE_LENGTH	(2048)
 #define AXTRACE_MAX_ACTOR_INFO_LENGTH	(2048)
 #define AXTRACE_MAX_ACTOR_LOG_LENGTH	(2048)
 
@@ -33,15 +32,18 @@
 #define ATC_UTF8	(1)	//Unicode 8
 #define ATC_UTF16	(2)	//Unicode 16
 
-#define AXTRACE_PROTO_VERSION			(4)
+#define AXTRACE_PROTO_VERSION			(5)
 
-#define AXTRACE_CMD_TYPE_SHAKEHAND		(0)
-#define AXTRACE_CMD_TYPE_LOG			(1)
-#define AXTRACE_CMD_TYPE_VALUE			(2)
-#define AXTRACE_CMD_TYPE_2D_BEGIN_SCENE	(3)
-#define AXTRACE_CMD_TYPE_2D_ACTOR		(4)
-#define AXTRACE_CMD_TYPE_2D_END_SCENE	(5)
-#define AXTRACE_CMD_TYPE_2D_ACTOR_LOG	(6)
+#define AXTRACE_CMD_TYPE_SHAKEHAND			(0)
+#define AXTRACE_CMD_TYPE_LOG				(1)
+#define AXTRACE_CMD_TYPE_VALUE				(2)
+#define AXTRACE_CMD_TYPE_2D_BEGIN_SCENE		(3)
+#define AXTRACE_CMD_TYPE_2D_ACTOR			(4)
+#define AXTRACE_CMD_TYPE_2D_END_SCENE		(5)
+#define AXTRACE_CMD_TYPE_2D_ACTOR_LOG		(6)
+#define AXTRACE_CMD_TYPE_2D_SHAPE_GRID		(7)
+#define AXTRACE_CMD_TYPE_2D_SHAPE_CIRCLE	(8)
+#define AXTRACE_CMD_TYPE_2D_SHAPE_SQUARE	(9)
 
 /*---------------------------------------------------------------------------------------------*/
 /* AxTrace Global data  */
@@ -104,10 +106,8 @@ typedef struct
 	double			x_max;			/* right of scene*/
 	double			y_max;			/* bottom of scene*/
 	unsigned short	name_len;		/* length of scene name */
-	unsigned short	define_len;		/* length of scene define */
 
 									/* [scene name buf  with '\0' ended]*/
-									/* [scene define buf  with '\0' ended]*/
 } axtrace_2d_begin_scene_s;
 
 typedef struct
@@ -118,10 +118,10 @@ typedef struct
 	double			y;				/* position (y)*/
 	double			dir;			/* direction */
 	unsigned int	style;			/* user define style */
-	unsigned short	name_len;		/* length of actor name */
+	unsigned short	name_len;		/* length of scene name */
 	unsigned short	info_len;		/* length of actor information */
 
-									/* [actor name buf  with '\0' ended]*/
+									/* [scene name buf  with '\0' ended]*/
 									/* [actor information buf  with '\0' ended]*/
 } axtrace_2d_actor_s;
 
@@ -143,6 +143,41 @@ typedef struct
 									/* [scene name buf  with '\0' ended]*/
 									/* [actor log(utf8) buf  with '\0' ended]*/
 } axtrace_2d_actor_log_s;
+
+typedef struct
+{
+	axtrace_head_s	head;			/* common head */
+	double			grid_width;		/* grid width*/
+	double			grid_height;	/* grid height*/
+	double			grid_point_x;	/* grid position x */
+	double			grid_point_y;	/* grid position y */
+	unsigned short	name_len;		/* length of scene name */
+
+									/* [scene name buf  with '\0' ended]*/
+} axtrace_2d_shape_grid_s;
+
+typedef struct
+{
+	axtrace_head_s	head;			/* common head */
+	double			center_x;		/* center x*/
+	double			center_y;		/* center y*/
+	double			radius;			/* radius of circle*/
+	unsigned short	name_len;		/* length of scene name */
+
+									/* [scene name buf  with '\0' ended]*/
+} axtrace_2d_shape_circle_s;
+
+typedef struct
+{
+	axtrace_head_s	head;			/* common head */
+	double			x_min;			/* left of square*/
+	double			y_min;			/* top of square*/
+	double			x_max;			/* right of square*/
+	double			y_max;			/* bottom of square*/
+	unsigned short	name_len;		/* length of scene name */
+
+									/* [scene name buf  with '\0' ended]*/
+} axtrace_2d_shape_square_s;
 
 #pragma pack(pop)
 
@@ -297,7 +332,6 @@ void axlog(unsigned int log_type, const char *format, ...)
 	/* send to axtrace server*/
 	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
 
-	/*TODO: check result, may be reconnect to server */
 	return;
 }
 
@@ -384,21 +418,19 @@ void axvalue(unsigned int value_type, const char* value_name, const void* value)
 	/* send to axtrace server*/
 	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
 
-	/*TODO: check result, may be reconnect to server */
 	return;
-
 }
 
 /*---------------------------------------------------------------------------------------------*/
-void ax2d_begin_scene(const char* scene_name, double x_min, double y_min, double x_max, double y_max, const char* scene_define)
+void ax2d_begin_scene(const char* scene_name, double x_min, double y_min, double x_max, double y_max)
 {
 	axtrace_contex_s* ctx;
 	HRESULT hr;
-	size_t scene_name_size, scene_define_size, final_length;
+	size_t scene_name_size, final_length;
 	int send_len;
 
 	/* buf for send , call send() once*/
-	char buf[sizeof(axtrace_2d_begin_scene_s) + AXTRACE_MAX_SCENE_NAME_LENGTH + AXTRACE_MAX_SCENE_DEFINE_LENGTH] = { 0 };
+	char buf[sizeof(axtrace_2d_begin_scene_s) + AXTRACE_MAX_SCENE_NAME_LENGTH] = { 0 };
 	axtrace_2d_begin_scene_s* trace_head = (axtrace_2d_begin_scene_s*)(buf);
 	char* _name = (char*)(buf + sizeof(axtrace_2d_begin_scene_s));
 
@@ -420,29 +452,7 @@ void ax2d_begin_scene(const char* scene_name, double x_min, double y_min, double
 	/* add '\0' ended */
 	scene_name_size += 1;
 
-	/* to scene define point */
-	if (scene_define != 0) {
-		_name = (char*)(buf + sizeof(axtrace_2d_begin_scene_s) + scene_name_size);
-
-		/* copy scene define */
-		hr = StringCbCopyA(_name, AXTRACE_MAX_SCENE_DEFINE_LENGTH, scene_define);
-		/* failed ?*/
-		if (FAILED(hr)) return;
-
-		/** get string length*/
-		hr = StringCbLengthA(_name, AXTRACE_MAX_SCENE_DEFINE_LENGTH - 1, &scene_define_size);
-		/* failed ?*/
-		if (FAILED(hr)) return;
-		if (scene_define_size >= AXTRACE_MAX_SCENE_DEFINE_LENGTH) return;
-
-		/* add '\0' ended */
-		scene_define_size += 1;
-	}
-	else {
-		scene_define_size = 0;
-	}
-
-	final_length = sizeof(axtrace_2d_begin_scene_s) + scene_name_size + scene_define_size;
+	final_length = sizeof(axtrace_2d_begin_scene_s) + scene_name_size;
 
 	trace_head->head.length = (unsigned short)(final_length);
 	trace_head->head.flag = 'A';
@@ -453,12 +463,10 @@ void ax2d_begin_scene(const char* scene_name, double x_min, double y_min, double
 	trace_head->x_max = x_max;
 	trace_head->y_max = y_max;
 	trace_head->name_len = (unsigned short)scene_name_size;
-	trace_head->define_len = (unsigned short)scene_define_size;
 
 	/* send to axtrace server*/
 	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
 
-	/*TODO: check result, may be reconnect to server */
 	return;
 }
 
@@ -467,7 +475,7 @@ void ax2d_actor(const char* scene_name, __int64 actor_id, double x, double y, do
 {
 	axtrace_contex_s* ctx;
 	HRESULT hr;
-	size_t actor_name_size, actor_info_size, final_length;
+	size_t scene_name_size, actor_info_size, final_length;
 	int send_len;
 
 	/* buf for send , call send() once*/
@@ -485,17 +493,17 @@ void ax2d_actor(const char* scene_name, __int64 actor_id, double x, double y, do
 	if (FAILED(hr)) return;
 
 	/** get actor name string length*/
-	hr = StringCbLengthA(_name, AXTRACE_MAX_SCENE_NAME_LENGTH - 1, &actor_name_size);
+	hr = StringCbLengthA(_name, AXTRACE_MAX_SCENE_NAME_LENGTH - 1, &scene_name_size);
 	/* failed ?*/
 	if (FAILED(hr)) return;
-	if (actor_name_size <= 0 || actor_name_size >= AXTRACE_MAX_SCENE_NAME_LENGTH) return;
+	if (scene_name_size <= 0 || scene_name_size >= AXTRACE_MAX_SCENE_NAME_LENGTH) return;
 
 	/* add '\0' ended */
-	actor_name_size += 1;
+	scene_name_size += 1;
 
 	/* to scene define point */
 	if (actor_info != 0) {
-		_name = (char*)(buf + sizeof(axtrace_2d_actor_s) + actor_name_size);
+		_name = (char*)(buf + sizeof(axtrace_2d_actor_s) + scene_name_size);
 
 		/* copy scene define */
 		hr = StringCbCopyA(_name, AXTRACE_MAX_ACTOR_INFO_LENGTH, actor_info);
@@ -515,7 +523,7 @@ void ax2d_actor(const char* scene_name, __int64 actor_id, double x, double y, do
 		actor_info_size = 0;
 	}
 
-	final_length = sizeof(axtrace_2d_actor_s) + actor_name_size + actor_info_size;
+	final_length = sizeof(axtrace_2d_actor_s) + scene_name_size + actor_info_size;
 
 	trace_head->head.length = (unsigned short)(final_length);
 	trace_head->head.flag = 'A';
@@ -526,13 +534,12 @@ void ax2d_actor(const char* scene_name, __int64 actor_id, double x, double y, do
 	trace_head->y = y;
 	trace_head->dir = dir;
 	trace_head->style = actor_style;
-	trace_head->name_len = (unsigned short)actor_name_size;
+	trace_head->name_len = (unsigned short)scene_name_size;
 	trace_head->info_len = (unsigned short)actor_info_size;
 
 	/* send to axtrace server*/
 	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
 
-	/*TODO: check result, may be reconnect to server */
 	return;
 }
 
@@ -577,7 +584,6 @@ void ax2d_end_scene(const char* scene_name)
 	/* send to axtrace server*/
 	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
 
-	/*TODO: check result, may be reconnect to server */
 	return;
 }
 
@@ -639,6 +645,152 @@ void ax2d_actor_log(const char* scene_name, __int64 actor_id, const char* actor_
 	trace_head->actor_id = actor_id;
 	trace_head->name_len = (unsigned short)scene_name_size;
 	trace_head->log_len = (unsigned short)actor_log_size;
+
+	/* send to axtrace server*/
+	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
+
+	return;
+}
+
+/*---------------------------------------------------------------------------------------------*/
+void ax2d_shape_grid(const char* scene_name, double grid_width, double grid_height, double grid_point_x, double grid_point_y)
+{
+	axtrace_contex_s* ctx;
+	HRESULT hr;
+	size_t scene_name_size, final_length;
+	int send_len;
+
+	/* buf for send , call send() once*/
+	char buf[sizeof(axtrace_2d_shape_grid_s) + AXTRACE_MAX_SCENE_NAME_LENGTH] = { 0 };
+	axtrace_2d_shape_grid_s* trace_head = (axtrace_2d_shape_grid_s*)(buf);
+	char* _name = (char*)(buf + sizeof(axtrace_2d_shape_grid_s));
+
+	/* is init ok? */
+	ctx = _axtrace_get_thread_contex();
+	if (ctx == 0) return;
+
+	/* copy scene name */
+	hr = StringCbCopyA(_name, AXTRACE_MAX_SCENE_NAME_LENGTH, scene_name);
+	/* failed ?*/
+	if (FAILED(hr)) return;
+
+	/** get actor name string length*/
+	hr = StringCbLengthA(_name, AXTRACE_MAX_SCENE_NAME_LENGTH - 1, &scene_name_size);
+	/* failed ?*/
+	if (FAILED(hr)) return;
+	if (scene_name_size <= 0 || scene_name_size >= AXTRACE_MAX_SCENE_NAME_LENGTH) return;
+
+	/* add '\0' ended */
+	scene_name_size += 1;
+
+	final_length = sizeof(axtrace_2d_shape_grid_s) + scene_name_size;
+
+	trace_head->head.length = (unsigned short)(final_length);
+	trace_head->head.flag = 'A';
+	trace_head->head.type = AXTRACE_CMD_TYPE_2D_SHAPE_GRID;
+
+	trace_head->grid_width = grid_width;
+	trace_head->grid_height = grid_height;
+	trace_head->grid_point_x = grid_point_x;
+	trace_head->grid_point_y = grid_point_y;
+	trace_head->name_len = (unsigned short)scene_name_size;
+
+	/* send to axtrace server*/
+	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
+
+	return;
+}
+
+/*---------------------------------------------------------------------------------------------*/
+void ax2d_shape_circle(const char* scene_name, double center_x, double center_y, double radius)
+{
+	axtrace_contex_s* ctx;
+	HRESULT hr;
+	size_t scene_name_size, final_length;
+	int send_len;
+
+	/* buf for send , call send() once*/
+	char buf[sizeof(axtrace_2d_shape_circle_s) + AXTRACE_MAX_SCENE_NAME_LENGTH] = { 0 };
+	axtrace_2d_shape_circle_s* trace_head = (axtrace_2d_shape_circle_s*)(buf);
+	char* _name = (char*)(buf + sizeof(axtrace_2d_shape_circle_s));
+
+	/* is init ok? */
+	ctx = _axtrace_get_thread_contex();
+	if (ctx == 0) return;
+
+	/* copy scene name */
+	hr = StringCbCopyA(_name, AXTRACE_MAX_SCENE_NAME_LENGTH, scene_name);
+	/* failed ?*/
+	if (FAILED(hr)) return;
+
+	/** get actor name string length*/
+	hr = StringCbLengthA(_name, AXTRACE_MAX_SCENE_NAME_LENGTH - 1, &scene_name_size);
+	/* failed ?*/
+	if (FAILED(hr)) return;
+	if (scene_name_size <= 0 || scene_name_size >= AXTRACE_MAX_SCENE_NAME_LENGTH) return;
+
+	/* add '\0' ended */
+	scene_name_size += 1;
+
+	final_length = sizeof(axtrace_2d_shape_circle_s) + scene_name_size;
+
+	trace_head->head.length = (unsigned short)(final_length);
+	trace_head->head.flag = 'A';
+	trace_head->head.type = AXTRACE_CMD_TYPE_2D_SHAPE_CIRCLE;
+
+	trace_head->center_x = center_x;
+	trace_head->center_y = center_y;
+	trace_head->radius = radius;
+	trace_head->name_len = (unsigned short)scene_name_size;
+
+	/* send to axtrace server*/
+	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
+
+	return;
+}
+
+/*---------------------------------------------------------------------------------------------*/
+void ax2d_shape_square(const char* scene_name,  double x_min, double y_min, double x_max, double y_max)
+{
+	axtrace_contex_s* ctx;
+	HRESULT hr;
+	size_t scene_name_size, final_length;
+	int send_len;
+
+	/* buf for send , call send() once*/
+	char buf[sizeof(axtrace_2d_shape_square_s) + AXTRACE_MAX_SCENE_NAME_LENGTH] = { 0 };
+	axtrace_2d_shape_square_s* trace_head = (axtrace_2d_shape_square_s*)(buf);
+	char* _name = (char*)(buf + sizeof(axtrace_2d_shape_square_s));
+
+	/* is init ok? */
+	ctx = _axtrace_get_thread_contex();
+	if (ctx == 0) return;
+
+	/* copy scene name */
+	hr = StringCbCopyA(_name, AXTRACE_MAX_SCENE_NAME_LENGTH, scene_name);
+	/* failed ?*/
+	if (FAILED(hr)) return;
+
+	/** get actor name string length*/
+	hr = StringCbLengthA(_name, AXTRACE_MAX_SCENE_NAME_LENGTH - 1, &scene_name_size);
+	/* failed ?*/
+	if (FAILED(hr)) return;
+	if (scene_name_size <= 0 || scene_name_size >= AXTRACE_MAX_SCENE_NAME_LENGTH) return;
+
+	/* add '\0' ended */
+	scene_name_size += 1;
+
+	final_length = sizeof(axtrace_2d_shape_grid_s) + scene_name_size;
+
+	trace_head->head.length = (unsigned short)(final_length);
+	trace_head->head.flag = 'A';
+	trace_head->head.type = AXTRACE_CMD_TYPE_2D_SHAPE_SQUARE;
+
+	trace_head->x_min = x_min;
+	trace_head->y_min = y_min;
+	trace_head->x_max = x_max;
+	trace_head->y_max = y_max;
+	trace_head->name_len = (unsigned short)scene_name_size;
 
 	/* send to axtrace server*/
 	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);

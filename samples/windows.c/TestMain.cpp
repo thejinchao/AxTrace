@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
 {
 	printf("============= AxTrace4 Test(C++) ================\n");
 	srand((unsigned int)::time(0));
-
+#if 0
 
 	//--------------------------
 	{
@@ -326,7 +326,7 @@ int main(int argc, char* argv[])
 		}
 
 	}
-
+#endif
 	{
 		printf("AxMap2D Test\n");
 		system("pause");
@@ -334,7 +334,7 @@ int main(int argc, char* argv[])
 		const int ACTOR_COUNTS = 100;
 		const int MOVE_COUNTS = 500;
 
-		const double MAP_X_MIN = -260.0;
+		const double MAP_X_MIN = -256.0;
 		const double MAP_Y_MIN = -256.0;
 		const double MAP_X_MAX = 256.0;
 		const double MAP_Y_MAX = 256.0;
@@ -345,7 +345,14 @@ int main(int argc, char* argv[])
 		double MAP_HEIGHT = MAP_Y_MAX - MAP_Y_MIN;
 		AxActor2D allActors[ACTOR_COUNTS];
 	
-		ax2d_begin_scene("test", MAP_X_MIN, MAP_Y_MIN, MAP_X_MAX, MAP_Y_MAX, "{\"gridSize\":[32.0,32.0], \"gridPoint\":[-256.0, 256.0]}");
+		//ax2d_shape_grid("test", 32.0, 32.0, 0.0, 0.0);
+
+		//ax2d_shape_square("test", 0.0, 0.0, 32.0, 32.0);
+		ax2d_shape_square("test", 32.0, 0.0, 70.0, 40.0);
+		ax2d_shape_circle("test", -10.0, -20.0, 30.0);
+		//system("pause");
+
+		ax2d_begin_scene("test", MAP_X_MIN, MAP_Y_MIN, MAP_X_MAX, MAP_Y_MAX);
 		for (int i = 0; i < ACTOR_COUNTS; i++)
 		{
 			AxActor2D& actor = allActors[i];
@@ -364,7 +371,7 @@ int main(int argc, char* argv[])
 
 		for (int i = 0; i < MOVE_COUNTS; i++)
 		{
-			ax2d_begin_scene("test", MAP_X_MIN, MAP_Y_MIN, MAP_X_MAX, MAP_Y_MAX, "{\"gridSize\":[32.0,32.0], \"gridPoint\":[-256.0, 256.0]}");
+			ax2d_begin_scene("test", MAP_X_MIN, MAP_Y_MIN, MAP_X_MAX, MAP_Y_MAX);// , "{\"gridSize\":[32.0,32.0], \"gridPoint\":[-256.0, 256.0]}");
 
 			for (int j = 0; j < ACTOR_COUNTS; j++)
 			{
@@ -399,8 +406,9 @@ int main(int argc, char* argv[])
 			double gridPointX = -256.0;
 			double gridPointY = 256;
 			_snprintf(temp, 256, "{\"gridSize\":[32.0,32.0], \"gridPoint\":[%f,%f]}", gridPointX+i, gridPointY-i);
+			ax2d_shape_grid("test", 32.0, 32.0, gridPointX+i, gridPointY-i);
 
-			ax2d_begin_scene("test", MAP_X_MIN, MAP_Y_MIN, MAP_X_MAX, MAP_Y_MAX, temp);
+			ax2d_begin_scene("test", MAP_X_MIN, MAP_Y_MIN, MAP_X_MAX, MAP_Y_MAX);// , temp);
 			for (int j = 0; j < ACTOR_COUNTS-i; j++)
 			{
 				AxActor2D& actor = allActors[j];

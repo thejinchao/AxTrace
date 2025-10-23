@@ -40,10 +40,14 @@ bool MessageFilter::init(Config* cfg)
 	ValueMessage::_luaopen(L);
 	Begin2DSceneMessage::_luaopen(L);
 	Update2DActorMessage::_luaopen(L);
+	End2DSceneMessage::_luaopen(L);
+	Add2DActorLogMessage::_luaopen(L);
+	Add2DGridShapeMessage::_luaopen(L);
+	Add2DCircleShapeMessage::_luaopen(L);
+	Add2DSquareShapeMessage::_luaopen(L);
 
 	//reload script
 	QString filterScript = m_config->getFilterScript();
-	//QByteArray byteArray = filterScript.toUtf8();
 	std::string strFilterScript = filterScript.toStdString();
 	qDebug() << strFilterScript;
 	const char* szFilterScript = strFilterScript.c_str();
@@ -81,6 +85,11 @@ bool MessageFilter::tryLoadScript(const char* script, QString& errorMsg)
 	ValueMessage::_luaopen(L2);
 	Begin2DSceneMessage::_luaopen(L2);
 	Update2DActorMessage::_luaopen(L2);
+	End2DSceneMessage::_luaopen(L2);
+	Add2DActorLogMessage::_luaopen(L2);
+	Add2DGridShapeMessage::_luaopen(L2);
+	Add2DCircleShapeMessage::_luaopen(L2);
+	Add2DSquareShapeMessage::_luaopen(L2);
 
 	bool success = (luaL_dostring(L2, script) == 0);
 
@@ -174,4 +183,20 @@ void MessageFilter::onActor2DMessage(const Update2DActorMessage* message, Actor2
 		result.fillColor = (uint16_t)(lua_tointeger(L, -1) & 0xFFFF);
 	}
 	lua_pop(L, 5);
+}
+
+QString MessageFilter::get2DSceneWndTitle(const Scene2DMessage* message)
+{
+	lua_getglobal(L, "get2DSceneWndTitle");
+	lua_pushlightuserdata(L, (void*)message);
+
+	luaL_getmetatable(L, message->luaMetaName());
+	lua_setmetatable(L, -2);
+	lua_pcall(L, 1, 1, 0);
+
+	const char* szWndTitle = lua_tostring(L, -1);
+
+	lua_pop(L, 1);
+		
+	return QString(szWndTitle);
 }

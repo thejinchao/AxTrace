@@ -127,6 +127,18 @@ void MainWindow::_processAxTraceData(Message* msg)
 		_addActor2DLog((Add2DActorLogMessage*)msg);
 		break;
 
+	case AXTRACE_CMD_TYPE_2D_SHAPE_GRID:
+		_add2DGrideShape((Add2DGridShapeMessage*)msg);
+		break;
+
+	case AXTRACE_CMD_TYPE_2D_SHAPE_CIRCLE:
+		_add2DCircleShape((Add2DCircleShapeMessage*)msg);
+		break;
+
+	case AXTRACE_CMD_TYPE_2D_SHAPE_SQUARE:
+		_add2DSquareShape((Add2DSquareShapeMessage*)msg);
+		break;
+
 	default: break;
 	}
 }
@@ -167,7 +179,7 @@ void MainWindow::_insertValue(ValueMessage* msg)
 //--------------------------------------------------------------------------------------------
 void MainWindow::_begin2DScene(Begin2DSceneMessage* msg)
 {
-	Map2DChild* child = getMap2DChild(msg->getSceneName());
+	Map2DChild* child = getMap2DChild(msg);
 	child->beginScene(msg);
 }
 
@@ -178,22 +190,43 @@ void MainWindow::_update2DActor(Update2DActorMessage* msg)
 	System::getSingleton()->getFilter()->onActor2DMessage(msg, filterResult);
 	if (!filterResult.display) return;
 
-	Map2DChild* child = getMap2DChild(msg->getSceneName());
+	Map2DChild* child = getMap2DChild(msg);
 	child->updateActor(msg, filterResult);
 }
 
 //--------------------------------------------------------------------------------------------
 void MainWindow::_end2DScene(End2DSceneMessage* msg)
 {
-	Map2DChild* child = getMap2DChild(msg->getSceneName());
+	Map2DChild* child = getMap2DChild(msg);
 	child->endScene(msg);
 }
 
 //--------------------------------------------------------------------------------------------
 void MainWindow::_addActor2DLog(Add2DActorLogMessage* msg)
 {
-	Map2DChild* child = getMap2DChild(msg->getSceneName());
+	Map2DChild* child = getMap2DChild(msg);
 	child->addActorLog(msg);
+}
+
+//--------------------------------------------------------------------------------------------
+void MainWindow::_add2DGrideShape(Add2DGridShapeMessage* msg)
+{
+	Map2DChild* child = getMap2DChild(msg);
+	child->addGridShape(msg);
+}
+
+//--------------------------------------------------------------------------------------------
+void MainWindow::_add2DCircleShape(Add2DCircleShapeMessage* msg)
+{
+	Map2DChild* child = getMap2DChild(msg);
+	child->addCircleShape(msg);
+}
+
+//--------------------------------------------------------------------------------------------
+void MainWindow::_add2DSquareShape(Add2DSquareShapeMessage* msg)
+{
+	Map2DChild* child = getMap2DChild(msg);
+	child->addSquareShape(msg);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -233,8 +266,10 @@ ValueChild* MainWindow::getValueChild(const QString& title)
 }
 
 //--------------------------------------------------------------------------------------------
-Map2DChild* MainWindow::getMap2DChild(const QString& title)
+Map2DChild* MainWindow::getMap2DChild(const Scene2DMessage* sceneMessage)
 {
+	QString title = System::getSingleton()->getFilter()->get2DSceneWndTitle(sceneMessage);
+
 	auto it = m_map2dChildMap.find(title);
 	if (it != m_map2dChildMap.end()) return it.value();
 

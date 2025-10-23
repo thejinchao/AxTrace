@@ -11,15 +11,14 @@
 #include "AT4_Config.h"
 
 //--------------------------------------------------------------------------------------------
-Scene2D::Scene2D(Begin2DSceneMessage* msg)
+Scene2D::Scene2D(Scene2DMessage* msg)
 	: m_sceneName(msg->getSceneName())
-	, m_sceneRect(msg->getSceneRect())
 	, m_actorMapIndex(0)
 	, m_frameIndex(0)
 	, m_updating(false)
-	, m_updatingRect(msg->getSceneRect())
+	, m_gridDefined(false)
 {
-	_parserSceneDefine(msg->getSceneDefine());
+
 }
 
 //--------------------------------------------------------------------------------------------
@@ -36,7 +35,7 @@ void Scene2D::beginScene(const Begin2DSceneMessage* msg)
 	m_updating = true;
 	m_updatingRect = msg->getSceneRect();
 	updatingActorsMap.clear();
-	m_updatingSceneDefine = msg->getSceneDefine();
+	//m_updatingSceneDefine = msg->getSceneDefine();
 }
 
 //--------------------------------------------------------------------------------------------
@@ -109,8 +108,6 @@ void Scene2D::endScene(const End2DSceneMessage* msg)
 	m_actorMapIndex = 1 - m_actorMapIndex;
 	m_frameIndex++;
 	m_sceneRect = m_updatingRect;
-
-	_parserSceneDefine(m_updatingSceneDefine);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -156,7 +153,7 @@ void Scene2D::clean(void)
 }
 
 //--------------------------------------------------------------------------------------------
-void Scene2D::walk(Scene2D::ActorWalkFunc walkFunc)
+void Scene2D::actorWalk(Scene2D::ActorWalkFunc walkFunc)
 {
 	ActorMap& actorsMap = m_actorMap[m_actorMapIndex];
 
@@ -168,45 +165,62 @@ void Scene2D::walk(Scene2D::ActorWalkFunc walkFunc)
 }
 
 //--------------------------------------------------------------------------------------------
-void Scene2D::_parserSceneDefine(const QJsonObject& sceneInfo)
+void Scene2D::addGridDefine(const QSizeF& gridSize, const QPointF& gridPoint)
 {
-	m_gridDefined = false;
-
-	//parser gridSize
-	if (sceneInfo.contains("gridSize") && sceneInfo["gridSize"].isArray()) {
-		QJsonArray gridSizeArray = sceneInfo["gridSize"].toArray();
-		if (gridSizeArray.size() >= 2) {
-			m_gridSize = QSizeF(abs(gridSizeArray[0].toDouble()), abs(gridSizeArray[1].toDouble()));
-
-			m_gridDefined = true;
-		}
-	}
+	m_gridSize = QSizeF(abs(gridSize.width()), abs(gridSize.height()));
 
 	//default gridPoint
 	m_gridPoint = QPointF(0, 0);
 
-	//parser gridSize
-	if (m_gridDefined && sceneInfo.contains("gridPoint") && sceneInfo["gridPoint"].isArray()) {
-		QJsonArray gridPointArray = sceneInfo["gridPoint"].toArray();
-		if (gridPointArray.size() >= 2) {
-			double gridPointX = gridPointArray[0].toDouble();
-			double gridPointY = gridPointArray[1].toDouble();
+	double gridPointX = gridPoint.x();
+	double gridPointY = gridPoint.y();
 
-			double absPointX = abs(gridPointX);
-			double absPointY = abs(gridPointY);
+	double absPointX = abs(gridPointX);
+	double absPointY = abs(gridPointY);
 
-			int flagX = gridPointX > 0 ? 1 : -1;
-			int flagY = gridPointY > 0 ? 1 : -1;
-			
-			if (absPointX > m_gridSize.width()) {
-				gridPointX = flagX*(absPointX - (int)(absPointX / m_gridSize.width()) * m_gridSize.width());
-			}
-			if (gridPointY > m_gridSize.height()) {
-				gridPointY = flagY * (absPointY - (int)(absPointY / m_gridSize.height()) * m_gridSize.height());
-			}
+	int flagX = gridPoint.x() > 0 ? 1 : -1;
+	int flagY = gridPoint.y() > 0 ? 1 : -1;
+	
+	if (absPointX > m_gridSize.width()) {
+		gridPointX = flagX*(absPointX - (int)(absPointX / m_gridSize.width()) * m_gridSize.width());
+	}
+	if (gridPointY > m_gridSize.height()) {
+		gridPointY = flagY * (absPointY - (int)(absPointY / m_gridSize.height()) * m_gridSize.height());
+	}
 
-			m_gridPoint = QPointF(gridPointX, gridPointY);
-		}
+	m_gridPoint = QPointF(gridPointX, gridPointY);
+
+	m_gridDefined = true;
+}
+
+//--------------------------------------------------------------------------------------------
+void Scene2D::addSquareShape(const QRectF& square)
+{
+	m_squareShapes.append(square);
+}
+
+//--------------------------------------------------------------------------------------------
+void Scene2D::squareShapeWalk(Scene2D::SquareWalkFunc walkFunc)
+{
+	for (SquareShapeList::iterator it = m_squareShapes.begin(); it != m_squareShapes.end(); ++it)
+	{
+		const QRectF& actor = *it;
+		walkFunc(actor);
+	}
+}
+
+//--------------------------------------------------------------------------------------------
+void Scene2D::addCircleShape(const QPointF& center, qreal radius)
+{
+	m_circleShapes.append(qMakePair(center, radius));
+}
+
+//--------------------------------------------------------------------------------------------
+void Scene2D::circleShapeWalk(CircleWalkFunc walkFunc)
+{
+	for (CircleShapeList::iterator it = m_circleShapes.begin(); it != m_circleShapes.end(); ++it)
+	{
+		walkFunc(it->first, it->second);
 	}
 }
 

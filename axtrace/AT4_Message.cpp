@@ -28,10 +28,13 @@ qint32 Message::getMessageMaxSize(qint32 msgType)
 		sizeof(axtrace_shakehand_s) + AXTRACE_MAX_PROCESSNAME_LENGTH,	// AXTRACE_CMD_TYPE_SHAKEHAND(0)
 		sizeof(axtrace_log_s) + AXTRACE_MAX_LOG_STRING_LENGTH,			// AXTRACE_CMD_TYPE_LOG(1)
 		sizeof(axtrace_value_s) + AXTRACE_MAX_VALUENAME_LENGTH + AXTRACE_MAX_VALUE_LENGTH,	//AXTRACE_CMD_TYPE_VALUE(2)
-		sizeof(axtrace_2d_begin_scene_s) + AXTRACE_MAX_SCENE_NAME_LENGTH + AXTRACE_MAX_SCENE_DEFINE_LENGTH, //AXTRACE_CMD_TYPE_2D_BEGIN_SCENE(3)
+		sizeof(axtrace_2d_begin_scene_s) + AXTRACE_MAX_SCENE_NAME_LENGTH, //AXTRACE_CMD_TYPE_2D_BEGIN_SCENE(3)
 		sizeof(axtrace_2d_actor_s) + AXTRACE_MAX_SCENE_NAME_LENGTH + AXTRACE_MAX_ACTOR_INFO_LENGTH, //AXTRACE_CMD_TYPE_2D_ACTOR(4)
 		sizeof(axtrace_2d_end_scene_s) + AXTRACE_MAX_SCENE_NAME_LENGTH, //AXTRACE_CMD_TYPE_2D_END_SCENE(5)
 		sizeof(axtrace_2d_actor_log_s) + AXTRACE_MAX_SCENE_NAME_LENGTH + AXTRACE_MAX_ACTOR_LOG_LENGTH,	//AXTRACE_CMD_TYPE_2D_ACTOR_LOG
+		sizeof(axtrace_2d_shape_grid_s) + AXTRACE_MAX_SCENE_NAME_LENGTH,	//AXTRACE_CMD_TYPE_2D_SHAPE_GRID
+		sizeof(axtrace_2d_shape_circle_s) + AXTRACE_MAX_SCENE_NAME_LENGTH,	//AXTRACE_CMD_TYPE_2D_SHAPE_CIRCLE
+		sizeof(axtrace_2d_shape_square_s) + AXTRACE_MAX_SCENE_NAME_LENGTH,	//AXTRACE_CMD_TYPE_2D_SHAPE_SQUARE
 	};
 	static qint32 s_MessageTypeCounts = sizeof(s_MessageMaxSize) / sizeof(s_MessageMaxSize[0]);
 
@@ -213,8 +216,6 @@ void LogMessage::_luaopen(lua_State *L)
 		{ 0, 0 }
 	};
 
-
-	//PlayerData meta table
 	luaL_newmetatable(L, LogMessage::MetaName);
 	lua_pushvalue(L, -1);  /* push metatable */
 	lua_setfield(L, -2, "__index");  /* metatable.__index = metatable */
@@ -408,13 +409,34 @@ void ValueMessage::_luaopen(lua_State *L)
 		{ 0, 0 }
 	};
 
-
-	//PlayerData meta table
 	luaL_newmetatable(L, ValueMessage::MetaName);
 	lua_pushvalue(L, -1);  /* push metatable */
 	lua_setfield(L, -2, "__index");  /* metatable.__index = metatable */
 
 	luaL_register(L, NULL, msg_data_meta);  /* file methods */
+}
+//--------------------------------------------------------------------------------------------
+Scene2DMessage::Scene2DMessage(SessionPtr session, const MessageTime& traceTime)
+	: Message(session, traceTime)
+{
+
+}
+
+//--------------------------------------------------------------------------------------------
+Scene2DMessage::~Scene2DMessage()
+{
+
+}
+
+//-------------------------------------------------------------------------------------
+int Scene2DMessage::_lua_get_scene_name(lua_State *L)
+{
+	const Scene2DMessage* msg = (const Scene2DMessage*)lua_touserdata(L, 1);
+
+	QByteArray msgUtf8 = msg->getSceneName().toUtf8();
+	lua_pushstring(L, msgUtf8.data());
+
+	return 1;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -422,7 +444,7 @@ QQueue<Begin2DSceneMessage*> Begin2DSceneMessage::s_messagePool;
 
 //--------------------------------------------------------------------------------------------
 Begin2DSceneMessage::Begin2DSceneMessage(SessionPtr session, const MessageTime& traceTime)
-	: Message(session, traceTime)
+	: Scene2DMessage(session, traceTime)
 {
 
 }
@@ -449,34 +471,16 @@ bool Begin2DSceneMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ri
 	qint32 name_length = begin_scene_head.name_len;
 	if (name_length <= 0 || name_length > AXTRACE_MAX_SCENE_NAME_LENGTH) return false;
 
-	//check scene define
-	qint32 define_length = begin_scene_head.define_len;
-	if (define_length<0 || define_length > AXTRACE_MAX_SCENE_DEFINE_LENGTH) return false;
-
 	//check length
-	if (head.length != sizeof(begin_scene_head) + name_length + define_length) return false;
+	if (head.length != sizeof(begin_scene_head) + name_length) return false;
 
 	//copy name 
-	char tempBuf[AXTRACE_MAX_SCENE_DEFINE_LENGTH] = { 0 };
+	char tempBuf[AXTRACE_MAX_SCENE_NAME_LENGTH] = { 0 };
 	len = ringBuf->peek(sizeof(begin_scene_head), tempBuf, name_length);
 	assert(len == name_length);
 	tempBuf[name_length - 1] = 0; //make sure last char is '\0'
 	m_sceneName = QString::fromUtf8(tempBuf);
 
-	//copy define 
-	if (define_length > 0) {
-		len = ringBuf->peek(sizeof(begin_scene_head)+ name_length, tempBuf, define_length);
-		assert(len == define_length);
-		tempBuf[define_length - 1] = 0;
-	
-		//make json object
-		QJsonParseError jerror;
-		QJsonDocument jsonDocument = QJsonDocument::fromJson(tempBuf, &jerror);
-		if (jerror.error == QJsonParseError::NoError)
-		{
-			m_sceneDefine = jsonDocument.object();
-		}
-	}
 	//ok!
 	ringBuf->discard(head.length);
 	return true;
@@ -493,10 +497,11 @@ void Begin2DSceneMessage::_luaopen(lua_State *L)
 		{ "get_pid", Message::_lua_get_process_id },
 		{ "get_tid", Message::_lua_get_thread_id },
 
+		{ "get_scene_name", Scene2DMessage::_lua_get_scene_name },
+
 		{ 0, 0 }
 	};
 
-	//PlayerData meta table
 	luaL_newmetatable(L, Begin2DSceneMessage::MetaName);
 	lua_pushvalue(L, -1);  /* push metatable */
 	lua_setfield(L, -2, "__index");  /* metatable.__index = metatable */
@@ -509,7 +514,7 @@ QQueue<Update2DActorMessage*> Update2DActorMessage::s_messagePool;
 
 //--------------------------------------------------------------------------------------------
 Update2DActorMessage::Update2DActorMessage(SessionPtr session, const MessageTime& traceTime)
-	: Message(session, traceTime)
+	: Scene2DMessage(session, traceTime)
 {
 
 }
@@ -632,6 +637,8 @@ void Update2DActorMessage::_luaopen(lua_State *L)
 		{ "get_pid", Message::_lua_get_process_id },
 		{ "get_tid", Message::_lua_get_thread_id },
 
+		{ "get_scene_name", Scene2DMessage::_lua_get_scene_name },
+
 		{ "get_actor_id", Update2DActorMessage::_lua_get_actor_id },
 		{ "get_actor_position", Update2DActorMessage::_lua_get_actor_position },
 		{ "get_actor_dir", Update2DActorMessage::_lua_get_actor_dir },
@@ -641,8 +648,6 @@ void Update2DActorMessage::_luaopen(lua_State *L)
 		{ 0, 0 }
 	};
 
-
-	//PlayerData meta table
 	luaL_newmetatable(L, Update2DActorMessage::MetaName);
 	lua_pushvalue(L, -1);  /* push metatable */
 	lua_setfield(L, -2, "__index");  /* metatable.__index = metatable */
@@ -655,7 +660,7 @@ QQueue<End2DSceneMessage*> End2DSceneMessage::s_messagePool;
 
 //--------------------------------------------------------------------------------------------
 End2DSceneMessage::End2DSceneMessage(SessionPtr session, const MessageTime& traceTime)
-	: Message(session, traceTime)
+	: Scene2DMessage(session, traceTime)
 {
 
 }
@@ -706,10 +711,11 @@ void End2DSceneMessage::_luaopen(lua_State *L)
 		{ "get_pid", Message::_lua_get_process_id },
 		{ "get_tid", Message::_lua_get_thread_id },
 
+		{ "get_scene_name", Scene2DMessage::_lua_get_scene_name },
+
 		{ 0, 0 }
 	};
 
-	//PlayerData meta table
 	luaL_newmetatable(L, End2DSceneMessage::MetaName);
 	lua_pushvalue(L, -1);  /* push metatable */
 	lua_setfield(L, -2, "__index");  /* metatable.__index = metatable */
@@ -722,7 +728,7 @@ QQueue<Add2DActorLogMessage*> Add2DActorLogMessage::s_messagePool;
 
 //--------------------------------------------------------------------------------------------
 Add2DActorLogMessage::Add2DActorLogMessage(SessionPtr session, const MessageTime& traceTime)
-	: Message(session, traceTime)
+	: Scene2DMessage(session, traceTime)
 {
 
 }
@@ -809,15 +815,228 @@ void Add2DActorLogMessage::_luaopen(lua_State *L)
 		{ "get_pid", Message::_lua_get_process_id },
 		{ "get_tid", Message::_lua_get_thread_id },
 
+		{ "get_scene_name", Scene2DMessage::_lua_get_scene_name },
+
 		{ "get_actor_id", Add2DActorLogMessage::_lua_get_actor_id },
 		{ "get_actor_log", Add2DActorLogMessage::_lua_get_actor_log },
 
 		{ 0, 0 }
 	};
 
-
-	//PlayerData meta table
 	luaL_newmetatable(L, Add2DActorLogMessage::MetaName);
+	lua_pushvalue(L, -1);  /* push metatable */
+	lua_setfield(L, -2, "__index");  /* metatable.__index = metatable */
+
+	luaL_register(L, NULL, msg_data_meta);  /* file methods */
+}
+
+//--------------------------------------------------------------------------------------------
+QQueue<Add2DGridShapeMessage*> Add2DGridShapeMessage::s_messagePool;
+
+//--------------------------------------------------------------------------------------------
+Add2DGridShapeMessage::Add2DGridShapeMessage(SessionPtr session, const MessageTime& traceTime)
+	: Scene2DMessage(session, traceTime)
+{
+
+}
+
+//--------------------------------------------------------------------------------------------
+Add2DGridShapeMessage::~Add2DGridShapeMessage()
+{
+
+}
+
+//--------------------------------------------------------------------------------------------
+bool Add2DGridShapeMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
+{
+	if (!(m_session->isHandshaked())) return false;
+
+	axtrace_2d_shape_grid_s message_head;
+	size_t len = ringBuf->peek(0, &message_head, sizeof(message_head));
+	assert(len == sizeof(message_head));
+
+	m_gridSize = QSizeF((qreal)message_head.grid_width, (qreal)message_head.grid_height);
+	m_gridPoint = QPointF((qreal)message_head.grid_point_x, (qreal)message_head.grid_point_y);
+
+	//check scene name
+	qint32 name_length = message_head.name_len;
+	if (name_length <= 0 || name_length > AXTRACE_MAX_SCENE_NAME_LENGTH) return false;
+
+	//check length
+	if (head.length != sizeof(message_head) + name_length) return false;
+
+	//copy scene name 
+	char tempName[AXTRACE_MAX_SCENE_NAME_LENGTH] = { 0 };
+	len = ringBuf->peek(sizeof(message_head), tempName, name_length);
+	assert(len == name_length);
+	tempName[name_length - 1] = 0; //make sure last char is '\0'
+	m_sceneName = QString::fromUtf8(tempName);
+
+	//ok!
+	ringBuf->discard(head.length);
+	return true;
+}
+
+//--------------------------------------------------------------------------------------------
+const char* Add2DGridShapeMessage::MetaName = "AxTrace.Add2DGridShape";
+
+void Add2DGridShapeMessage::_luaopen(lua_State *L)
+{
+	static luaL_Reg msg_data_meta[] =
+	{
+		{ "get_type", Message::_lua_get_type },
+		{ "get_pid", Message::_lua_get_process_id },
+		{ "get_tid", Message::_lua_get_thread_id },
+
+		{ "get_scene_name", Scene2DMessage::_lua_get_scene_name },
+
+		{ 0, 0 }
+	};
+
+	luaL_newmetatable(L, Add2DGridShapeMessage::MetaName);
+	lua_pushvalue(L, -1);  /* push metatable */
+	lua_setfield(L, -2, "__index");  /* metatable.__index = metatable */
+
+	luaL_register(L, NULL, msg_data_meta);  /* file methods */
+}
+
+//--------------------------------------------------------------------------------------------
+QQueue<Add2DCircleShapeMessage*> Add2DCircleShapeMessage::s_messagePool;
+
+//--------------------------------------------------------------------------------------------
+Add2DCircleShapeMessage::Add2DCircleShapeMessage(SessionPtr session, const MessageTime& traceTime)
+	: Scene2DMessage(session, traceTime)
+{
+
+}
+
+//--------------------------------------------------------------------------------------------
+Add2DCircleShapeMessage::~Add2DCircleShapeMessage()
+{
+
+}
+
+//--------------------------------------------------------------------------------------------
+bool Add2DCircleShapeMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
+{
+	if (!(m_session->isHandshaked())) return false;
+
+	axtrace_2d_shape_circle_s message_head;
+	size_t len = ringBuf->peek(0, &message_head, sizeof(message_head));
+	assert(len == sizeof(message_head));
+
+	m_center = QPointF((qreal)message_head.center_x, (qreal)message_head.center_y);
+	m_radius = (qreal)message_head.radius;
+
+	//check scene name
+	qint32 name_length = message_head.name_len;
+	if (name_length <= 0 || name_length > AXTRACE_MAX_SCENE_NAME_LENGTH) return false;
+
+	//check length
+	if (head.length != sizeof(message_head) + name_length) return false;
+
+	//copy scene name 
+	char tempName[AXTRACE_MAX_SCENE_NAME_LENGTH] = { 0 };
+	len = ringBuf->peek(sizeof(message_head), tempName, name_length);
+	assert(len == name_length);
+	tempName[name_length - 1] = 0; //make sure last char is '\0'
+	m_sceneName = QString::fromUtf8(tempName);
+
+	//ok!
+	ringBuf->discard(head.length);
+	return true;
+}
+
+//--------------------------------------------------------------------------------------------
+const char* Add2DCircleShapeMessage::MetaName = "AxTrace.Add2DCircleShape";
+
+void Add2DCircleShapeMessage::_luaopen(lua_State *L)
+{
+	static luaL_Reg msg_data_meta[] =
+	{
+		{ "get_type", Message::_lua_get_type },
+		{ "get_pid", Message::_lua_get_process_id },
+		{ "get_tid", Message::_lua_get_thread_id },
+
+		{ "get_scene_name", Scene2DMessage::_lua_get_scene_name },
+
+		{ 0, 0 }
+	};
+
+	luaL_newmetatable(L, Add2DCircleShapeMessage::MetaName);
+	lua_pushvalue(L, -1);  /* push metatable */
+	lua_setfield(L, -2, "__index");  /* metatable.__index = metatable */
+
+	luaL_register(L, NULL, msg_data_meta);  /* file methods */
+}
+
+//--------------------------------------------------------------------------------------------
+QQueue<Add2DSquareShapeMessage*> Add2DSquareShapeMessage::s_messagePool;
+
+//--------------------------------------------------------------------------------------------
+Add2DSquareShapeMessage::Add2DSquareShapeMessage(SessionPtr session, const MessageTime& traceTime)
+	: Scene2DMessage(session, traceTime)
+{
+
+}
+
+//--------------------------------------------------------------------------------------------
+Add2DSquareShapeMessage::~Add2DSquareShapeMessage()
+{
+
+}
+
+//--------------------------------------------------------------------------------------------
+bool Add2DSquareShapeMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf)
+{
+	if (!(m_session->isHandshaked())) return false;
+
+	axtrace_2d_shape_square_s message_head;
+	size_t len = ringBuf->peek(0, &message_head, sizeof(message_head));
+	assert(len == sizeof(message_head));
+
+	m_square = QRectF(
+		(qreal)message_head.x_min, (qreal)message_head.y_min,
+		(qreal)(message_head.x_max - message_head.x_min),
+		(qreal)(message_head.y_max - message_head.y_min)
+	);
+
+	//check scene name
+	qint32 name_length = message_head.name_len;
+	if (name_length <= 0 || name_length > AXTRACE_MAX_SCENE_NAME_LENGTH) return false;
+
+	//check length
+	if (head.length != sizeof(message_head) + name_length) return false;
+
+	//copy scene name 
+	char tempName[AXTRACE_MAX_SCENE_NAME_LENGTH] = { 0 };
+	len = ringBuf->peek(sizeof(message_head), tempName, name_length);
+	assert(len == name_length);
+	tempName[name_length - 1] = 0; //make sure last char is '\0'
+	m_sceneName = QString::fromUtf8(tempName);
+
+	//ok!
+	ringBuf->discard(head.length);
+	return true;
+}
+
+//--------------------------------------------------------------------------------------------
+const char* Add2DSquareShapeMessage::MetaName = "AxTrace.Add2DSquareShape";
+
+void Add2DSquareShapeMessage::_luaopen(lua_State *L)
+{
+	static luaL_Reg msg_data_meta[] =
+	{
+		{ "get_type", Message::_lua_get_type },
+		{ "get_pid", Message::_lua_get_process_id },
+		{ "get_tid", Message::_lua_get_thread_id },
+
+		{ "get_scene_name", Scene2DMessage::_lua_get_scene_name },
+
+		{ 0, 0 }
+	};
+
+	luaL_newmetatable(L, Add2DSquareShapeMessage::MetaName);
 	lua_pushvalue(L, -1);  /* push metatable */
 	lua_setfield(L, -2, "__index");  /* metatable.__index = metatable */
 

@@ -22,6 +22,10 @@ class Begin2DSceneMessage;
 class Update2DActorMessage;
 class End2DSceneMessage;
 class Add2DActorLogMessage;
+class Add2DGridShapeMessage;
+class Add2DCircleShapeMessage;
+class Add2DSquareShapeMessage;
+class Scene2DMessage;
 class SessionDialog;
 
 QT_BEGIN_NAMESPACE
@@ -61,7 +65,7 @@ public:
 public:
 	LogChild* getLogChild(const QString& title);
 	ValueChild* getValueChild(const QString& title);
-	Map2DChild* getMap2DChild(const QString& title);
+	Map2DChild* getMap2DChild(const Scene2DMessage* sceneMessage);
 
 	void notifySelectionChanged(void) 
 	{
@@ -82,6 +86,9 @@ private:
 	void _update2DActor(Update2DActorMessage* msg);
 	void _end2DScene(End2DSceneMessage* msg);
 	void _addActor2DLog(Add2DActorLogMessage* msg);
+	void _add2DGrideShape(Add2DGridShapeMessage* msg);
+	void _add2DCircleShape(Add2DCircleShapeMessage* msg);
+	void _add2DSquareShape(Add2DSquareShapeMessage* msg);
 
 private:
 	typedef QMap<QString, LogChild*> LogChildMap;

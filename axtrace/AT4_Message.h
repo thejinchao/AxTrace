@@ -154,7 +154,23 @@ public:
 	DEFINE_POOL(ValueMessage);
 };
 
-class Begin2DSceneMessage : public Message
+class Scene2DMessage : public Message
+{
+public:
+	const QString& getSceneName(void) const { return m_sceneName; }
+	virtual const char* luaMetaName() const = 0;
+protected:
+	QString			m_sceneName;
+
+protected:
+	static int _lua_get_scene_name(lua_State *L);
+
+public:
+	Scene2DMessage(SessionPtr session, const MessageTime& traceTime);
+	virtual ~Scene2DMessage();
+};
+
+class Begin2DSceneMessage : public Scene2DMessage
 {
 public:
 	static const char* MetaName;
@@ -163,12 +179,12 @@ public:
 	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
 	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_2D_BEGIN_SCENE; }
 
-	const QString& getSceneName(void) const { return m_sceneName; }
+	virtual const char* luaMetaName() const { return MetaName; }
+
 	const QRectF& getSceneRect(void) const { return m_sceneRect; }
 	const QJsonObject& getSceneDefine(void) const { return m_sceneDefine; }
 
 private:
-	QString			m_sceneName;
 	QRectF			m_sceneRect;
 	QJsonObject		m_sceneDefine;
 
@@ -179,7 +195,7 @@ public:
 	DEFINE_POOL(Begin2DSceneMessage);
 };
 
-class Update2DActorMessage : public Message
+class Update2DActorMessage : public Scene2DMessage
 {
 public:
 	static const char* MetaName;
@@ -188,7 +204,8 @@ public:
 	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
 	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_2D_ACTOR; }
 
-	const QString& getSceneName(void) const { return m_sceneName; }
+	virtual const char* luaMetaName() const { return MetaName; }
+
 	qint64 getActorID(void) const { return m_actorID; }
 	const QPointF& getActorPosition(void) const { return m_position; }
 	qreal getActorDir(void) const { return m_dir; }
@@ -196,7 +213,6 @@ public:
 	const QString& getActorInfo(void) const { return m_actorInfo; }
 
 private:
-	QString			m_sceneName;
 	qint64			m_actorID;
 	QPointF			m_position;
 	qreal			m_dir;
@@ -218,7 +234,7 @@ public:
 };
 
 
-class End2DSceneMessage : public Message
+class End2DSceneMessage : public Scene2DMessage
 {
 public:
 	static const char* MetaName;
@@ -227,10 +243,9 @@ public:
 	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
 	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_2D_END_SCENE; }
 
-	const QString& getSceneName(void) const { return m_sceneName; }
+	virtual const char* luaMetaName() const { return MetaName; }
 
 private:
-	QString			m_sceneName;
 
 public:
 	End2DSceneMessage(SessionPtr session, const MessageTime& traceTime);
@@ -239,7 +254,7 @@ public:
 	DEFINE_POOL(End2DSceneMessage);
 };
 
-class Add2DActorLogMessage : public Message
+class Add2DActorLogMessage : public Scene2DMessage
 {
 public:
 	static const char* MetaName;
@@ -248,12 +263,12 @@ public:
 	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
 	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_2D_ACTOR_LOG; }
 
+	virtual const char* luaMetaName() const { return MetaName; }
+
 	qint64 getActorID(void) const { return m_actorID; }
-	const QString& getSceneName(void) const { return m_sceneName; }
 	const QString& getActorLog(void) const { return m_actorLog; }
 
 private:
-	QString			m_sceneName;
 	qint64			m_actorID;
 	QString			m_actorLog;
 
@@ -266,4 +281,77 @@ public:
 	virtual ~Add2DActorLogMessage();
 
 	DEFINE_POOL(Add2DActorLogMessage);
+};
+
+class Add2DGridShapeMessage : public Scene2DMessage
+{
+public:
+	static const char* MetaName;
+	static void _luaopen(lua_State *L);
+
+	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
+	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_2D_SHAPE_GRID; }
+
+	virtual const char* luaMetaName() const { return MetaName; }
+
+	const QSizeF& getGridSize() const { return m_gridSize; }
+	const QPointF getGridPoint() const { return m_gridPoint; }
+
+private:
+	QSizeF			m_gridSize;
+	QPointF			m_gridPoint;
+
+public:
+	Add2DGridShapeMessage(SessionPtr session, const MessageTime& traceTime);
+	virtual ~Add2DGridShapeMessage();
+
+	DEFINE_POOL(Add2DGridShapeMessage);
+};
+
+class Add2DCircleShapeMessage : public Scene2DMessage
+{
+public:
+	static const char* MetaName;
+	static void _luaopen(lua_State *L);
+
+	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
+	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_2D_SHAPE_CIRCLE; }
+
+	virtual const char* luaMetaName() const { return MetaName; }
+
+	const QPointF& getCenter() const { return m_center; }
+	qreal getRadius() const { return m_radius; }
+
+private:
+	QPointF m_center;
+	qreal m_radius;
+
+public:
+	Add2DCircleShapeMessage(SessionPtr session, const MessageTime& traceTime);
+	virtual ~Add2DCircleShapeMessage();
+
+	DEFINE_POOL(Add2DCircleShapeMessage);
+};
+
+class Add2DSquareShapeMessage : public Scene2DMessage
+{
+public:
+	static const char* MetaName;
+	static void _luaopen(lua_State *L);
+
+	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
+	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_2D_SHAPE_SQUARE; }
+
+	virtual const char* luaMetaName() const { return MetaName; }
+
+	const QRectF& getSquare() const { return m_square; }
+
+private:
+	QRectF m_square;
+
+public:
+	Add2DSquareShapeMessage(SessionPtr session, const MessageTime& traceTime);
+	virtual ~Add2DSquareShapeMessage();
+
+	DEFINE_POOL(Add2DSquareShapeMessage);
 };

@@ -59,16 +59,12 @@ public:
 	void clean(void);
 
 	typedef std::function<void(const Actor&)> ActorWalkFunc;
-	void walk(ActorWalkFunc walkFunc);
+	void actorWalk(ActorWalkFunc walkFunc);
 
 	const QString& getSceneName(void) const { return m_sceneName; }
 	const QRectF& getSceneRect(void) const { return m_sceneRect; }
 	quint32 getFrameIndex(void) const {	return m_frameIndex; }
 	qint32 getActorCounts(void) const { return m_actorMap[m_actorMapIndex].count(); }
-
-	bool isGridDefined(void) const { return m_gridDefined; }
-	const QSizeF& getGridSize(void) const { return m_gridSize; }
-	const QPointF& getGridPoint(void) const { return m_gridPoint; }
 
 	QString getActorBriefInfo(const Actor& actor) const;
 	QString getActorBriefInfo(qint64 id) const;
@@ -78,8 +74,19 @@ public:
 	void enablePositionTail(qint64 id, bool enable);
 	const PositionTail* getPositionTail(qint64 id) const;
 
-private:
-	void _parserSceneDefine(const QJsonObject& sceneInfo);
+public:
+	void addGridDefine(const QSizeF& gridSize, const QPointF& gridPoint);
+	bool isGridDefined(void) const { return m_gridDefined; }
+	const QSizeF& getGridSize(void) const { return m_gridSize; }
+	const QPointF& getGridPoint(void) const { return m_gridPoint; }
+
+	void addSquareShape(const QRectF& square);
+	typedef std::function<void(const QRectF&)> SquareWalkFunc;
+	void squareShapeWalk(SquareWalkFunc walkFunc);
+
+	void addCircleShape(const QPointF& center, qreal radius);
+	typedef std::function<void(const QPointF&, qreal)> CircleWalkFunc;
+	void circleShapeWalk(CircleWalkFunc walkFunc);
 
 private:
 	QString			m_sceneName;
@@ -91,12 +98,17 @@ private:
 	QSizeF			m_gridSize;
 	QPointF			m_gridPoint;
 
+	typedef QVector< QRectF > SquareShapeList;
+	SquareShapeList	m_squareShapes;
+
+	typedef QVector<QPair<QPointF, qreal>> CircleShapeList;
+	CircleShapeList m_circleShapes;
+
 	typedef QHash< qint64, Actor > ActorMap;
 	ActorMap m_actorMap[2];
 
 	bool			m_updating;
 	QRectF			m_updatingRect;
-	QJsonObject		m_updatingSceneDefine;
 	
 	typedef QHash< qint64, ActorHistory > ActorHistoryMap;
 	ActorHistoryMap m_actorHistory;
@@ -104,6 +116,6 @@ private:
 	typedef QHash< qint64, PositionTail > ActorTailMap;
 	ActorTailMap m_actorTail;
 public:
-	Scene2D(Begin2DSceneMessage* msg);
+	Scene2D(Scene2DMessage* msg);
 	~Scene2D();
 };

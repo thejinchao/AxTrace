@@ -20,6 +20,9 @@ class Begin2DSceneMessage;
 class Update2DActorMessage;
 class End2DSceneMessage;
 class Add2DActorLogMessage;
+class Add2DGridShapeMessage;
+class Add2DCircleShapeMessage;
+class Add2DSquareShapeMessage;
 
 class Map2DChild : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -32,6 +35,10 @@ public:
 	void updateActor(Update2DActorMessage* msg, const MessageFilter::Actor2DResult& filterResult);
 	void endScene(End2DSceneMessage* msg);
 	void addActorLog(Add2DActorLogMessage* msg);
+	void addGridShape(Add2DGridShapeMessage* msg);
+	void addCircleShape(Add2DCircleShapeMessage* msg);
+	void addSquareShape(Add2DSquareShapeMessage* msg);
+
 	bool isPause(void) const { return m_pause; }
 	void switchPause(void);
 
@@ -90,7 +97,7 @@ private:
 	static QPen& getCachedPen(uint16_t color);
 	static QBrush& getCachedBrush(uint16_t color);
 
-	enum { MAX_COLOR_COUNTS = 0xFFF };
+	enum { MAX_COLOR_COUNTS = 0xFFF+1 };
 	static QPen*	m_cachedPen[MAX_COLOR_COUNTS];
 	static QBrush*	m_cachedBrush[MAX_COLOR_COUNTS];
 
