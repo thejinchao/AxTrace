@@ -13,7 +13,6 @@
 #include "AT4_System.h"
 #include "AT4_MainWindow.h"
 #include "AT4_Message.h"
-#include "AT4_System.h"
 #include "AT4_Config.h"
 
 //--------------------------------------------------------------------------------------------
@@ -126,6 +125,8 @@ void Map2DChild::init(QWidget* parent)
 	m_selectBorder = QPen(Qt::yellow);
 	m_axisXPen = QPen(Qt::red);
 	m_axisYPen = QPen(Qt::green);
+	m_shapePen = QPen(Qt::gray);
+	m_shapeBrush = QBrush(QColor(255, 255, 255, 128));
 	m_infoTextFont.setPixelSize(16);
 	setMouseTracking(true);
 }
@@ -341,26 +342,18 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 	//1.2 draw scene shapes(square)
 	m_scene->squareShapeWalk([&](const QRectF& square)
 	{
-		QPen& squarePen = getCachedPen(0x777);
-		squarePen.setWidthF(1.0 / m_camera->getScale());
-		painter.setPen(squarePen);
-
-		QBrush& squareBrush = getCachedBrush(0xFFF);
-		painter.setBrush(squareBrush);
-
+		m_shapePen.setWidthF(1.0 / m_camera->getScale());
+		painter.setPen(m_shapePen);
+		painter.setBrush(m_shapeBrush);
 		painter.drawRect(square);
 	});
 
 	//1.3 draw scene shapes(circle)
 	m_scene->circleShapeWalk([&](const QPointF& center, qreal radius)
 	{
-		QPen& squarePen = getCachedPen(0x777);
-		squarePen.setWidthF(1.0 / m_camera->getScale());
-		painter.setPen(squarePen);
-
-		QBrush& squareBrush = getCachedBrush(0xFFF);
-		painter.setBrush(squareBrush);
-
+		m_shapePen.setWidthF(1.0 / m_camera->getScale());
+		painter.setPen(m_shapePen);
+		painter.setBrush(m_shapeBrush);
 		painter.drawEllipse(center, radius, radius);
 	});
 	MessageFilter* filter = System::getSingleton()->getFilter();

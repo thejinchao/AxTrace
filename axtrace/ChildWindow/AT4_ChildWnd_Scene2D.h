@@ -70,6 +70,8 @@ private:
 	QPen m_selectBorder;
 	QPen m_axisXPen;
 	QPen m_axisYPen;
+	QPen m_shapePen;
+	QBrush m_shapeBrush;
 
 	Scene2D* m_scene;
 	Camera2D* m_camera;
