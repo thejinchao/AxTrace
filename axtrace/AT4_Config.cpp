@@ -182,7 +182,9 @@ bool Config::loadSetting(void)
 	_resetToDefaultSetting();
 
 	//Load setting from disk
-	QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
+	QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+		QDir::cleanPath(QCoreApplication::organizationName() + QDir::separator() + QCoreApplication::applicationName()),
+		"config");
 
 	m_bAutoScroll = settings.value("AutoScroll", m_bAutoScroll).toBool();
 	m_bShowGrid = settings.value("ShowGrid", m_bShowGrid).toBool();
@@ -209,7 +211,9 @@ bool Config::loadSetting(void)
 void Config::saveSetting(void) const
 {
 	// Save setting to disk
-	QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
+	QSettings settings(QSettings::IniFormat, QSettings::UserScope, 
+		QDir::cleanPath(QCoreApplication::organizationName() + QDir::separator() + QCoreApplication::applicationName()), 
+		"config");
 
 	settings.setValue("AutoScroll", m_bAutoScroll);
 	settings.setValue("ShowGrid", m_bShowGrid);
