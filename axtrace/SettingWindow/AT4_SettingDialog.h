@@ -13,6 +13,7 @@ class QtProperty;
 class QDialogButtonBox;
 class QtTreePropertyBrowser;
 class QLabel;
+class QSpinBox;
 QT_END_NAMESPACE
 
 class SettingDialog : public QDialog
@@ -20,18 +21,28 @@ class SettingDialog : public QDialog
 	Q_OBJECT
 
 private slots:
-	void scriptEditButtonClicked(QtProperty *);
-	void valueChanged(QtProperty *property, const QVariant &value);
 	void clearMessage() ;
+	
+	void onListenPortChanged();
+	void onMaxLogCountsChanged();
+	void onMaxActorLogCountsChanged();
+	void onMaxActorTailCountsChanged();
+
+	void onFilterScriptButtonClicked();
+	void onParserScriptButtonClicked();
+	
 
 private:
-	void _initProperty(void);
 	void _setWarningText(const QString& message);
 
 private:
-	QtTreePropertyBrowser* m_propertyBrowser;
 	QDialogButtonBox* m_dlgButtons;
 	QLabel* m_warningLabel;
+
+	QSpinBox* m_ctlListenPort;
+	QSpinBox* m_ctlMaxLogCounts;
+	QSpinBox* m_ctlMaxActorLogCounts;
+	QSpinBox* m_ctlMaxActorTailCounts;
 
 public:
 	SettingDialog(QWidget *parent = nullptr);
