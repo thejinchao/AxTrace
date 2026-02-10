@@ -171,7 +171,6 @@ void Config::setMaxActorTailCounts(qint32 maxActorTailCounts)
 void Config::setListenPort(qint32 listenPort)
 {
 	Q_ASSERT(listenPort >= LISTEN_PORT_MIN && listenPort<= LISTEN_PORT_MAX);
-	Q_ASSERT(System::getSingleton()->getSessionManager()->getSessionCounts() == 0);
 
 	m_listenPort = listenPort;
 }

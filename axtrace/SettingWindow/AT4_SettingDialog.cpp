@@ -144,26 +144,30 @@ void SettingDialog::_setWarningText(const QString& message)
 void SettingDialog::onListenPortChanged()
 {
 	Config* config = System::getSingleton()->getConfig();
-	qint32 value = m_ctlListenPort->value();
-	if (config->getListenPort() == value) return;
+	qint32 oldListenPort = config->getListenPort();
 
-	SessionManager* sessionManager = System::getSingleton()->getSessionManager();
-	if (sessionManager->getSessionCounts() > 0)
-	{
-		m_ctlListenPort->setValue(config->getListenPort());
-		_setWarningText(tr("Disconnect all connection first!"));
-		return;
-	}
+	qint32 value = m_ctlListenPort->value();
+	if (oldListenPort == value) return;
 
 	Incoming* incoming = System::getSingleton()->getIncoming();
 	Q_ASSERT(incoming);
 
-	//shutdown current network
-	incoming->close();
+	//change listen port of network
+	if (!(incoming->changeListenPort(value)))
+	{
+		//restore old value
+		m_ctlListenPort->setValue(oldListenPort);
 
-	//set new listen port and restart network
+		//show warning text		
+		QTimer::singleShot(1, [this]() {
+			QMessageBox::critical(this, QString("AxTrace 4"), QString("Failed to change listen port!"), QMessageBox::Ok);
+		});
+		return;
+	}
+
+	//save to config
 	config->setListenPort(value);
-	incoming->init(value);
+	return;
 }
 
 //--------------------------------------------------------------------------------------------
