@@ -10,6 +10,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Diagnostics;
+#nullable enable
 
 namespace com.thecodeway
 {
@@ -272,7 +273,7 @@ namespace com.thecodeway
 			ctx.socket.Send(buf, 0, final_length, SocketFlags.DontRoute);
 		}
 
-		static private void _value(axtrace_context_s ctx, uint style, string name, uint value_type, byte[] valueBytes)
+		static private void _value(axtrace_context_s ctx, string name, uint value_type, byte[] valueBytes)
 		{
 			byte[] nameBytes = System.Text.Encoding.UTF8.GetBytes(name);
 			int name_length = nameBytes.Length + 1; // add '\0'
@@ -301,96 +302,96 @@ namespace com.thecodeway
 
 			ctx.socket.Send(buf, 0, final_length, SocketFlags.DontRoute);
 		}
-		static public void Value(uint style, string name, sbyte value)
+		static public void Value(string name, sbyte value)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
 			byte[] valueBytes = new byte[1];
 			valueBytes[0] = (byte)value;
 			
-			_value(ctx, style, name, AXV_UINT8, valueBytes);
+			_value(ctx, name, AXV_INT8, valueBytes);
 		}
-		static public void Value(uint style, string name, byte value)
+		static public void Value(string name, byte value)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
 			byte[] valueBytes = new byte[1];
 			valueBytes[0] = value;
 
-			_value(ctx, style, name, AXV_INT8, valueBytes);
+			_value(ctx, name, AXV_UINT8, valueBytes);
 		}
-		static public void Value(uint style, string name, short value)
+		static public void Value(string name, short value)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
 
-			_value(ctx, style, name,
+			_value(ctx, name,
 				AXV_INT16,
 				BitConverter.GetBytes(value));
 		}
-		static public void Value(uint style, string name, ushort value)
+		static public void Value(string name, ushort value)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
 
-			_value(ctx, style, name,
+			_value(ctx, name,
 				AXV_UINT16,
 				BitConverter.GetBytes(value));
 		}
-		static public void Value(uint style, string name, int value)
+		static public void Value(string name, int value)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
 
-			_value(ctx, style, name,
+			_value(ctx, name,
 				AXV_INT32,
 				BitConverter.GetBytes(value));
 		}
-		static public void Value(uint style, string name, uint value)
+		static public void Value(string name, uint value)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
-			_value(ctx, style, name,
+			_value(ctx, name,
 				AXV_UINT32,
 				BitConverter.GetBytes(value));
 		}
-		static public void Value(uint style, string name, long value)
+		static public void Value(string name, long value)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
 
-			_value(ctx, style, name,
+			_value(ctx, name,
 				AXV_INT64,
 				BitConverter.GetBytes(value));
 		}
-		static public void Value(uint style, string name, ulong value)
+		static public void Value(string name, ulong value)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
 
-			_value(ctx, style, name,
+			_value(ctx, name,
 				AXV_UINT64,
 				BitConverter.GetBytes(value));
 		}
-		static public void Value(uint style, string name, float value)
+		static public void Value(string name, float value)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
 
-			_value(ctx, style, name,
+			_value(ctx, name,
 				AXV_FLOAT32,
 				BitConverter.GetBytes(value));
 		}
-		static public void Value(uint style, string name, double value)
+		static public void Value(string name, double value)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
 
-			_value(ctx, style, name,
+			_value(ctx, name,
 				AXV_FLOAT64,
 				BitConverter.GetBytes(value));
 		}
-		static public void Value(uint style, string name, string value)
+		static public void Value(string name, string value)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
@@ -399,7 +400,7 @@ namespace com.thecodeway
 			byte[] withNull = new byte[stringBytes.Length + 1];
 			stringBytes.CopyTo(withNull, 0);
 			withNull[stringBytes.Length] = 0;
-			_value(ctx, style, name,
+			_value(ctx, name,
 				AXV_STR_UTF8,
 				withNull);
 		}

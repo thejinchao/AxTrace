@@ -31,8 +31,7 @@ namespace AxTraceSample
 		{
 			if (obj != null) 
 			{
-				AxTrace.Value(AxTrace.AXT_TRACE,
-					((AxValueParam)obj).value_name, ((AxValueParam)obj).value);
+				AxTrace.Value(((AxValueParam)obj).value_name, ((AxValueParam)obj).value);
 			}
 		}
 
@@ -163,30 +162,30 @@ namespace AxTraceSample
 				Console.ReadKey();
 
 				//test value
-				AxTrace.Value(AxTrace.AXT_TRACE, "Int_Test", (int)-12345);
+				AxTrace.Value("Int_Test", (int)-12345);
 
-				AxTrace.Value(AxTrace.AXT_TRACE, "BYTE_MAX_VALUE", (byte)byte.MaxValue);
-				AxTrace.Value(AxTrace.AXT_TRACE, "BYTE_MIN_VALUE", (byte)byte.MinValue);
+				AxTrace.Value("BYTE_MAX_VALUE", (byte)byte.MaxValue);
+				AxTrace.Value("BYTE_MIN_VALUE", (byte)byte.MinValue);
 
-				AxTrace.Value(AxTrace.AXT_TRACE, "SHORT_MAX_VALUE", (short)short.MaxValue);
-				AxTrace.Value(AxTrace.AXT_TRACE, "SHORT_MIN_VALUE", (short)short.MinValue);
+				AxTrace.Value("SHORT_MAX_VALUE", (short)short.MaxValue);
+				AxTrace.Value("SHORT_MIN_VALUE", (short)short.MinValue);
 
-				AxTrace.Value(AxTrace.AXT_TRACE, "INT_MAX_VALUE", (int)int.MaxValue);
-				AxTrace.Value(AxTrace.AXT_TRACE, "INT_MIN_VALUE", (int)int.MinValue);
+				AxTrace.Value("INT_MAX_VALUE", (int)int.MaxValue);
+				AxTrace.Value("INT_MIN_VALUE", (int)int.MinValue);
 
-				AxTrace.Value(AxTrace.AXT_TRACE, "LONG_MAX_VALUE", (long)long.MaxValue);
-				AxTrace.Value(AxTrace.AXT_TRACE, "LONG_MIN_VALUE", (long)long.MinValue);
+				AxTrace.Value("LONG_MAX_VALUE", (long)long.MaxValue);
+				AxTrace.Value("LONG_MIN_VALUE", (long)long.MinValue);
 
-				AxTrace.Value(AxTrace.AXT_TRACE, "Float_Test", (float)-3.1415926f);
-				AxTrace.Value(AxTrace.AXT_TRACE, "Double_Test", (double)-3.141592653589793238462643383279);
+				AxTrace.Value("Float_Test", (float)-3.1415926f);
+				AxTrace.Value("Double_Test", (double)-3.141592653589793238462643383279);
 
-				AxTrace.Value(AxTrace.AXT_TRACE, "FLOAT_MAX_VALUE", (float)float.MaxValue);
-				AxTrace.Value(AxTrace.AXT_TRACE, "FLOAT_MIN_VALUE", (float)float.MinValue);
+				AxTrace.Value("FLOAT_MAX_VALUE", (float)float.MaxValue);
+				AxTrace.Value("FLOAT_MIN_VALUE", (float)float.MinValue);
 
-				AxTrace.Value(AxTrace.AXT_TRACE, "DOUBLE_MAX_VALUE", (double)double.MaxValue);
-				AxTrace.Value(AxTrace.AXT_TRACE, "DOUBLE_MIN_VALUE", (double)double.MinValue);
+				AxTrace.Value("DOUBLE_MAX_VALUE", (double)double.MaxValue);
+				AxTrace.Value("DOUBLE_MIN_VALUE", (double)double.MinValue);
 
-				AxTrace.Value(AxTrace.AXT_TRACE, "String_Test", "String 汉字 123");
+				AxTrace.Value("String_Test", "String 汉字 123");
 			}
 
 			{
@@ -199,7 +198,7 @@ namespace AxTraceSample
 
 				for (int i = 0; i < 100; i++)
 				{
-					AxTrace.Value(AxTrace.AXT_TRACE, "start_blank", start_blank);
+					AxTrace.Value("start_blank", start_blank);
 
 					int blank_Count = start_blank;
 					int step = start_step;
@@ -218,7 +217,7 @@ namespace AxTraceSample
 						szTemp[k++] = (byte)'*';
 
 						string value_name = "Value_" + j;
-						AxTrace.Value(AxTrace.AXT_TRACE, value_name,
+						AxTrace.Value(value_name,
 							System.Text.Encoding.ASCII.GetString(szTemp));
 					}
 
@@ -240,7 +239,7 @@ namespace AxTraceSample
 
 				for (int i = 0; i < 500; i++)
 				{
-					AxTrace.Value(AxTrace.AXT_TRACE, "start_blank_multiThread", start_blank);
+					AxTrace.Value("start_blank_multiThread", start_blank);
 					int blank_Count = start_blank;
 					int step = start_step;
 
