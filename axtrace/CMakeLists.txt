@@ -92,12 +92,7 @@ set_source_files_properties(${AT4_PRECOMPILE_FILE}
 )
 
 include_directories(
-	$ENV{CYCLONE_SDK_ROOT}/include
 	../luajit
-)
-
-link_directories(
-	$ENV{CYCLONE_SDK_ROOT}/lib
 )
 
 add_executable(AxTrace4 WIN32 
@@ -117,8 +112,8 @@ target_link_libraries(AxTrace4
     Qt6::Gui
 	Qt6::Widgets
 	Qt6::OpenGLWidgets
+	cyclone::cyclone
 	lua51
-	cyclone 
 	ws2_32 
 	Shlwapi
 )
@@ -131,20 +126,20 @@ set_target_properties(AxTrace4
 install(TARGETS AxTrace4
     DESTINATION .)
 
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Widgets$<$<CONFIG:Debug>:d>.dll
+install(FILES ${QT6_INSTALL_PREFIX}/${QT6_INSTALL_BINS}/Qt6Widgets$<$<CONFIG:Debug>:d>.dll
 	DESTINATION .)
 	
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Core$<$<CONFIG:Debug>:d>.dll
+install(FILES ${QT6_INSTALL_PREFIX}/${QT6_INSTALL_BINS}/Qt6Core$<$<CONFIG:Debug>:d>.dll
 	DESTINATION .)
 
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Gui$<$<CONFIG:Debug>:d>.dll
+install(FILES ${QT6_INSTALL_PREFIX}/${QT6_INSTALL_BINS}/Qt6Gui$<$<CONFIG:Debug>:d>.dll
 	DESTINATION .)
 
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6OpenGL$<$<CONFIG:Debug>:d>.dll
+install(FILES ${QT6_INSTALL_PREFIX}/${QT6_INSTALL_BINS}/Qt6OpenGL$<$<CONFIG:Debug>:d>.dll
 	DESTINATION .)
 
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6OpenGLWidgets$<$<CONFIG:Debug>:d>.dll
+install(FILES ${QT6_INSTALL_PREFIX}/${QT6_INSTALL_BINS}/Qt6OpenGLWidgets$<$<CONFIG:Debug>:d>.dll
 	DESTINATION .)
 
-install(FILES $ENV{QT6_SDK_ROOT}/plugins/platforms/qwindows$<$<CONFIG:Debug>:d>.dll
+install(FILES ${QT6_INSTALL_PREFIX}/${QT6_INSTALL_PLUGINS}/platforms/qwindows$<$<CONFIG:Debug>:d>.dll
 	DESTINATION plugins/platforms)
