@@ -372,7 +372,7 @@ int main(int argc, char* argv[])
 				ax2d_actor("test", actor.id, actor.x, actor.y, actor.dir, actor.type, actor.info);
 
 				if (actor.remain_distance() <= MOVE_STEP*4) {
-					actor.select_next_target(MAP_X_MIN, MAP_Y_MIN, MAP_X_MAX, MAP_Y_MAX, MOVE_STEP);
+					actor.select_next_target(MAP_X_MIN, MAP_X_MAX, MAP_Y_MIN, MAP_Y_MAX, MOVE_STEP);
 
 					char actor_log[128] = { 0 };
 					snprintf(actor_log, 128, "move to:%f, %f", actor.tx, actor.ty);
