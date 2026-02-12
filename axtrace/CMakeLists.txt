@@ -19,10 +19,6 @@ source_group("ChildWindow" FILES ${AT4_CHILD_WND_SOURCES})
 set(AT4_SETTING_WND_SOURCES
 	SettingWindow/AT4_SettingDialog.h
 	SettingWindow/AT4_SettingDialog.cpp
-	SettingWindow/AT4_ExtensionProperty.h
-	SettingWindow/AT4_ExtensionProperty.cpp
-	SettingWindow/AT4_ScriptVariant.h
-	SettingWindow/AT4_ScriptVariant.cpp
 )
 source_group("SettingWindow" FILES ${AT4_SETTING_WND_SOURCES})
 
@@ -96,13 +92,7 @@ set_source_files_properties(${AT4_PRECOMPILE_FILE}
 )
 
 include_directories(
-	$ENV{CYCLONE_SDK_ROOT}/include
 	../luajit
-	../QtPropertyBrowser
-)
-
-link_directories(
-	$ENV{CYCLONE_SDK_ROOT}/lib
 )
 
 add_executable(AxTrace4 WIN32 
@@ -122,13 +112,12 @@ target_link_libraries(AxTrace4
     Qt6::Gui
 	Qt6::Widgets
 	Qt6::OpenGLWidgets
-	QtPropertyBrowser
+	cyclone::cyclone
 	lua51
-	cyclone 
 	ws2_32 
 	Shlwapi
 )
-add_dependencies(AxTrace4 lua51 QtPropertyBrowser)
+add_dependencies(AxTrace4 lua51)
 set_target_properties(AxTrace4 
     PROPERTIES LINK_FLAGS "${CMAKE_CURRENT_BINARY_DIR}/../luajit/_build/lj_vm.obj"
 )
@@ -137,20 +126,20 @@ set_target_properties(AxTrace4
 install(TARGETS AxTrace4
     DESTINATION .)
 
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Widgets$<$<CONFIG:Debug>:d>.dll
+install(FILES ${QT6_INSTALL_PREFIX}/${QT6_INSTALL_BINS}/Qt6Widgets$<$<CONFIG:Debug>:d>.dll
 	DESTINATION .)
 	
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Core$<$<CONFIG:Debug>:d>.dll
+install(FILES ${QT6_INSTALL_PREFIX}/${QT6_INSTALL_BINS}/Qt6Core$<$<CONFIG:Debug>:d>.dll
 	DESTINATION .)
 
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6Gui$<$<CONFIG:Debug>:d>.dll
+install(FILES ${QT6_INSTALL_PREFIX}/${QT6_INSTALL_BINS}/Qt6Gui$<$<CONFIG:Debug>:d>.dll
 	DESTINATION .)
 
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6OpenGL$<$<CONFIG:Debug>:d>.dll
+install(FILES ${QT6_INSTALL_PREFIX}/${QT6_INSTALL_BINS}/Qt6OpenGL$<$<CONFIG:Debug>:d>.dll
 	DESTINATION .)
 
-install(FILES $ENV{QT6_SDK_ROOT}/bin/Qt6OpenGLWidgets$<$<CONFIG:Debug>:d>.dll
+install(FILES ${QT6_INSTALL_PREFIX}/${QT6_INSTALL_BINS}/Qt6OpenGLWidgets$<$<CONFIG:Debug>:d>.dll
 	DESTINATION .)
 
-install(FILES $ENV{QT6_SDK_ROOT}/plugins/platforms/qwindows$<$<CONFIG:Debug>:d>.dll
+install(FILES ${QT6_INSTALL_PREFIX}/${QT6_INSTALL_PLUGINS}/platforms/qwindows$<$<CONFIG:Debug>:d>.dll
 	DESTINATION plugins/platforms)

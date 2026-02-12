@@ -17,6 +17,7 @@
 //--------------------------------------------------------------------------------------------
 Incoming::Incoming()
 	: m_server(nullptr)
+	, m_listenPort(0)
 {
 	//set cyclone log level
 	cyclone::set_log_threshold(cyclone::L_ERROR);
@@ -41,6 +42,7 @@ bool Incoming::init(qint32 listenPort)
 	m_server->m_listener.on_close = std::bind(&Incoming::on_close, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 
 	if (!(m_server->bind(address, false))) return false;
+	m_listenPort = listenPort;
 	return m_server->start(cyclone::sys_api::get_cpu_counts());
 }
 
@@ -48,6 +50,23 @@ bool Incoming::init(qint32 listenPort)
 void Incoming::kickConnection(cyclone::TcpConnectionPtr conn)
 {
 	m_server->shutdown_connection(conn);
+}
+
+//--------------------------------------------------------------------------------------------
+bool Incoming::changeListenPort(qint32 listenPort)
+{
+	if (m_listenPort == listenPort) return true;
+
+	//bind new port
+	if (!(m_server->bind(cyclone::Address(listenPort, false), true)))
+	{
+		return false;
+	}
+
+	//stop old port
+	m_server->stop_bind(cyclone::Address(m_listenPort, false));
+	m_listenPort = listenPort;
+	return true;
 }
 
 //--------------------------------------------------------------------------------------------

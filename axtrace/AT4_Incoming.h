@@ -15,9 +15,12 @@ public:
 	void close(void);
 	//kick out connection
 	void kickConnection(cyclone::TcpConnectionPtr conn);
+	//change listen port
+	bool changeListenPort(qint32 listenPort);
 
 private:
 	cyclone::TcpServer* m_server;
+	qint32 m_listenPort;
 
 	void on_connected(cyclone::TcpServer* server, int32_t thread_index, cyclone::TcpConnectionPtr conn);
 	void on_message(cyclone::TcpServer* server, int32_t thread_index, cyclone::TcpConnectionPtr conn);
