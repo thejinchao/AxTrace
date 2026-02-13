@@ -1,4 +1,4 @@
-﻿/***************************************************
+/***************************************************
 
 				AXIA|Trace4
 
@@ -29,6 +29,7 @@ class QAction;
 class QMenu;
 class QMdiArea;
 class QMdiSubWindow;
+class QOpenGLWidget;
 class QCustomEvent;
 class QButton;
 class QPushButton;
@@ -114,6 +115,7 @@ private slots:
 
 private:
 	void closeEvent(QCloseEvent *event) override;
+	void showEvent(QShowEvent *event) override;
 	bool event(QEvent* e) override;
 
 	void createActions();
@@ -126,6 +128,11 @@ private:
 	IChild *activeMdiChild() const;
 
     QMdiArea *m_mdiArea;
+
+	// Placeholder to establish OpenGL surface type at first show, avoiding window
+	// recreation when the first Map2DChild (QOpenGLWidget) is created later.
+	QOpenGLWidget *m_openglPlaceholder;
+	QMdiSubWindow *m_openglPlaceholderSubWindow;
 
     QMenu *m_windowMenu;
 
