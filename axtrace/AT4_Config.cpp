@@ -146,7 +146,8 @@ void Config::setMainGeometry(const QByteArray& geometry)
 //--------------------------------------------------------------------------------------------
 void Config::setMaxLogCounts(int maxLogCounts)
 {
-	Q_ASSERT(maxLogCounts > MAX_LOG_COUNTS_RANGE_MIN && maxLogCounts < MAX_LOG_COUNTS_RANGE_MAX);
+	Q_ASSERT(maxLogCounts >= MAX_LOG_COUNTS_RANGE_MIN && maxLogCounts <= MAX_LOG_COUNTS_RANGE_MAX);
+	if (maxLogCounts< MAX_LOG_COUNTS_RANGE_MIN || maxLogCounts>MAX_LOG_COUNTS_RANGE_MAX) return;
 
 	m_maxLogCounts = maxLogCounts;
 }
@@ -154,7 +155,8 @@ void Config::setMaxLogCounts(int maxLogCounts)
 //--------------------------------------------------------------------------------------------
 void Config::setMaxActorLogCounts(qint32 maxActorLogCounts)
 {
-	Q_ASSERT(maxActorLogCounts > MAX_ACTOR_LOG_COUNTS_RANGE_MIN && maxActorLogCounts < MAX_ACTOR_LOG_COUNTS_RANGE_MAX);
+	Q_ASSERT(maxActorLogCounts >= MAX_ACTOR_LOG_COUNTS_RANGE_MIN && maxActorLogCounts <= MAX_ACTOR_LOG_COUNTS_RANGE_MAX);
+	if (maxActorLogCounts< MAX_ACTOR_LOG_COUNTS_RANGE_MIN || maxActorLogCounts>MAX_ACTOR_LOG_COUNTS_RANGE_MAX) return;
 
 	m_maxActorLogCounts = maxActorLogCounts;
 }
@@ -162,7 +164,8 @@ void Config::setMaxActorLogCounts(qint32 maxActorLogCounts)
 //--------------------------------------------------------------------------------------------
 void Config::setMaxActorTailCounts(qint32 maxActorTailCounts)
 {
-	Q_ASSERT(maxActorTailCounts > MAX_ACTOR_TAIL_COUNTS_RANGE_MIN && maxActorTailCounts < MAX_ACTOR_TAIL_COUNTS_RANGE_MAX);
+	Q_ASSERT(maxActorTailCounts >= MAX_ACTOR_TAIL_COUNTS_RANGE_MIN && maxActorTailCounts <= MAX_ACTOR_TAIL_COUNTS_RANGE_MAX);
+	if (maxActorTailCounts< MAX_ACTOR_TAIL_COUNTS_RANGE_MIN || maxActorTailCounts>MAX_ACTOR_TAIL_COUNTS_RANGE_MAX) return;
 
 	m_maxActorTailCounts = maxActorTailCounts;
 }
@@ -171,6 +174,7 @@ void Config::setMaxActorTailCounts(qint32 maxActorTailCounts)
 void Config::setListenPort(qint32 listenPort)
 {
 	Q_ASSERT(listenPort >= LISTEN_PORT_MIN && listenPort<= LISTEN_PORT_MAX);
+	if (listenPort< LISTEN_PORT_MIN || listenPort>LISTEN_PORT_MAX) return;
 
 	m_listenPort = listenPort;
 }
