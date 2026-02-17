@@ -92,40 +92,46 @@ void Incoming::on_message(cyclone::TcpServer* server, int32_t thread_index, cycl
 {
 	cyclone::RingBuf& input_buf = conn->get_input_buf();
 
-	if (System::getSingleton()->getConfig()->getCapture())
-	{
-		QDateTime timeNow = QDateTime::currentDateTime();
+	bool capture = System::getSingleton()->getConfig()->getCapture();
 
-		cyclone::RingBuf& input = conn->get_input_buf();
+	cyclone::RingBuf& input = conn->get_input_buf();
 
-		//peek size, and check valid
-		do {
-			size_t input_size = input.size();
-			if (input_size < sizeof(axtrace_head_s)) return;
+	//peek size, and check valid
+	do {
+		size_t input_size = input.size();
+		if (input_size < sizeof(axtrace_head_s)) return;
 
-			axtrace_head_s head;
-			if (sizeof(head) != input.peek(0, &head, sizeof(head)) || head.flag != 'A') {
-				//error!, kick off this session
-				m_server->shutdown_connection(conn);
-				return;
-			}
+		axtrace_head_s head;
+		if (sizeof(head) != input.peek(0, &head, sizeof(head)) || head.flag != 'A') {
+			//error!, kick off this session
+			m_server->shutdown_connection(conn);
+			return;
+		}
 
-			//message type or message size is not valid
-			qint32 maxMessageSize = Message::getMessageMaxSize(head.type);
-			if (maxMessageSize<0 || head.length>maxMessageSize) {
-				//error!, kick off this session
-				m_server->shutdown_connection(conn);
-				return;
-			}
+		//message type or message size is not valid
+		qint32 maxMessageSize = Message::getMessageMaxSize(head.type);
+		if (maxMessageSize<0 || head.length>maxMessageSize) {
+			//error!, kick off this session
+			m_server->shutdown_connection(conn);
+			return;
+		}
 
-			//package is not completed yet
-			if (input_size < head.length) {
-				return;
-			}
+		//package is not completed yet
+		if (input_size < head.length) {
+			return;
+		}
 
+		if (capture)
+		{
+			QDateTime timeNow = QDateTime::currentDateTime();
 			System::getSingleton()->getMessageQueue()->insertMessage(&input, head.length, timeNow.time(), conn->get_id());
-		} while (true);
-	}
+		}
+		else
+		{
+			input.discard(head.length);
+		}
+	} while (true);
+	
 
 }
 
