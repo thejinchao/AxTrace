@@ -83,8 +83,10 @@ bool MessageFilter::tryLoadScript(const char* script, QString& errorMsg)
 	Update2DActorMessage::_luaopen(L2);
 
 	bool success = (luaL_dostring(L2, script) == 0);
-
-	errorMsg = QString::fromUtf8(lua_tostring(L2, -1));
+	if (!success)
+	{
+		errorMsg = QString::fromUtf8(lua_tostring(L2, -1));
+	}
 	lua_close(L2);
 
 	return success;
