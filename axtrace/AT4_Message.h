@@ -80,7 +80,7 @@ public:
 	int32_t getVersion(void) const { return m_version; }
 	unsigned int getProcessID(void) const { return m_processID; }
 	unsigned int getThreadID(void) const { return m_threadID; }
-	const QString& geetSessionName(void) const { return m_sessionName; }
+	const QString& getSessionName(void) const { return m_sessionName; }
 
 private:
 	int32_t m_version;

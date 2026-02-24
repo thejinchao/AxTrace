@@ -43,7 +43,7 @@ bool Session::onSessionShakehand(const ShakehandMessage* message)
 
 	m_processID = message->getProcessID();
 	m_threadID = message->getThreadID();
-	m_sessionName = message->geetSessionName();
+	m_sessionName = message->getSessionName();
 	m_bShakehand = true;
 	return true;
 }

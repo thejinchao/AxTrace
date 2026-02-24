@@ -1,4 +1,4 @@
-﻿/***************************************************
+/***************************************************
 
 				AXIA|Trace4
 
@@ -20,16 +20,31 @@
 #include "ChildWindow/AT4_ChildWnd_Scene2D.h"
 #include "ChildWindow/AT4_Scene2D.h"
 #include "SettingWindow/AT4_SettingDialog.h"
+#include <QOpenGLWidget>
+#include <QShowEvent>
 
 //--------------------------------------------------------------------------------------------
 MainWindow::MainWindow()
     : m_mdiArea(new QMdiArea)
 	, m_sessionDialog(nullptr)
+	, m_openglPlaceholder(nullptr)
+	, m_openglPlaceholderSubWindow(nullptr)
 {
 	m_mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	m_mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
     setCentralWidget(m_mdiArea);
+
+	// Pre-add a hidden OpenGL widget so the top-level window gets OpenGLSurface from
+	// the first show. Otherwise, when the first Map2DChild (QOpenGLWidget) is created
+	// later, Qt 6.4+ recreates the native window (RasterSurface -> OpenGLSurface),
+	// causing the main window to flash and take a long time.
+	// See QOpenGLWidget doc: "When dynamically adding a QOpenGLWidget into a widget
+	// hierarchy... the associated native window may get implicitly destroyed and recreated".
+	m_openglPlaceholder = new QOpenGLWidget(this);
+	m_openglPlaceholderSubWindow = m_mdiArea->addSubWindow(m_openglPlaceholder);
+	m_openglPlaceholderSubWindow->resize(1, 1);
+	m_openglPlaceholderSubWindow->show();
     connect(m_mdiArea, &QMdiArea::subWindowActivated,
             this, &MainWindow::updateMenus);
 
@@ -42,6 +57,24 @@ MainWindow::MainWindow()
     setWindowTitle(tr("AxTrace"));
 
     setUnifiedTitleAndToolBarOnMac(true);
+}
+
+//--------------------------------------------------------------------------------------------
+void MainWindow::showEvent(QShowEvent *event)
+{
+	QMainWindow::showEvent(event);
+
+	// Remove the OpenGL placeholder after first show; the surface type is already set.
+	// This avoids the placeholder appearing in the window list and tile/cascade.
+	if (m_openglPlaceholderSubWindow)
+	{
+		QWidget *w = m_openglPlaceholderSubWindow->widget();
+		m_mdiArea->removeSubWindow(w);
+		delete w;
+		delete m_openglPlaceholderSubWindow;
+		m_openglPlaceholder = nullptr;
+		m_openglPlaceholderSubWindow = nullptr;
+	}
 }
 
 //--------------------------------------------------------------------------------------------

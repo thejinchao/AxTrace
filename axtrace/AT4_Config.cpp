@@ -57,13 +57,13 @@ void Config::_resetToDefaultSetting(void)
 		"\telseif(logType==AXT_USERDEF+1) then \r\n"
 		"\t\treturn true, \"Talk\"..msg:get_pid(), frontColor, backColor; \r\n"
 		"\tend; \r\n"
-		"\treturn true, \"defult\", frontColor, backColor; \r\n"
+		"\treturn true, \"default\", frontColor, backColor; \r\n"
 		"end;\n\r\n"
 		"--[[ \r\n"
 		"msg:get_value() \r\n"
 		"--]] \r\n"
 		"function onValueMessage(msg) \r\n"
-		"\treturn true, \"defult\", COL_BLACK, COL_WHITE; \r\n"
+		"\treturn true, \"default\", COL_BLACK, COL_WHITE; \r\n"
 		"end; \r\n\r\n"
 		"--[[\r\n"
 		"return 2d scene wnd title, for all 2d scene message\r\n"
@@ -152,7 +152,8 @@ void Config::setMainGeometry(const QByteArray& geometry)
 //--------------------------------------------------------------------------------------------
 void Config::setMaxLogCounts(int maxLogCounts)
 {
-	Q_ASSERT(maxLogCounts > MAX_LOG_COUNTS_RANGE_MIN && maxLogCounts < MAX_LOG_COUNTS_RANGE_MAX);
+	Q_ASSERT(maxLogCounts >= MAX_LOG_COUNTS_RANGE_MIN && maxLogCounts <= MAX_LOG_COUNTS_RANGE_MAX);
+	if (maxLogCounts< MAX_LOG_COUNTS_RANGE_MIN || maxLogCounts>MAX_LOG_COUNTS_RANGE_MAX) return;
 
 	m_maxLogCounts = maxLogCounts;
 }
@@ -160,7 +161,8 @@ void Config::setMaxLogCounts(int maxLogCounts)
 //--------------------------------------------------------------------------------------------
 void Config::setMaxActorLogCounts(qint32 maxActorLogCounts)
 {
-	Q_ASSERT(maxActorLogCounts > MAX_ACTOR_LOG_COUNTS_RANGE_MIN && maxActorLogCounts < MAX_ACTOR_LOG_COUNTS_RANGE_MAX);
+	Q_ASSERT(maxActorLogCounts >= MAX_ACTOR_LOG_COUNTS_RANGE_MIN && maxActorLogCounts <= MAX_ACTOR_LOG_COUNTS_RANGE_MAX);
+	if (maxActorLogCounts< MAX_ACTOR_LOG_COUNTS_RANGE_MIN || maxActorLogCounts>MAX_ACTOR_LOG_COUNTS_RANGE_MAX) return;
 
 	m_maxActorLogCounts = maxActorLogCounts;
 }
@@ -168,7 +170,8 @@ void Config::setMaxActorLogCounts(qint32 maxActorLogCounts)
 //--------------------------------------------------------------------------------------------
 void Config::setMaxActorTailCounts(qint32 maxActorTailCounts)
 {
-	Q_ASSERT(maxActorTailCounts > MAX_ACTOR_TAIL_COUNTS_RANGE_MIN && maxActorTailCounts < MAX_ACTOR_TAIL_COUNTS_RANGE_MAX);
+	Q_ASSERT(maxActorTailCounts >= MAX_ACTOR_TAIL_COUNTS_RANGE_MIN && maxActorTailCounts <= MAX_ACTOR_TAIL_COUNTS_RANGE_MAX);
+	if (maxActorTailCounts< MAX_ACTOR_TAIL_COUNTS_RANGE_MIN || maxActorTailCounts>MAX_ACTOR_TAIL_COUNTS_RANGE_MAX) return;
 
 	m_maxActorTailCounts = maxActorTailCounts;
 }
@@ -177,6 +180,7 @@ void Config::setMaxActorTailCounts(qint32 maxActorTailCounts)
 void Config::setListenPort(qint32 listenPort)
 {
 	Q_ASSERT(listenPort >= LISTEN_PORT_MIN && listenPort<= LISTEN_PORT_MAX);
+	if (listenPort< LISTEN_PORT_MIN || listenPort>LISTEN_PORT_MAX) return;
 
 	m_listenPort = listenPort;
 }

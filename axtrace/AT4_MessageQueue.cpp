@@ -136,7 +136,9 @@ Message* MessageQueue::_popMessage(void)
 	}
 	break;
 	default:
-		return message;
+		//discard message
+		m_ring_buf->discard(head.length);
+		return nullptr;
 	}
 
 	if (!(message->build(head, m_ring_buf)))
