@@ -46,6 +46,7 @@ private:
 		QString valueData;
 		QColor backColor;
 		QColor frontColor;
+		int lineCounts=0;
 	};
 
 	typedef QVector<Value> ValueVector;
@@ -53,6 +54,8 @@ private:
 
 	ValueVector m_valueVector;
 	ValueHashMap m_valueHashMap;
+
+	QTreeView* m_view;
 };
 
 

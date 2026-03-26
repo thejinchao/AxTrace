@@ -13,8 +13,9 @@
 #include "AT4_MainWindow.h"
 
 //--------------------------------------------------------------------------------------------
-ValueDataModel::ValueDataModel(QObject *parent)
+ValueDataModel::ValueDataModel(QObject* parent)
 	: QAbstractItemModel(parent)
+	, m_view((QTreeView*)parent)
 {
 
 }
@@ -67,9 +68,24 @@ void ValueDataModel::insertValue(const ValueMessage* valueMessage, const Message
 	value.backColor = MessageFilter::toQColor(filterResult.backColor);
 	value.frontColor = MessageFilter::toQColor(filterResult.fontColor);
 
-	if(insert) 	endInsertRows();
-	
-	dataChanged(index(idx, 0), index(idx, COLUMN_COUNTS));
+	int lineCounts = valueData.count('\n');
+	bool needLayout = false;
+	if (value.lineCounts != lineCounts)
+	{
+		value.lineCounts = valueData.count('\n');
+		needLayout = true;
+	}
+
+	if (insert)
+	{
+		endInsertRows();
+	}
+	else
+	{
+		emit dataChanged(index(idx, 0), index(idx, COLUMN_COUNTS), { Qt::DisplayRole });
+
+		if(needLayout) m_view->doItemsLayout();
+	}
 }
 
 //--------------------------------------------------------------------------------------------
@@ -95,6 +111,16 @@ QVariant ValueDataModel::data(const QModelIndex &index, int role) const
 	case Qt::ForegroundRole: return QBrush(value.frontColor);
 	case Qt::TextAlignmentRole: return QVariant(int(Qt::AlignLeft | Qt::AlignTop));
 	case Qt::DisplayRole: return data(index.row(), index.column());
+	//case Qt::SizeHintRole:
+	//{
+	//	QFontMetrics fm(m_view->font());
+
+	//	QRect rect = fm.boundingRect(0, 0, 1000, 0, Qt::TextWordWrap | Qt::AlignLeft | Qt::AlignTop, value.valueData);
+	//	//int height = calculateHeightForText(text);
+	//	//int width = fm.horizontalAdvance(data(index.row(), index.column())) + 10;
+	//	int height = rect.height() + 4;
+	//	return QSize(-1, height);
+	//}
 	default: return QVariant();
 	}
 }
