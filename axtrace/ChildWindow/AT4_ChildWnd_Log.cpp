@@ -299,8 +299,11 @@ void LogChild::init(void)
 
 	this->setSortingEnabled(false);
 	this->setRootIsDecorated(false);
-	this->setSelectionMode(MultiSelection);
-	
+	this->setSelectionMode(QAbstractItemView::ExtendedSelection);
+	this->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	this->setSelectionBehavior(QAbstractItemView::SelectRows);
+	this->setUniformRowHeights(false);
+
 	connect(this->selectionModel(), &QItemSelectionModel::selectionChanged, this, []() {
 		System::getSingleton()->getMainWindow()->notifySelectionChanged();
 	});
@@ -333,6 +336,8 @@ void LogChild::timerEvent(QTimerEvent *event)
 	LogDataModel* model = (LogDataModel*)(this->model());
 	if(model)
 		model->autoCheckOverflow();
+
+	QTreeView::timerEvent(event);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -362,8 +367,7 @@ bool LogChild::eventFilter(QObject *target, QEvent *event)
 		}
 	}
 
-	return false;
-
+	return QTreeView::eventFilter(target, event);
 }
 
 //--------------------------------------------------------------------------------------------
