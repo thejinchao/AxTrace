@@ -29,11 +29,13 @@ ValueDataModel::~ValueDataModel()
 void ValueDataModel::insertValue(const ValueMessage* valueMessage, const MessageFilter::ListResult& filterResult)
 {
 	const QString& name = valueMessage->getName();
-	int idx;
+	int idx = 0;
+	bool insert = false;
 
 	auto it = m_valueHashMap.find(name);
 	if (it == m_valueHashMap.end())
 	{
+		insert = true;
 		idx = m_valueVector.size();
 
 		Value value;
@@ -41,13 +43,13 @@ void ValueDataModel::insertValue(const ValueMessage* valueMessage, const Message
 
 		m_valueVector.push_back(value);
 		m_valueHashMap.insert(name, idx);
+
+		beginInsertRows(QModelIndex(), idx, idx);
 	}
 	else
 	{
 		idx = it.value();
 	}
-
-	beginInsertRows(QModelIndex(), idx, idx);
 
 	Value& value = m_valueVector[idx];
 
@@ -64,8 +66,9 @@ void ValueDataModel::insertValue(const ValueMessage* valueMessage, const Message
 
 	value.backColor = MessageFilter::toQColor(filterResult.backColor);
 	value.frontColor = MessageFilter::toQColor(filterResult.fontColor);
-	endInsertRows();
 
+	if(insert) 	endInsertRows();
+	
 	dataChanged(index(idx, 0), index(idx, COLUMN_COUNTS));
 }
 
@@ -253,12 +256,15 @@ ValueChild::~ValueChild()
 //--------------------------------------------------------------------------------------------
 void ValueChild::init(void)
 {
-	this->setModel(new ValueDataModel());
+	this->setModel(new ValueDataModel(this));
 	this->header()->resizeSection(0, 120);
 	this->header()->resizeSection(1, 200);
 	this->setSortingEnabled(false);
 	this->setRootIsDecorated(false);
-	this->setSelectionMode(MultiSelection);
+	this->setSelectionMode(QAbstractItemView::ExtendedSelection);
+	this->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	this->setSelectionBehavior(QAbstractItemView::SelectRows);
+	this->setUniformRowHeights(false);
 
 	connect(this->selectionModel(), &QItemSelectionModel::selectionChanged, this, []() {
 		System::getSingleton()->getMainWindow()->notifySelectionChanged();
