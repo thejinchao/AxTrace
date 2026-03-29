@@ -18,8 +18,6 @@ int main(int argc, char *argv[])
 	format.setSamples(4);
 	QSurfaceFormat::setDefaultFormat(format);
 
-	QApplication::setStyle(QStyleFactory::create("Fusion"));
-
 	System theSystem;
 	if (!theSystem.init(argc, argv)) {
 		return 0;

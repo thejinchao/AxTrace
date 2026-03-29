@@ -58,6 +58,11 @@ bool System::init(int argc, char *argv[])
 	QCoreApplication::setApplicationVersion("4.0");
 	m_theApplication->setWindowIcon(QIcon(":/images/AxTrace.ico"));
 
+	//Set style and platete
+	QStyle* fusionStyle = QStyleFactory::create("Fusion");
+	m_theApplication->setStyle(fusionStyle);
+	m_theApplication->setPalette(fusionStyle->standardPalette());
+
 	QCommandLineParser parser;
 	parser.setApplicationDescription("AxTrace");
 	parser.addHelpOption();
