@@ -21,6 +21,7 @@ SessionDialog::SessionDialog(QWidget *parent)
 	m_sessionList->setHeaderHidden(false);
 	m_sessionList->setSortingEnabled(false);
 	m_sessionList->setRootIsDecorated(false);
+	m_sessionList->setAllColumnsShowFocus(true);
 
 	m_sessionModel->setColumnCount(4);
 	m_sessionModel->setHorizontalHeaderLabels({ "ID", "Name", "PID", "TID", "Address" });

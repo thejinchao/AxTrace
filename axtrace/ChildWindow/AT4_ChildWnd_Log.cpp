@@ -299,6 +299,7 @@ void LogChild::init(void)
 
 	this->setSortingEnabled(false);
 	this->setRootIsDecorated(false);
+	this->setAllColumnsShowFocus(true);
 	this->setSelectionMode(QAbstractItemView::ExtendedSelection);
 	this->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	this->setSelectionBehavior(QAbstractItemView::SelectRows);
