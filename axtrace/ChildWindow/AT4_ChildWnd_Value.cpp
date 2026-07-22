@@ -287,6 +287,7 @@ void ValueChild::init(void)
 	this->header()->resizeSection(1, 200);
 	this->setSortingEnabled(false);
 	this->setRootIsDecorated(false);
+	this->setAllColumnsShowFocus(true);
 	this->setSelectionMode(QAbstractItemView::ExtendedSelection);
 	this->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	this->setSelectionBehavior(QAbstractItemView::SelectRows);
