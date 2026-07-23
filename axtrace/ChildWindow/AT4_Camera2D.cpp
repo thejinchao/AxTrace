@@ -42,6 +42,8 @@ void Camera2D::_updateTransform(void)
 	m_transform = QTransform::fromTranslate(-m_sceneRect.left(), -m_sceneRect.top());
 	m_transform *= QTransform::fromScale(flipX*m_scale, flipY*m_scale);
 	m_transform *= QTransform::fromTranslate((m_viewSize.width() - abs(m_sceneRect.width()) * m_scale) / 2, (m_viewSize.height() - abs(m_sceneRect.height()) * m_scale) / 2);
+
+	m_flipAndRotateTransform = QTransform::fromScale(flipX, flipY);
 }
 
 //--------------------------------------------------------------------------------------------
