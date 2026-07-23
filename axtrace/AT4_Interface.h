@@ -103,10 +103,10 @@ typedef struct
 typedef struct
 {
 	axtrace_head_s	head;			/* common head */
-	double			x_min;			/* left of scene*/
-	double			y_min;			/* top of scene*/
-	double			x_max;			/* right of scene*/
-	double			y_max;			/* bottom of scene*/
+	double			x_left;			/* left of scene*/
+	double			y_top;			/* top of scene*/
+	double			x_right;		/* right of scene*/
+	double			y_bottom;		/* bottom of scene*/
 	unsigned short	name_len;		/* length of scene name */
 
 									/* [scene name buf  with '\0' ended]*/
@@ -172,10 +172,10 @@ typedef struct
 typedef struct
 {
 	axtrace_head_s	head;			/* common head */
-	double			x_min;			/* left of square*/
-	double			y_min;			/* top of square*/
-	double			x_max;			/* right of square*/
-	double			y_max;			/* bottom of square*/
+	double			x_left;			/* left of square*/
+	double			y_top;			/* top of square*/
+	double			x_right;		/* right of square*/
+	double			y_bottom;		/* bottom of square*/
 	unsigned short	name_len;		/* length of scene name */
 
 									/* [scene name buf  with '\0' ended]*/

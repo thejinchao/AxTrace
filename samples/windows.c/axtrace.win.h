@@ -57,35 +57,27 @@ AXTRACE_EXTERN_C void axvalue(unsigned int value_type, const char* value_name, c
 /**
 * begin draw a 2d scene
 
-x_min                         x_max
-+----------------------------+  y_min
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-+----------------------------+  y_max
+   x_left                          x_right
+   ┌───────────────────────────────┐ y_top
+   │                               │
+   │                               │
+   │                               │
+   │                               │
+   │                               │
+   │                               │
+   │                               │
+   └───────────────────────────────┘ y_bottom
 
 @param scene_name the name of scene(id)
-@param x_min left of scene
-@param y_min top of scene
-@param x_max right of scene
-@param y_max bottom of scene
+@param x_left left of scene
+@param y_top top of scene
+@param x_right right of scene
+@param y_bottom bottom of scene
 */
-AXTRACE_EXTERN_C void ax2d_begin_scene(const char* scene_name, double x_min, double y_min, double x_max, double y_max);
+AXTRACE_EXTERN_C void ax2d_begin_scene(const char* scene_name, double x_left, double y_top, double x_right, double y_bottom);
 
 /*
 create/update a actor in the scene
-
-+-------------+--------------+
-|             ^              |
-|             | y            |
-|     x       v              |
-+<----------> O              |
-|                            |
-|                            |
-+----------------------------+
-
 @param scene_name the name of scene(id)
 @param actor_id actor id
 @param x actor position(x)
@@ -141,29 +133,27 @@ add a circle-shape for a named scene
 */
 AXTRACE_EXTERN_C void ax2d_shape_circle(const char* scene_name, double center_x, double center_y, double radius);
 /*
-add a square-shape for a named scene
-                                                             
-         ┌──────────────────────────────────────────────┐    
-         │              ▲               ▲               │    
-         │              │ y_min         │               │    
-         │              ▼               │               │    
-         │  x_min  ┌───────────────┐    │               │    
-         │◄───────►│               │    │y_max          │    
-         │         │               │    │               │    
-         │         │               │    │               │    
-         │         │               │    ▼               │    
-         │         └───────────────┘   ───              │    
-         │        x_max                                 │    
-         ├◄───────────────────────►│                    │    
-         │                                              │    
-         └──────────────────────────────────────────────┘    
-
+add a square-shape for a named scene                                                       
+        ┌──────────────────────────────────────────────┐
+        │                                              │
+        │         │ x_left        │ x_right            │
+        │         ▼               ▼                    │
+        │         ┌───────────────┐◄────               │
+        │         │               │   y_top            │
+        │         │               │                    │
+        │         │               │                    │
+        │         │               │                    │
+        │         └───────────────┘◄────               │
+        │                             y_bottom         │
+        │                                              │
+        │                                              │
+        └──────────────────────────────────────────────┘
 @param scene_name the name of scene(id)
 @param x_min the left position of square
 @param y_min the top position of square
 @param x_max the right position of square
 @param y_max the bottom position of square
 */
-AXTRACE_EXTERN_C void ax2d_shape_square(const char* scene_name, double x_min, double y_min, double x_max, double y_max);
+AXTRACE_EXTERN_C void ax2d_shape_square(const char* scene_name, double x_left, double y_top, double x_right, double y_bottom);
 
 #endif

@@ -67,14 +67,14 @@ struct AxActor2D
 	double remain_distance(void) const {
 		return sqrt((x - tx)*(x - tx) + (y - ty)*(y - ty));
 	}
-	void select_next_target(double x_min, double x_max, double y_min, double y_max, double move_step) 
+	void select_next_target(double x_left, double y_top, double x_right, double y_bottom, double move_step)
 	{
 		double min_distance = 10 * move_step;
 		double max_distance = 100 * move_step;
 
 		do {
-			tx = rand_number(x_min, x_max);
-			ty = rand_number(y_min, y_max);
+			tx = rand_number(x_left, x_right);
+			ty = rand_number(y_top, y_bottom);
 		} while (remain_distance() < min_distance || remain_distance() > max_distance);
 		sx = x;
 		sy = y;
@@ -335,15 +335,15 @@ int main(int argc, char* argv[])
 		const int ACTOR_COUNTS = 100;
 		const int MOVE_COUNTS = 500;
 
-		const double MAP_X_MIN = -256.0;
-		const double MAP_Y_MIN = -256.0;
-		const double MAP_X_MAX = 512.0;
-		const double MAP_Y_MAX = 256.0;
+		const double MAP_X_LEFT = 512.0;
+		const double MAP_Y_TOP = -256.0;
+		const double MAP_X_RIGHT = -256.0;
+		const double MAP_Y_BOTTOM = 256.0;
 		const double MOVE_STEP = 1.0;
 		const double PI = 3.14159265;
 
-		double MAP_WIDTH = MAP_X_MAX - MAP_X_MIN;
-		double MAP_HEIGHT = MAP_Y_MAX - MAP_Y_MIN;
+		double MAP_WIDTH = MAP_X_RIGHT - MAP_X_LEFT;
+		double MAP_HEIGHT = MAP_Y_BOTTOM - MAP_Y_TOP;
 		AxActor2D allActors[ACTOR_COUNTS];
 	
 		//define scene grid
@@ -361,15 +361,15 @@ int main(int argc, char* argv[])
 		ax2d_shape_circle("test", 250.0, 120.0, 100.0);
 
 		//begin draw scene
-		ax2d_begin_scene("test", MAP_X_MIN, MAP_Y_MIN, MAP_X_MAX, MAP_Y_MAX);
+		ax2d_begin_scene("test", MAP_X_LEFT, MAP_Y_TOP, MAP_X_RIGHT, MAP_Y_BOTTOM);
 		for (int i = 0; i < ACTOR_COUNTS; i++)
 		{
 			AxActor2D& actor = allActors[i];
 			actor.init(i, MOVE_STEP);
 
-			actor.sx = actor.x = rand_number(MAP_X_MIN, MAP_X_MAX);
-			actor.sy = actor.y = rand_number(MAP_Y_MIN, MAP_Y_MAX);
-			actor.select_next_target(MAP_X_MIN, MAP_X_MAX, MAP_Y_MIN, MAP_Y_MAX, MOVE_STEP);
+			actor.sx = actor.x = rand_number(MAP_X_LEFT, MAP_X_RIGHT);
+			actor.sy = actor.y = rand_number(MAP_Y_TOP, MAP_Y_BOTTOM);
+			actor.select_next_target(MAP_X_LEFT, MAP_Y_TOP, MAP_X_RIGHT, MAP_Y_BOTTOM, MOVE_STEP);
 
 			ax2d_actor("test", actor.id, actor.x, actor.y, actor.dir, actor.type, actor.info);
 		}
@@ -380,7 +380,7 @@ int main(int argc, char* argv[])
 
 		for (int i = 0; i < MOVE_COUNTS; i++)
 		{
-			ax2d_begin_scene("test", MAP_X_MIN, MAP_Y_MIN, MAP_X_MAX, MAP_Y_MAX);
+			ax2d_begin_scene("test", MAP_X_LEFT, MAP_Y_TOP, MAP_X_RIGHT, MAP_Y_BOTTOM);
 
 			for (int j = 0; j < ACTOR_COUNTS; j++)
 			{
@@ -389,7 +389,7 @@ int main(int argc, char* argv[])
 				ax2d_actor("test", actor.id, actor.x, actor.y, actor.dir, actor.type, actor.info);
 
 				if (actor.remain_distance() <= MOVE_STEP*4) {
-					actor.select_next_target(MAP_X_MIN, MAP_X_MAX, MAP_Y_MIN, MAP_Y_MAX, MOVE_STEP);
+					actor.select_next_target(MAP_X_LEFT, MAP_Y_TOP, MAP_X_RIGHT, MAP_Y_BOTTOM, MOVE_STEP);
 
 					char actor_log[128] = { 0 };
 					_snprintf(actor_log, 128, "move to:%f, %f", actor.tx, actor.ty);
@@ -407,6 +407,7 @@ int main(int argc, char* argv[])
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
 
+		printf("Begin remove actors test\n");
 		system("pause");
 
 		for (int i = 0; i < ACTOR_COUNTS; i++)
@@ -415,7 +416,7 @@ int main(int argc, char* argv[])
 			double gridPointY = 256;
 			ax2d_shape_grid("test", 32.0, 32.0, gridPointX+i, gridPointY-i);
 
-			ax2d_begin_scene("test", MAP_X_MIN, MAP_Y_MIN, MAP_X_MAX, MAP_Y_MAX);
+			ax2d_begin_scene("test", MAP_X_LEFT, MAP_Y_TOP, MAP_X_RIGHT, MAP_Y_BOTTOM);
 			for (int j = 0; j < ACTOR_COUNTS-i; j++)
 			{
 				AxActor2D& actor = allActors[j];

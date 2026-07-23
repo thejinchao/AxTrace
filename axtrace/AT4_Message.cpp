@@ -464,8 +464,8 @@ bool Begin2DSceneMessage::build(const axtrace_head_s& head, cyclone::RingBuf* ri
 	size_t len = ringBuf->peek(0, &begin_scene_head, sizeof(begin_scene_head));
 	assert(len == sizeof(begin_scene_head));
 
-	m_sceneRect = QRectF(begin_scene_head.x_min, begin_scene_head.y_min, 
-		begin_scene_head.x_max-begin_scene_head.x_min, begin_scene_head.y_max - begin_scene_head.y_min);
+	m_sceneRect = QRectF(begin_scene_head.x_left, begin_scene_head.y_top, 
+		begin_scene_head.x_right - begin_scene_head.x_left, begin_scene_head.y_bottom - begin_scene_head.y_top);
 
 	//check scene name
 	qint32 name_length = begin_scene_head.name_len;
@@ -996,9 +996,9 @@ bool Add2DSquareShapeMessage::build(const axtrace_head_s& head, cyclone::RingBuf
 	assert(len == sizeof(message_head));
 
 	m_square = QRectF(
-		(qreal)message_head.x_min, (qreal)message_head.y_min,
-		(qreal)(message_head.x_max - message_head.x_min),
-		(qreal)(message_head.y_max - message_head.y_min)
+		(qreal)message_head.x_left, (qreal)message_head.y_top,
+		(qreal)(message_head.x_right - message_head.x_left),
+		(qreal)(message_head.y_bottom - message_head.y_top)
 	);
 
 	//check scene name
