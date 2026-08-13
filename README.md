@@ -64,27 +64,15 @@ local content = msg:get_content();
 在最近的一次更新中，AxTrace重新设计了UI系统，使用QT作为UI框架，这次改进几乎重构了所有代码。并且这次更新也加入了ax2d系列函数，可以将游戏中的场景数据以可视化的方式输出，这在开发MMORPG游戏服务器时非常有用，可以用图像的方式实时监控服务器程序中玩家和NPC的位置信息。
 
 ## 如何编译
-### 编译Cyclone
-AxTrace使用了我的另外一个开源工程cyclone作为网络底层，使用如下方法编译并安装该库
 
-1.  创建一个空的目录作为cyclone根目录，例如"d:/cyclone"
-2.  将cyclone源码clone到该目录下的一个子目录中，例如"d:/cyclone/src"，使用命令行为
-``` git clone https://github.com/thejinchao/cyclone.git src ```
-3.  在根目录下创建一个工程目录用来作为编译使用，例如"d:/cyclone/_sln"，在该目录中使用cmake生成工程文件，例如下面的命令行
-``` cmake -G "Visual Studio 15 2017 Win64" ../src  ```
-4.  打开生成的工程文件，编译cyclone，并执行其中的install工程，则"d:/cyclone/sdk"目录则会安装编译之后的cyclone，设置环境变量`CYCLONE_SDK_ROOT`到该目录
+### 编译Cyclone
+AxTrace使用了我的另外一个开源工程[cyclone](https://github.com/thejinchao/cyclone) 作为网络底层，编译并安装
 
 ### 安装QT6 SDK
-1. 下载Qt6 SDK，安装后设置环境变量`QT6_SDK_ROOT`指向安装路径
+1. 下载并安装[Qt6 SDK](https://www.qt.io/development/download-qt-installer-oss)
 
-### 编译AxTrace
-1. 创建一个空目录作为AxTrace的根目录，例如"d:/AxTrace"
-2. 将AxTrace源码clone到该目录下的一个子目录中，例如"d:/AxTrace/src"
-3. 在AxTrace根目录下创建一个子目录作为工程目录，例如"d:/AxTrace/_sln"
-4. 在工程目录中使用cmake生成工程文件，命令行为`cmake -G "Visual Studio 17 2022" ../src`
-5. 打开工程文件并编译
-
-### 运行AxTrace
-1. 在使用CMake生成AxTrace工程的时候，通过`CCMAKE_INSTALL_PREFIX`来指定安装目录
-2. 编译工程后，执行其中的`INSTALL`工程来将生成的exe和必须的QT动态库拷贝到安装目录
-3. 打开安装目录，运行其中的AxTrace4.exe
+### 编译以及运行AxTrace
+1. 下载AxTrace的[源码](https://github.com/thejinchao/AxTrace)
+2. 使用CMAKE生成VS工程，生成时需要设置CMake变量`Qt6_DIR`=`<Qt6_prebuilt_path>/lib/cmake/Qt6`, `cyclone_DIR`=`<cyclone_sdk_path>/lib/cmake/cyclone`
+3. 编译工程后，执行其中的`INSTALL`工程来将生成的exe和必须的QT动态库拷贝到安装目录
+4. 打开安装目录，运行其中的AxTrace4.exe
