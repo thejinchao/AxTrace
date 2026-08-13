@@ -107,6 +107,16 @@ add_executable(AxTrace4 WIN32
 	AxTrace.rc
 )
 
+target_include_directories(AxTrace4
+PRIVATE
+	${LuaJIT_DIR}/include
+)
+
+target_link_directories(AxTrace4
+PRIVATE
+	${LuaJIT_DIR}/lib
+)
+
 target_link_libraries(AxTrace4 
     Qt6::Core
     Qt6::Gui
@@ -116,10 +126,6 @@ target_link_libraries(AxTrace4
 	lua51
 	ws2_32 
 	Shlwapi
-)
-add_dependencies(AxTrace4 lua51)
-set_target_properties(AxTrace4 
-    PROPERTIES LINK_FLAGS "${CMAKE_CURRENT_BINARY_DIR}/../luajit/_build/lj_vm.obj"
 )
 
 #install
