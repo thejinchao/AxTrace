@@ -1,4 +1,8 @@
-﻿set(AT4_CHILD_WND_SOURCES
+﻿set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+
+set(AT4_CHILD_WND_SOURCES
 	ChildWindow/AT4_ChildWnd_Log.h
 	ChildWindow/AT4_ChildWnd_Log.cpp
 	ChildWindow/AT4_ChildWnd_Value.h
@@ -89,10 +93,6 @@ endforeach()
 set_source_files_properties(${AT4_PRECOMPILE_FILE}
 	PROPERTIES
 	COMPILE_FLAGS "/Ycstdafx.h"
-)
-
-include_directories(
-	../luajit
 )
 
 add_executable(AxTrace4 WIN32 
