@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.15)
+﻿cmake_minimum_required(VERSION 4.0)
 
 project(AxTrace4)
 
@@ -12,15 +12,9 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets OpenGLWidgets)
 # Set cmake variable cyclone_DIR="<cyclone_sdk_path>/lib/cmake/cyclone"
 find_package(cyclone REQUIRED)
 
-# set LuaJIT
-set(LuaJIT_DIR ${CMAKE_SOURCE_DIR}/luajit)
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTORCC ON)
-
 # add subdirectory
+add_subdirectory(luajit)
 add_subdirectory(axtrace)
