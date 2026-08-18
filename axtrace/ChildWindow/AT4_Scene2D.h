@@ -5,26 +5,32 @@
 	(C) Copyright thecodeway.com 2023
 ***************************************************/
 #pragma once
-
+#include "AT4_Interface.h"
 #include <QJsonObject>
 
+class Scene2DMessage;
 class Begin2DSceneMessage;
 class Update2DActorMessage;
 class End2DSceneMessage;
 class Add2DActorLogMessage;
-
-#include "AT4_MessageFilter.h"
-#include "AT4_Interface.h"
+struct Actor2DFilterResult;
 
 class Scene2D
 {
 public:
+	enum ActorType
+	{
+		AT_CIRCLE,
+		AT_QUAD,
+		AT_TRIANGLE,
+	};
+
 	struct Actor
 	{
 		qint64 actorID;
 		QPointF pos;
 		qreal dir;
-		MessageFilter::Actor2DType type;
+		ActorType type;
 		quint16 borderColor;
 		quint16 fillColor;
 		qreal size;
@@ -52,7 +58,7 @@ public:
 
 public:
 	void beginScene(const Begin2DSceneMessage* msg);
-	void updateActor(const Update2DActorMessage* msg, const MessageFilter::Actor2DResult& filterResult);
+	void updateActor(const Update2DActorMessage* msg, const Actor2DFilterResult& filterResult);
 	void endScene(const End2DSceneMessage* msg);
 	void addActorLog(Add2DActorLogMessage* msg);
 

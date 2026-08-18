@@ -13,8 +13,6 @@
 #include <QPen>
 #include "AT4_Scene2D.h"
 
-#include "AT4_MessageFilter.h"
-
 class Camera2D;
 class Begin2DSceneMessage;
 class Update2DActorMessage;
@@ -23,6 +21,7 @@ class Add2DActorLogMessage;
 class Add2DGridShapeMessage;
 class Add2DCircleShapeMessage;
 class Add2DSquareShapeMessage;
+struct Actor2DFilterResult;
 
 class Map2DChild : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -32,7 +31,7 @@ public:
 	void init(QWidget* parent);
 	void clean(void);
 	void beginScene(Begin2DSceneMessage* msg);
-	void updateActor(Update2DActorMessage* msg, const MessageFilter::Actor2DResult& filterResult);
+	void updateActor(Update2DActorMessage* msg, const Actor2DFilterResult& filterResult);
 	void endScene(End2DSceneMessage* msg);
 	void addActorLog(Add2DActorLogMessage* msg);
 	void addGridShape(Add2DGridShapeMessage* msg);

@@ -5,6 +5,7 @@
 	(C) Copyright thecodeway.com 2023
 ***************************************************/
 #pragma once
+#include "ChildWindow/AT4_Scene2D.h"
 
 class Config;
 class LogMessage;
@@ -13,42 +14,42 @@ class Update2DActorMessage;
 class Scene2DMessage;
 struct lua_State;
 
-class MessageFilter
+struct LogFilterResult
 {
-public:
-	struct ListResult
-	{
-		bool		display;
-		QString		wndTitle;		//utf8
-		uint16_t	fontColor;
-		uint16_t	backColor;
-	};
+	bool		display;
+	QString		wndTitle;
+	uint16_t	fontColor;
+	uint16_t	backColor;
+};
 
-	enum Actor2DType
-	{
-		AT_CIRCLE,
-		AT_QUAD,
-		AT_TRIANGLE,
-	};
+struct ValueFilterResult
+{
+	bool		display;
+	QString		wndTitle;
+	uint16_t	fontColor;
+	uint16_t	backColor;
+};
 
-	struct Actor2DResult
-	{
-		bool		display;
-		Actor2DType	type;
-		int			size;
-		uint16_t	borderColor;
-		uint16_t	fillColor;
-	};
+struct Actor2DFilterResult
+{
+	bool				display;
+	Scene2D::ActorType	type;
+	int					size;
+	uint16_t			borderColor;
+	uint16_t			fillColor;
+};
 
+class LuaVirtualMachine
+{
 public:
 	bool init(Config* cfg);
 
 	bool reloadScript(const char* script);
 	static bool tryLoadScript(const char* script, QString& errorMsg);
 
-	void onLogMessage(const LogMessage* message, ListResult& result);
-	void onValueMessage(const ValueMessage* message, ListResult& result);
-	void onActor2DMessage(const Update2DActorMessage* msg, Actor2DResult& result);
+	void onLogMessage(const LogMessage* message, LogFilterResult& result);
+	void onValueMessage(const ValueMessage* message, ValueFilterResult& result);
+	void onActor2DMessage(const Update2DActorMessage* msg, Actor2DFilterResult& result);
 	QString get2DSceneWndTitle(const Scene2DMessage* msg);
 
 	static QColor toQColor(uint16_t col) {
@@ -64,6 +65,6 @@ private:
 	lua_State*	L;
 
 public:
-	MessageFilter();
-	virtual ~MessageFilter();
+	LuaVirtualMachine();
+	virtual ~LuaVirtualMachine();
 };

@@ -10,13 +10,13 @@
 #include <QItemDelegate>
 #include <QQueue>
 
-#include "AT4_MessageFilter.h"
 #include "AT4_LogParser.h"
 #include "AT4_LogWndColumn.h"
 #include "AT4_Config.h"
 #include "Session/AT4_Session.h"
 
 class LogMessage;
+struct LogFilterResult;
 
 struct LogData
 {
@@ -39,7 +39,7 @@ public:
 	explicit LogDataModel(LogParserPtr logParser, QObject *parent = 0);
 	~LogDataModel();
 
-	void insertLog(const LogMessage* logMessage, const MessageFilter::ListResult& filterResult);
+	void insertLog(const LogMessage* logMessage, const LogFilterResult& filterResult);
 	void clearAllLog(void);
 	void autoCheckOverflow(void);
 	void switchColumn(qint32 index);
@@ -82,7 +82,7 @@ class LogChild : public QTreeView
 
 public:
 	void init(void);
-	void insertLog(const LogMessage* logMessage, const MessageFilter::ListResult& filterResult);
+	void insertLog(const LogMessage* logMessage, const LogFilterResult& filterResult);
 	bool isPause(void) const { return m_pause; }
 	void switchPause(void);
 

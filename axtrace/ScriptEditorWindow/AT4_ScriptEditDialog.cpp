@@ -8,7 +8,7 @@
 #include "AT4_ScriptEditDialog.h"
 #include "AT4_System.h"
 #include "AT4_Config.h"
-#include "AT4_MessageFilter.h"
+#include "AT4_LuaVirtualMachine.h"
 #include "AT4_LuaHighlighter.h"
 #include "AT4_CodeEditor.h"
 #include "AT4_MainWindow.h"
@@ -63,7 +63,7 @@ void ScriptEditorDialog_Filter::verify(void)
 {
 	QString errorMsg;
 	std::string plainText = m_editor->toPlainText().toUtf8().toStdString();
-	if (!MessageFilter::tryLoadScript(plainText.c_str(), errorMsg))
+	if (!LuaVirtualMachine::tryLoadScript(plainText.c_str(), errorMsg))
 	{
 		QMessageBox::critical(this, tr("LoadScript Error"), errorMsg, QMessageBox::Ok);
 		return;
@@ -79,7 +79,7 @@ void ScriptEditorDialog_Filter::verify(void)
 	m_script = m_editor->toPlainText();
 
 	//reload now
-	bool reloadSuccess = System::getSingleton()->getFilter()->reloadScript(plainText.c_str());
+	bool reloadSuccess = System::getSingleton()->getLuaVM()->reloadScript(plainText.c_str());
 	Q_ASSERT(reloadSuccess);
 
 	System::getSingleton()->getConfig()->setFilterScript(m_script);

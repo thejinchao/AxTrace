@@ -10,7 +10,7 @@ class MainWindow;
 class Incoming;
 class Config;
 class MessageQueue;
-class MessageFilter;
+class LuaVirtualMachine;
 class SessionManager;
 
 class System
@@ -23,18 +23,18 @@ public:
 	Config* getConfig(void) { return m_config; }
 	MainWindow* getMainWindow(void) { return m_mainWindow; }
 	MessageQueue* getMessageQueue(void) { return m_messageQueue; }
-	MessageFilter*	getFilter(void) { return m_filter; }
+	LuaVirtualMachine*	getLuaVM(void) { return m_luaVM; }
 	SessionManager* getSessionManager(void) { return m_sessionManager; }
 	Incoming* getIncoming(void) { return m_incoming; }
 
 private:
-	QApplication*	m_theApplication;
-	Config*			m_config;
-	Incoming*		m_incoming;
-	MainWindow*		m_mainWindow;
-	MessageQueue*	m_messageQueue;
-	MessageFilter*	m_filter;
-	SessionManager* m_sessionManager;
+	QApplication*		m_theApplication;
+	Config*				m_config;
+	Incoming*			m_incoming;
+	MainWindow*			m_mainWindow;
+	MessageQueue*		m_messageQueue;
+	LuaVirtualMachine*	m_luaVM;
+	SessionManager*		m_sessionManager;
 
 public:
 	System();

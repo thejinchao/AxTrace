@@ -5,12 +5,12 @@
 	(C) Copyright thecodeway.com 2023
 ***************************************************/
 #include "stdafx.h"
-#include "AT4_MessageFilter.h"
+#include "AT4_LuaVirtualMachine.h"
 #include "AT4_Config.h"
 #include "AT4_Message.h"
 
 //--------------------------------------------------------------------------------------------
-MessageFilter::MessageFilter()
+LuaVirtualMachine::LuaVirtualMachine()
 	: m_config(nullptr)
 	, L(nullptr)
 {
@@ -18,14 +18,14 @@ MessageFilter::MessageFilter()
 }
 
 //--------------------------------------------------------------------------------------------
-MessageFilter::~MessageFilter()
+LuaVirtualMachine::~LuaVirtualMachine()
 {
 	if(L)
 		lua_close(L);
 }
 
 //--------------------------------------------------------------------------------------------
-bool MessageFilter::init(Config* cfg)
+bool LuaVirtualMachine::init(Config* cfg)
 {
 	assert(cfg);
 
@@ -58,7 +58,7 @@ bool MessageFilter::init(Config* cfg)
 }
 
 //--------------------------------------------------------------------------------------------
-bool MessageFilter::reloadScript(const char* script)
+bool LuaVirtualMachine::reloadScript(const char* script)
 {
 	//run init lua script
 	if (luaL_dostring(L, script)) {
@@ -74,7 +74,7 @@ bool MessageFilter::reloadScript(const char* script)
 }
 
 //--------------------------------------------------------------------------------------------
-bool MessageFilter::tryLoadScript(const char* script, QString& errorMsg)
+bool LuaVirtualMachine::tryLoadScript(const char* script, QString& errorMsg)
 {
 	lua_State* L2 = luaL_newstate();
 	luaL_openlibs(L2);
@@ -102,7 +102,7 @@ bool MessageFilter::tryLoadScript(const char* script, QString& errorMsg)
 }
 
 //--------------------------------------------------------------------------------------------
-void MessageFilter::_luaopen(lua_State* L)
+void LuaVirtualMachine::_luaopen(lua_State* L)
 {
 	lua_pushinteger(L, 0x000); 	lua_setglobal(L, "COL_BLACK");
 	lua_pushinteger(L, 0xFFF); 	lua_setglobal(L, "COL_WHITE");
@@ -128,7 +128,7 @@ void MessageFilter::_luaopen(lua_State* L)
 }
 
 //--------------------------------------------------------------------------------------------
-void MessageFilter::onLogMessage(const LogMessage* message, ListResult& result)
+void LuaVirtualMachine::onLogMessage(const LogMessage* message, LogFilterResult& result)
 {
 	lua_getglobal(L, "onLogMessage");
 
@@ -149,7 +149,7 @@ void MessageFilter::onLogMessage(const LogMessage* message, ListResult& result)
 }
 
 //--------------------------------------------------------------------------------------------
-void MessageFilter::onValueMessage(const ValueMessage* message, ListResult& result)
+void LuaVirtualMachine::onValueMessage(const ValueMessage* message, ValueFilterResult& result)
 {
 	lua_getglobal(L, "onValueMessage");
 	lua_pushlightuserdata(L, (void*)message);
@@ -168,7 +168,7 @@ void MessageFilter::onValueMessage(const ValueMessage* message, ListResult& resu
 }
 
 //--------------------------------------------------------------------------------------------
-void MessageFilter::onActor2DMessage(const Update2DActorMessage* message, Actor2DResult& result)
+void LuaVirtualMachine::onActor2DMessage(const Update2DActorMessage* message, Actor2DFilterResult& result)
 {
 	lua_getglobal(L, "onActor2DMessage");
 	lua_pushlightuserdata(L, (void*)message);
@@ -179,7 +179,7 @@ void MessageFilter::onActor2DMessage(const Update2DActorMessage* message, Actor2
 
 	result.display = (lua_toboolean(L, -5) != 0);
 	if (result.display) {
-		result.type = (Actor2DType)lua_tointeger(L, -4);
+		result.type = (Scene2D::ActorType)lua_tointeger(L, -4);
 		result.size = lua_tointeger(L, -3);
 		result.borderColor = (uint16_t)(lua_tointeger(L, -2) & 0xFFFF);
 		result.fillColor = (uint16_t)(lua_tointeger(L, -1) & 0xFFFF);
@@ -187,7 +187,8 @@ void MessageFilter::onActor2DMessage(const Update2DActorMessage* message, Actor2
 	lua_pop(L, 5);
 }
 
-QString MessageFilter::get2DSceneWndTitle(const Scene2DMessage* message)
+//--------------------------------------------------------------------------------------------
+QString LuaVirtualMachine::get2DSceneWndTitle(const Scene2DMessage* message)
 {
 	lua_getglobal(L, "get2DSceneWndTitle");
 	lua_pushlightuserdata(L, (void*)message);

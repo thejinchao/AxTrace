@@ -12,6 +12,7 @@
 #include "AT4_System.h"
 #include "AT4_Config.h"
 #include "AT4_MainWindow.h"
+#include "AT4_LuaVirtualMachine.h"
 
 //--------------------------------------------------------------------------------------------
 LogDataModel::LogDataModel(LogParserPtr logParserPtr, QObject *parent)
@@ -30,15 +31,15 @@ LogDataModel::~LogDataModel()
 }
 
 //--------------------------------------------------------------------------------------------
-void LogDataModel::insertLog(const LogMessage* logMessage, const MessageFilter::ListResult& filterResult)
+void LogDataModel::insertLog(const LogMessage* logMessage, const LogFilterResult& filterResult)
 {
 	LogData logData;
 	logData.logIndex = m_currentIndex++;
 	logData.logTime = logMessage->getTime();
 	logData.session = logMessage->getSession();
 	logData.logType = logMessage->getLogType();
-	logData.backColor = MessageFilter::toQColor(filterResult.backColor);
-	logData.frontColor = MessageFilter::toQColor(filterResult.fontColor);
+	logData.backColor = LuaVirtualMachine::toQColor(filterResult.backColor);
+	logData.frontColor = LuaVirtualMachine::toQColor(filterResult.fontColor);
 	logData.logContent = m_logParser->parserLog(logMessage->getLog());
 
 	beginInsertRows(QModelIndex(), rowCount(), rowCount()+1);
@@ -342,7 +343,7 @@ void LogChild::timerEvent(QTimerEvent *event)
 }
 
 //--------------------------------------------------------------------------------------------
-void LogChild::insertLog(const LogMessage* logMessage, const MessageFilter::ListResult& filterResult)
+void LogChild::insertLog(const LogMessage* logMessage, const LogFilterResult& filterResult)
 {
 	if (m_pause) return;
 

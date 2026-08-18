@@ -220,7 +220,7 @@ void LogMessage::_luaopen(lua_State *L)
 	lua_pushvalue(L, -1);  /* push metatable */
 	lua_setfield(L, -2, "__index");  /* metatable.__index = metatable */
 
-	luaL_register(L, NULL, msg_data_meta);  /* file methods */
+	luaL_setfuncs(L, msg_data_meta, 0);  /* file methods */
 }
 
 //--------------------------------------------------------------------------------------------
@@ -413,7 +413,7 @@ void ValueMessage::_luaopen(lua_State *L)
 	lua_pushvalue(L, -1);  /* push metatable */
 	lua_setfield(L, -2, "__index");  /* metatable.__index = metatable */
 
-	luaL_register(L, NULL, msg_data_meta);  /* file methods */
+	luaL_setfuncs(L, msg_data_meta, 0);  /* file methods */
 }
 //--------------------------------------------------------------------------------------------
 Scene2DMessage::Scene2DMessage(SessionPtr session, const MessageTime& traceTime)
@@ -506,7 +506,7 @@ void Begin2DSceneMessage::_luaopen(lua_State *L)
 	lua_pushvalue(L, -1);  /* push metatable */
 	lua_setfield(L, -2, "__index");  /* metatable.__index = metatable */
 
-	luaL_register(L, NULL, msg_data_meta);  /* file methods */
+	luaL_setfuncs(L, msg_data_meta, 0);  /* file methods */
 }
 
 //--------------------------------------------------------------------------------------------
@@ -652,7 +652,7 @@ void Update2DActorMessage::_luaopen(lua_State *L)
 	lua_pushvalue(L, -1);  /* push metatable */
 	lua_setfield(L, -2, "__index");  /* metatable.__index = metatable */
 
-	luaL_register(L, NULL, msg_data_meta);  /* file methods */
+	luaL_setfuncs(L, msg_data_meta, 0);  /* file methods */
 }
 
 //--------------------------------------------------------------------------------------------
@@ -720,7 +720,7 @@ void End2DSceneMessage::_luaopen(lua_State *L)
 	lua_pushvalue(L, -1);  /* push metatable */
 	lua_setfield(L, -2, "__index");  /* metatable.__index = metatable */
 
-	luaL_register(L, NULL, msg_data_meta);  /* file methods */
+	luaL_setfuncs(L, msg_data_meta, 0);  /* file methods */
 }
 
 //--------------------------------------------------------------------------------------------
@@ -827,7 +827,7 @@ void Add2DActorLogMessage::_luaopen(lua_State *L)
 	lua_pushvalue(L, -1);  /* push metatable */
 	lua_setfield(L, -2, "__index");  /* metatable.__index = metatable */
 
-	luaL_register(L, NULL, msg_data_meta);  /* file methods */
+	luaL_setfuncs(L, msg_data_meta, 0);  /* file methods */
 }
 
 //--------------------------------------------------------------------------------------------
