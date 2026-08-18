@@ -10,7 +10,7 @@
 #include "AT4_Config.h"
 #include "AT4_Incoming.h"
 #include "AT4_MessageQueue.h"
-#include "AT4_MessageFilter.h"
+#include "AT4_LuaVirtualMachine.h"
 #include "ChildWindow/AT4_ChildWnd_Scene2D.h"
 #include "Session/AT4_Session.h"
 
@@ -24,7 +24,7 @@ System::System()
 	, m_incoming(nullptr)
 	, m_mainWindow(nullptr)
 	, m_messageQueue(nullptr)
-	, m_filter(nullptr)
+	, m_luaVM(nullptr)
 	, m_sessionManager(nullptr)
 {
 	s_singleton = this;
@@ -41,7 +41,7 @@ System::~System()
 	End2DSceneMessage::deletePool();
 
 	delete m_sessionManager;
-	delete m_filter;
+	delete m_luaVM;
 	delete m_messageQueue;
 	delete m_mainWindow;
 	delete m_incoming;
@@ -73,7 +73,7 @@ bool System::init(int argc, char *argv[])
 	m_config = new Config();
 	m_incoming = new Incoming();
 	m_messageQueue = new MessageQueue();
-	m_filter = new MessageFilter();
+	m_luaVM = new LuaVirtualMachine();
 	m_sessionManager = new SessionManager();
 
 	Map2DChild::initCachedObject();
@@ -83,8 +83,8 @@ bool System::init(int argc, char *argv[])
 		QMessageBox::critical(nullptr, QString("AxTrace 4"), QString("Load Setting Error"), QMessageBox::Ok);
 		return false;
 	}
-	if (!(m_filter->init(m_config))) {
-		QMessageBox::critical(nullptr, QString("AxTrace 4"), QString("Load Filter Script Error"), QMessageBox::Ok);
+	if (!(m_luaVM->init(m_config))) {
+		QMessageBox::critical(nullptr, QString("AxTrace 4"), QString("Load Lua Script Error"), QMessageBox::Ok);
 		return false;
 	}
 

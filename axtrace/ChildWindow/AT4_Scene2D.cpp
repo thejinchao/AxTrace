@@ -9,6 +9,7 @@
 #include "AT4_Message.h"
 #include "AT4_System.h"
 #include "AT4_Config.h"
+#include "AT4_LuaVirtualMachine.h"
 
 //--------------------------------------------------------------------------------------------
 Scene2D::Scene2D(Begin2DSceneMessage* msg)
@@ -40,7 +41,7 @@ void Scene2D::beginScene(const Begin2DSceneMessage* msg)
 }
 
 //--------------------------------------------------------------------------------------------
-void Scene2D::updateActor(const Update2DActorMessage* msg, const MessageFilter::Actor2DResult& filterResult)
+void Scene2D::updateActor(const Update2DActorMessage* msg, const Actor2DFilterResult& filterResult)
 {
 	if (!m_updating) return;
 	ActorMap& updatingActorsMap = m_actorMap[1 - m_actorMapIndex];

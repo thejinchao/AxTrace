@@ -10,7 +10,7 @@
 #include "AT4_System.h"
 #include "AT4_MessageQueue.h"
 #include "AT4_Message.h"
-#include "AT4_MessageFilter.h"
+#include "AT4_LuaVirtualMachine.h"
 #include "AT4_Config.h"
 #include "Session/AT4_Session.h"
 #include "Session/AT4_SessionDialog.h"
@@ -176,8 +176,8 @@ void MainWindow::_onShakeHand(ShakehandMessage* msg)
 //--------------------------------------------------------------------------------------------
 void MainWindow::_insertLog(LogMessage* msg)
 {
-	MessageFilter::ListResult filterResult;
-	System::getSingleton()->getFilter()->onLogMessage(msg, filterResult);
+	LogFilterResult filterResult;
+	System::getSingleton()->getLuaVM()->onLogMessage(msg, filterResult);
 	if (!filterResult.display) return;
 
 	LogChild* child = getLogChild(filterResult.wndTitle);
@@ -189,8 +189,8 @@ void MainWindow::_insertLog(LogMessage* msg)
 //--------------------------------------------------------------------------------------------
 void MainWindow::_insertValue(ValueMessage* msg)
 {
-	MessageFilter::ListResult filterResult;
-	System::getSingleton()->getFilter()->onValueMessage(msg, filterResult);
+	ValueFilterResult filterResult;
+	System::getSingleton()->getLuaVM()->onValueMessage(msg, filterResult);
 	if (!filterResult.display) return;
 
 	ValueChild* child = getValueChild(filterResult.wndTitle);
@@ -207,8 +207,8 @@ void MainWindow::_begin2DScene(Begin2DSceneMessage* msg)
 //--------------------------------------------------------------------------------------------
 void MainWindow::_update2DActor(Update2DActorMessage* msg)
 {
-	MessageFilter::Actor2DResult filterResult;
-	System::getSingleton()->getFilter()->onActor2DMessage(msg, filterResult);
+	Actor2DFilterResult filterResult;
+	System::getSingleton()->getLuaVM()->onActor2DMessage(msg, filterResult);
 	if (!filterResult.display) return;
 
 	Map2DChild* child = getMap2DChild(msg->getSceneName());

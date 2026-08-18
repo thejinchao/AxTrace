@@ -27,7 +27,7 @@ ValueDataModel::~ValueDataModel()
 }
 
 //--------------------------------------------------------------------------------------------
-void ValueDataModel::insertValue(const ValueMessage* valueMessage, const MessageFilter::ListResult& filterResult)
+void ValueDataModel::insertValue(const ValueMessage* valueMessage, const ValueFilterResult& filterResult)
 {
 	const QString& name = valueMessage->getName();
 	int idx = 0;
@@ -65,8 +65,8 @@ void ValueDataModel::insertValue(const ValueMessage* valueMessage, const Message
 	valueMessage->getValueAsString(valueData);
 	value.valueData = valueData;
 
-	value.backColor = MessageFilter::toQColor(filterResult.backColor);
-	value.frontColor = MessageFilter::toQColor(filterResult.fontColor);
+	value.backColor = LuaVirtualMachine::toQColor(filterResult.backColor);
+	value.frontColor = LuaVirtualMachine::toQColor(filterResult.fontColor);
 
 	int lineCounts = valueData.count('\n');
 	bool needLayout = false;
@@ -299,7 +299,7 @@ void ValueChild::init(void)
 }
 
 //--------------------------------------------------------------------------------------------
-void ValueChild::insertValue(const ValueMessage* valueMessage, const MessageFilter::ListResult& filterResult)
+void ValueChild::insertValue(const ValueMessage* valueMessage, const ValueFilterResult& filterResult)
 {
 	if (m_pause) return;
 

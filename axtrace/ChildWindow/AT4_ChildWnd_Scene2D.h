@@ -13,13 +13,12 @@
 #include <QPen>
 #include "AT4_Scene2D.h"
 
-#include "AT4_MessageFilter.h"
-
 class Camera2D;
 class Begin2DSceneMessage;
 class Update2DActorMessage;
 class End2DSceneMessage;
 class Add2DActorLogMessage;
+struct Actor2DFilterResult;
 
 class Map2DChild : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -29,7 +28,7 @@ public:
 	void init(QWidget* parent);
 	void clean(void);
 	void beginScene(Begin2DSceneMessage* msg);
-	void updateActor(Update2DActorMessage* msg, const MessageFilter::Actor2DResult& filterResult);
+	void updateActor(Update2DActorMessage* msg, const Actor2DFilterResult& filterResult);
 	void endScene(End2DSceneMessage* msg);
 	void addActorLog(Add2DActorLogMessage* msg);
 	bool isPause(void) const { return m_pause; }
