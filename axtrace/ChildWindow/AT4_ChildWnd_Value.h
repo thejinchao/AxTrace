@@ -7,7 +7,7 @@
 #pragma once
 
 #include <QTreeView>
-#include "AT4_LuaVirtualMachine.h"
+#include "Data/AT4_ValueData.h"
 
 class ValueMessage;
 
@@ -38,19 +38,6 @@ public:
 
 private:
 	enum { COLUMN_COUNTS = 3 };
-
-	struct Value
-	{
-		QString updateTime;
-		QString valueName;
-		QString valueData;
-		QColor backColor;
-		QColor frontColor;
-		int lineCounts=0;
-	};
-
-	typedef QVector<Value> ValueVector;
-	typedef QHash<QString, ValueVector::size_type> ValueHashMap;
 
 	ValueVector m_valueVector;
 	ValueHashMap m_valueHashMap;

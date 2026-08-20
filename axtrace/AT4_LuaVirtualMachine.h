@@ -12,22 +12,8 @@ class LogMessage;
 class ValueMessage;
 class Update2DActorMessage;
 struct lua_State;
-
-struct LogFilterResult
-{
-	bool		display;
-	QString		wndTitle;
-	uint16_t	fontColor;
-	uint16_t	backColor;
-};
-
-struct ValueFilterResult
-{
-	bool		display;
-	QString		wndTitle;
-	uint16_t	fontColor;
-	uint16_t	backColor;
-};
+struct LogFilterResult;
+struct ValueFilterResult;
 
 struct Actor2DFilterResult
 {

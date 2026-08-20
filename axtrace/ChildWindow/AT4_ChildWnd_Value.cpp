@@ -5,7 +5,7 @@
 	(C) Copyright thecodeway.com 2023
 ***************************************************/
 #include "stdafx.h"
-
+#include "AT4_LuaVirtualMachine.h"
 #include "AT4_ChildWnd_Value.h"
 #include "AT4_Message.h"
 #include "AT4_ChildInterface.h"

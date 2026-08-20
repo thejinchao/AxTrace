@@ -8,6 +8,8 @@
 #include "AT4_LuaVirtualMachine.h"
 #include "AT4_Config.h"
 #include "AT4_Message.h"
+#include "Data/AT4_LogData.h"
+#include "Data/AT4_ValueData.h"
 
 //--------------------------------------------------------------------------------------------
 LuaVirtualMachine::LuaVirtualMachine()

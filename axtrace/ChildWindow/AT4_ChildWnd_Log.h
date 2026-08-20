@@ -13,23 +13,10 @@
 #include "AT4_LogParser.h"
 #include "AT4_LogWndColumn.h"
 #include "AT4_Config.h"
-#include "Session/AT4_Session.h"
+#include "Data/AT4_LogData.h"
 
 class LogMessage;
 struct LogFilterResult;
-
-struct LogData
-{
-	quint32			logIndex;
-	MessageTime		logTime;
-	SessionPtr		session;
-	quint32			logType;
-	QColor			backColor;
-	QColor			frontColor;
-	QStringList		logContent;
-};
-
-typedef QQueue<LogData> LogDataVector;
 
 class LogDataModel : public QAbstractItemModel
 {

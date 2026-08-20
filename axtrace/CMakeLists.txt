@@ -2,6 +2,15 @@
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
+
+set(AT4_DATA_SOURCES
+	Data/AT4_LogData.h
+	Data/AT4_LogData.cpp
+	Data/AT4_ValueData.h
+	Data/AT4_ValueData.cpp
+)
+source_group("Data" FILES ${AT4_DATA_SOURCES})
+
 set(AT4_CHILD_WND_SOURCES
 	ChildWindow/AT4_ChildWnd_Log.h
 	ChildWindow/AT4_ChildWnd_Log.cpp
@@ -77,7 +86,7 @@ set(AT4_RC_SOURCES
 set(AT4_PRECOMPILE_FILE
 	stdafx.cpp)
 
-foreach(filename ${AT4_CHILD_WND_SOURCES} ${AT4_CPP_SOURCES} 
+foreach(filename ${AT4_CHILD_WND_SOURCES} ${AT4_CPP_SOURCES} ${AT4_DATA_SOURCES}
 	${AT4_SETTING_WND_SOURCES} ${AT4_SCRIPT_EDITOR_WND_SOURCES} ${AT4_SESSION_SOURCES})
 	get_filename_component(ext ${filename} LAST_EXT ABSOLUTE)
 	string(TOLOWER ${ext} ext_lower)
@@ -97,6 +106,7 @@ set_source_files_properties(${AT4_PRECOMPILE_FILE}
 
 add_executable(AxTrace4 WIN32 
 	${AT4_RC_SOURCES}
+	${AT4_DATA_SOURCES}
 	${AT4_CHILD_WND_SOURCES}
 	${AT4_SETTING_WND_SOURCES}
 	${AT4_SCRIPT_EDITOR_WND_SOURCES}
