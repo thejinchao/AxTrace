@@ -2,10 +2,10 @@
 
 				AXIA|Trace4
 
-	(C) Copyright thecodeway.com 2023
+	(C) Copyright thecodeway.com 2026
 ***************************************************/
 #include "stdafx.h"
-#include "AT4_Scene2D.h"
+#include "AT4_Scene2DData.h"
 #include "AT4_Message.h"
 #include "AT4_System.h"
 #include "AT4_Config.h"
@@ -48,7 +48,7 @@ void Scene2D::updateActor(const Update2DActorMessage* msg, const Actor2DFilterRe
 
 	ActorMap::iterator it = updatingActorsMap.find(msg->getActorID());
 	if (it == updatingActorsMap.end()) {
-		Actor actor;
+		Actor2D actor;
 		actor.actorID = msg->getActorID();
 		actor.pos = msg->getActorPosition();
 		actor.dir = msg->getActorDir();
@@ -62,7 +62,7 @@ void Scene2D::updateActor(const Update2DActorMessage* msg, const Actor2DFilterRe
 	}
 	else
 	{
-		Actor& actor = *it;
+		Actor2D& actor = *it;
 
 		actor.pos = msg->getActorPosition();
 		actor.dir = msg->getActorDir();
@@ -163,7 +163,7 @@ void Scene2D::walk(Scene2D::ActorWalkFunc walkFunc)
 
 	for (ActorMap::iterator it = actorsMap.begin(); it != actorsMap.end(); ++it)
 	{
-		const Actor& actor = it.value();
+		const Actor2D& actor = it.value();
 		walkFunc(actor);
 	}
 }
@@ -212,7 +212,7 @@ void Scene2D::_parserSceneDefine(const QJsonObject& sceneInfo)
 }
 
 //--------------------------------------------------------------------------------------------
-QString Scene2D::getActorBriefInfo(const Actor& actor) const
+QString Scene2D::getActorBriefInfo(const Actor2D& actor) const
 {
 	QString brief = QString("ID:%1\nPos:%2,%3\nDir:%4")
 		.arg(actor.actorID)
@@ -229,7 +229,7 @@ QString Scene2D::getActorBriefInfo(const Actor& actor) const
 }
 
 //--------------------------------------------------------------------------------------------
-QString Scene2D::getActorDetailInfo(const Actor& actor) const
+QString Scene2D::getActorDetailInfo(const Actor2D& actor) const
 {
 	QString detailInfo = getActorBriefInfo(actor);
 

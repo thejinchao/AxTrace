@@ -10,6 +10,7 @@
 #include "AT4_Message.h"
 #include "Data/AT4_LogData.h"
 #include "Data/AT4_ValueData.h"
+#include "Data/AT4_Scene2DActorData.h"
 
 //--------------------------------------------------------------------------------------------
 LuaVirtualMachine::LuaVirtualMachine()
@@ -172,7 +173,7 @@ void LuaVirtualMachine::onActor2DMessage(const Update2DActorMessage* message, Ac
 
 	result.display = (lua_toboolean(L, -5) != 0);
 	if (result.display) {
-		result.type = (Scene2D::ActorType)lua_tointeger(L, -4);
+		result.type = (Actor2DType)lua_tointeger(L, -4);
 		result.size = lua_tointeger(L, -3);
 		result.borderColor = (uint16_t)(lua_tointeger(L, -2) & 0xFFFF);
 		result.fillColor = (uint16_t)(lua_tointeger(L, -1) & 0xFFFF);

@@ -8,6 +8,10 @@ set(AT4_DATA_SOURCES
 	Data/AT4_LogData.cpp
 	Data/AT4_ValueData.h
 	Data/AT4_ValueData.cpp
+	Data/AT4_Scene2DData.h
+	Data/AT4_Scene2DData.cpp
+	Data/AT4_Scene2DActorData.h
+	Data/AT4_Scene2DActorData.cpp
 )
 source_group("Data" FILES ${AT4_DATA_SOURCES})
 
@@ -22,8 +26,6 @@ set(AT4_CHILD_WND_SOURCES
 	ChildWindow/AT4_ChildInterface.cpp
 	ChildWindow/AT4_Camera2D.h
 	ChildWindow/AT4_Camera2D.cpp
-	ChildWindow/AT4_Scene2D.h
-	ChildWindow/AT4_Scene2D.cpp
 	ChildWindow/AT4_LogWndColumn.h
 	ChildWindow/AT4_LogWndColumn.cpp
 )

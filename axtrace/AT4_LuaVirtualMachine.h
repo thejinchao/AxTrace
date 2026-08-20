@@ -5,7 +5,6 @@
 	(C) Copyright thecodeway.com 2023
 ***************************************************/
 #pragma once
-#include "ChildWindow/AT4_Scene2D.h"
 
 class Config;
 class LogMessage;
@@ -14,15 +13,7 @@ class Update2DActorMessage;
 struct lua_State;
 struct LogFilterResult;
 struct ValueFilterResult;
-
-struct Actor2DFilterResult
-{
-	bool				display;
-	Scene2D::ActorType	type;
-	int					size;
-	uint16_t			borderColor;
-	uint16_t			fillColor;
-};
+struct Actor2DFilterResult;
 
 class LuaVirtualMachine
 {

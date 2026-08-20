@@ -11,7 +11,7 @@
 #include <QBrush>
 #include <QFont>
 #include <QPen>
-#include "AT4_Scene2D.h"
+#include "Data/AT4_Scene2DData.h"
 
 class Camera2D;
 class Begin2DSceneMessage;
@@ -75,7 +75,7 @@ private:
 	QSet<qint64> m_hovedActor;
 
 private:
-	bool _getMouseTips(const QTransform& localMove, const Scene2D::Actor& actor, QString& mouseTips);
+	bool _getMouseTips(const QTransform& localMove, const Actor2D& actor, QString& mouseTips);
 	void _drawGrid(QPainter& painter);
 	void _drawAxis(QPainter& painter);
 	void _onMousePress(void);
@@ -97,4 +97,3 @@ public:
 	Map2DChild(const QString& title);
 	virtual ~Map2DChild();
 };
-

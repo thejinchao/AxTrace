@@ -8,13 +8,13 @@
 
 #include "AT4_ChildWnd_Scene2D.h"
 #include "AT4_ChildInterface.h"
-#include "AT4_Scene2D.h"
 #include "AT4_Camera2D.h"
 #include "AT4_System.h"
 #include "AT4_MainWindow.h"
 #include "AT4_Message.h"
 #include "AT4_LuaVirtualMachine.h"
 #include "AT4_Config.h"
+#include "Data/AT4_Scene2DData.h"
 
 //--------------------------------------------------------------------------------------------
 class Map2DChildInterface : public IChild
@@ -310,7 +310,7 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 	bool findSelectedActor = false;
 
 	//2. draw actor
-	m_scene->walk([&](const Scene2D::Actor& actor)
+	m_scene->walk([&](const Actor2D& actor)
 	{
 		painter.setBrush(getCachedBrush(actor.fillColor));
 
@@ -355,7 +355,7 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 		//2.1 draw actor
 		switch (actor.type)
 		{
-		case Scene2D::ActorType::AT_CIRCLE:
+		case Actor2DType::AT_CIRCLE:
 		{
 			painter.drawEllipse(QPointF(0.0, 0.0), actor.size, actor.size);
 			if(idDirNormal)
@@ -363,7 +363,7 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 		}
 		break;
 
-		case Scene2D::ActorType::AT_QUAD:
+		case Actor2DType::AT_QUAD:
 		{
 			painter.drawRect(QRectF(-actor.size, -actor.size, actor.size * 2, actor.size * 2));
 			if(idDirNormal)
@@ -371,7 +371,7 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 		}
 		break;
 
-		case Scene2D::ActorType::AT_TRIANGLE:
+		case Actor2DType::AT_TRIANGLE:
 		{
 			float l = -0.866025*actor.size; // sqrt(0.75)
 			float t = 0.5*actor.size;
@@ -398,18 +398,18 @@ void Map2DChild::paintEvent(QPaintEvent *event)
 
 			switch (actor.type)
 			{
-				case Scene2D::ActorType::AT_CIRCLE:
+				case Actor2DType::AT_CIRCLE:
 				{
 					painter.drawRect(QRectF(-actor.size, -actor.size, actor.size * 2, actor.size * 2));
 				}
 				break;
-				case Scene2D::ActorType::AT_QUAD:
+				case Actor2DType::AT_QUAD:
 				{
 					painter.drawRect(QRectF(-actor.size*1.1, -actor.size*1.1, actor.size * 2.2, actor.size * 2.2));
 				}
 				break;
 
-				case Scene2D::ActorType::AT_TRIANGLE:
+				case Actor2DType::AT_TRIANGLE:
 				{
 					float l = 0.866025*actor.size; // sqrt(0.75)
 					float t = 0.5*actor.size;
@@ -548,7 +548,7 @@ void Map2DChild::_drawAxis(QPainter& painter)
 }
 
 //--------------------------------------------------------------------------------------------
-bool Map2DChild::_getMouseTips(const QTransform& localMove, const Scene2D::Actor& actor, QString& mouseTips)
+bool Map2DChild::_getMouseTips(const QTransform& localMove, const Actor2D& actor, QString& mouseTips)
 {
 	//calc cursor pos
 	bool invertible;
@@ -559,19 +559,19 @@ bool Map2DChild::_getMouseTips(const QTransform& localMove, const Scene2D::Actor
 
 	switch (actor.type)
 	{
-	case Scene2D::ActorType::AT_CIRCLE:
+	case Actor2DType::AT_CIRCLE:
 	{
 		if (QPointF::dotProduct(pos, pos) > (actor.size*actor.size)) return false;
 	}
 	break;
 
-	case Scene2D::ActorType::AT_QUAD:
+	case Actor2DType::AT_QUAD:
 	{
 		if (pos.x() < -actor.size || pos.x() > actor.size || pos.y() < -actor.size || pos.y() > actor.size) return false;
 	}
 	break;
 
-	case Scene2D::ActorType::AT_TRIANGLE:
+	case Actor2DType::AT_TRIANGLE:
 	{
 		const float sqrt_0_75 = 0.866025f; //sqrt(0.75)
 		const float s1_len = 1.93185165258f; //sqrt(2+2*sqrt(0.75)) 

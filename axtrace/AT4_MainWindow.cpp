@@ -18,7 +18,6 @@
 #include "ChildWindow/AT4_ChildWnd_Log.h"
 #include "ChildWindow/AT4_ChildWnd_Value.h"
 #include "ChildWindow/AT4_ChildWnd_Scene2D.h"
-#include "ChildWindow/AT4_Scene2D.h"
 #include "SettingWindow/AT4_SettingDialog.h"
 #include <QOpenGLWidget>
 #include <QShowEvent>
