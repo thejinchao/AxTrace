@@ -36,9 +36,17 @@ public:
 		return COLUMN_COUNTS;
 	}
 
-private:
-	enum { COLUMN_COUNTS = 3 };
+public:
+	enum { 
+		COLUMN_INDEX = 0,
+		COLUMN_UPDATE_TIME = 1,
+		COLUMN_VALUE_NAME = 2,
+		COLUMN_VALUE_DATA = 3,
 
+		COLUMN_COUNTS = 4
+	};
+
+private:
 	ValueVector m_valueVector;
 	ValueHashMap m_valueHashMap;
 

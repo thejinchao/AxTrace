@@ -8,6 +8,7 @@
 
 struct Value
 {
+	int index;
 	QString updateTime;
 	QString valueName;
 	QString valueData;

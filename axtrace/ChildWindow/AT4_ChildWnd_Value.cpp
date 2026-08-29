@@ -40,6 +40,7 @@ void ValueDataModel::insertValue(const ValueMessage* valueMessage, const ValueFi
 		idx = m_valueVector.size();
 
 		Value value;
+		value.index = idx;
 		value.valueName = name;
 
 		m_valueVector.push_back(value);
@@ -111,16 +112,6 @@ QVariant ValueDataModel::data(const QModelIndex &index, int role) const
 	case Qt::ForegroundRole: return QBrush(value.frontColor);
 	case Qt::TextAlignmentRole: return QVariant(int(Qt::AlignLeft | Qt::AlignTop));
 	case Qt::DisplayRole: return data(index.row(), index.column());
-	//case Qt::SizeHintRole:
-	//{
-	//	QFontMetrics fm(m_view->font());
-
-	//	QRect rect = fm.boundingRect(0, 0, 1000, 0, Qt::TextWordWrap | Qt::AlignLeft | Qt::AlignTop, value.valueData);
-	//	//int height = calculateHeightForText(text);
-	//	//int width = fm.horizontalAdvance(data(index.row(), index.column())) + 10;
-	//	int height = rect.height() + 4;
-	//	return QSize(-1, height);
-	//}
 	default: return QVariant();
 	}
 }
@@ -134,10 +125,11 @@ QString ValueDataModel::data(int row, int column) const
 	const Value& value = m_valueVector[row];
 	switch (column)
 	{
-	case 0: return value.updateTime;
-	case 1: return value.valueName;
-	case 2: return value.valueData;
-	default: return QString();
+	case COLUMN_INDEX: return QString::number(value.index);
+	case COLUMN_UPDATE_TIME: return value.updateTime;
+	case COLUMN_VALUE_NAME: return value.valueName;
+	case COLUMN_VALUE_DATA: return value.valueData;
+		default: return QString();
 	}
 }
 
@@ -146,9 +138,14 @@ QVariant ValueDataModel::headerData(int section, Qt::Orientation orientation, in
 {
 	if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
 	{
-		if (section == 0) return QVariant(tr("Time"));
-		else if (section == 1) return QVariant(tr("Name"));
-		else return QVariant(tr("Value"));
+		switch (section)
+		{
+		case COLUMN_INDEX: return QVariant(tr("#"));
+		case COLUMN_UPDATE_TIME: return QVariant(tr("Time"));
+		case COLUMN_VALUE_NAME: return QVariant(tr("Name"));
+		case COLUMN_VALUE_DATA: return QVariant(tr("Value"));
+		default: return QVariant();
+		}
 	}
 
 	return QVariant();
@@ -197,10 +194,11 @@ public:
 		QString lines;
 		foreach(auto row, rows)
 		{
-			QString line = QString("%1\t%2\t%3\n").arg(
+			QString line = QString("%1\t%2\t%3\t%4\n").arg(
 				model->data(row.row(), 0),
 				model->data(row.row(), 1),
-				model->data(row.row(), 2));
+				model->data(row.row(), 2),
+				model->data(row.row(), 3));
 
 			lines += line;
 		}
@@ -232,10 +230,11 @@ public:
 			QTextStream stream(&file);
 			for (int rowIndex = 0; rowIndex < model->rowCount(); rowIndex++)
 			{
-				QString line = QString("%1\t%2\t%3\n").arg(
+				QString line = QString("%1\t%2\t%3\t%4\n").arg(
 					model->data(rowIndex, 0),
 					model->data(rowIndex, 1),
-					model->data(rowIndex, 2));
+					model->data(rowIndex, 2),
+					model->data(rowIndex, 3));
 				stream << line;
 			}
 			file.close();
@@ -283,8 +282,9 @@ ValueChild::~ValueChild()
 void ValueChild::init(void)
 {
 	this->setModel(new ValueDataModel(this));
-	this->header()->resizeSection(0, 120);
-	this->header()->resizeSection(1, 200);
+	this->header()->resizeSection(ValueDataModel::COLUMN_INDEX, 40);
+	this->header()->resizeSection(ValueDataModel::COLUMN_UPDATE_TIME, 120);
+	this->header()->resizeSection(ValueDataModel::COLUMN_VALUE_NAME, 200);
 	this->setSortingEnabled(false);
 	this->setRootIsDecorated(false);
 	this->setAllColumnsShowFocus(true);
