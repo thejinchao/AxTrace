@@ -18,12 +18,13 @@ QString LogColumn_Index::getString(const LogData& logData) const
 //--------------------------------------------------------------------------------------------
 QString LogColumn_Time::getString(const LogData& logData) const
 {
-	const MessageTime& t = logData.logTime;
+	const QTime t = QDateTime::fromMSecsSinceEpoch(logData.logTime.epochTime).time();
+
 	return  QString("%1:%2 %3.%4")
-		.arg(t.hour, 2, 10, QLatin1Char('0'))
-		.arg(t.minute, 2, 10, QLatin1Char('0'))
-		.arg(t.second, 2, 10, QLatin1Char('0'))
-		.arg(t.milliseconds, 3, 10, QLatin1Char('0'));
+		.arg(t.hour(), 2, 10, QLatin1Char('0'))
+		.arg(t.minute(), 2, 10, QLatin1Char('0'))
+		.arg(t.second(), 2, 10, QLatin1Char('0'))
+		.arg(t.msec(), 3, 10, QLatin1Char('0'));
 }
 
 //--------------------------------------------------------------------------------------------

@@ -148,10 +148,7 @@ typedef struct
 
 struct MessageTime
 {
-	quint16	hour;
-	quint16	minute;
-	quint16	second;
-	quint16	milliseconds;
+	qint64 epochTime;
 };
 
 #pragma pack(pop)
