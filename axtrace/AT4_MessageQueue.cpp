@@ -25,13 +25,10 @@ MessageQueue::~MessageQueue()
 }
 
 //--------------------------------------------------------------------------------------------
-void MessageQueue::insertMessage(cyclone::RingBuf* buf, size_t msg_length, const QTime& timeNow, qint32 sessionID)
+void MessageQueue::insertMessage(cyclone::RingBuf* buf, size_t msg_length, const QDateTime& timeNow, qint32 sessionID)
 {
 	MessageTime t;
-	t.hour = timeNow.hour();
-	t.minute = timeNow.minute();
-	t.second = timeNow.second();
-	t.milliseconds = timeNow.msec();
+	t.epochTime = timeNow.toMSecsSinceEpoch();
 
 	{
 		QMutexLocker locker(&m_lock);

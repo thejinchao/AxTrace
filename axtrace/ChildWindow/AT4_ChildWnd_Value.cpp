@@ -55,12 +55,14 @@ void ValueDataModel::insertValue(const ValueMessage* valueMessage, const ValueFi
 
 	Value& value = m_valueVector[idx];
 
-	const MessageTime& t = valueMessage->getTime();
+	//const MessageTime& t = valueMessage->getTime();
+	const QTime t = QDateTime::fromMSecsSinceEpoch(valueMessage->getTime().epochTime).time();
+	
 	value.updateTime = tr("%1:%2 %3.%4")
-		.arg(t.hour, 2, 10, QLatin1Char('0'))
-		.arg(t.minute, 2, 10, QLatin1Char('0'))
-		.arg(t.second, 2, 10, QLatin1Char('0'))
-		.arg(t.milliseconds, 3, 10, QLatin1Char('0'));
+		.arg(t.hour(), 2, 10, QLatin1Char('0'))
+		.arg(t.minute(), 2, 10, QLatin1Char('0'))
+		.arg(t.second(), 2, 10, QLatin1Char('0'))
+		.arg(t.msec(), 3, 10, QLatin1Char('0'));
 
 	QString valueData;
 	valueMessage->getValueAsString(valueData);

@@ -124,7 +124,7 @@ void Incoming::on_message(cyclone::TcpServer* server, int32_t thread_index, cycl
 		if (capture)
 		{
 			QDateTime timeNow = QDateTime::currentDateTime();
-			System::getSingleton()->getMessageQueue()->insertMessage(&input, head.length, timeNow.time(), conn->get_id());
+			System::getSingleton()->getMessageQueue()->insertMessage(&input, head.length, timeNow, conn->get_id());
 		}
 		else
 		{
