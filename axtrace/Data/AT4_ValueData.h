@@ -6,10 +6,13 @@
 ***************************************************/
 #pragma once
 
+#include "AT4_Interface.h"
+
 struct Value
 {
 	int index;
-	QString updateTime;
+	MessageTime updateTime;
+	QString updateTimeStr;
 	QString valueName;
 	QString valueData;
 	QColor backColor;
@@ -19,6 +22,7 @@ struct Value
 
 typedef QVector<Value> ValueVector;
 typedef QHash<QString, ValueVector::size_type> ValueHashMap;
+typedef QVector<ValueVector::size_type> ValueIndexVector;
 
 struct ValueFilterResult
 {

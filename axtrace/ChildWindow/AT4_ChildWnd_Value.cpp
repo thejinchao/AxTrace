@@ -29,65 +29,94 @@ ValueDataModel::~ValueDataModel()
 //--------------------------------------------------------------------------------------------
 void ValueDataModel::insertValue(const ValueMessage* valueMessage, const ValueFilterResult& filterResult)
 {
-	const QString& name = valueMessage->getName();
-	int idx = 0;
-	bool insert = false;
+	const QString& valueName = valueMessage->getName();
 
-	auto it = m_valueHashMap.find(name);
-	if (it == m_valueHashMap.end())
-	{
-		insert = true;
-		idx = m_valueVector.size();
+	QString valueData;
+	valueMessage->getValueAsString(valueData);
 
-		Value value;
-		value.index = idx;
-		value.valueName = name;
-
-		m_valueVector.push_back(value);
-		m_valueHashMap.insert(name, idx);
-
-		beginInsertRows(QModelIndex(), idx, idx);
-	}
-	else
-	{
-		idx = it.value();
-	}
-
-	Value& value = m_valueVector[idx];
-
-	//const MessageTime& t = valueMessage->getTime();
-	const QTime t = QDateTime::fromMSecsSinceEpoch(valueMessage->getTime().epochTime).time();
-	
-	value.updateTime = tr("%1:%2 %3.%4")
+	const MessageTime updateTime = valueMessage->getTime();
+	const QTime t = QDateTime::fromMSecsSinceEpoch(updateTime.epochTime).time();
+	const QString updateTimeStr = tr("%1:%2 %3.%4")
 		.arg(t.hour(), 2, 10, QLatin1Char('0'))
 		.arg(t.minute(), 2, 10, QLatin1Char('0'))
 		.arg(t.second(), 2, 10, QLatin1Char('0'))
 		.arg(t.msec(), 3, 10, QLatin1Char('0'));
 
-	QString valueData;
-	valueMessage->getValueAsString(valueData);
-	value.valueData = valueData;
+	const QColor backColor = LuaVirtualMachine::toQColor(filterResult.backColor);
+	const QColor frontColor = LuaVirtualMachine::toQColor(filterResult.fontColor);
 
-	value.backColor = LuaVirtualMachine::toQColor(filterResult.backColor);
-	value.frontColor = LuaVirtualMachine::toQColor(filterResult.fontColor);
-
-	int lineCounts = valueData.count('\n');
-	bool needLayout = false;
-	if (value.lineCounts != lineCounts)
+	const auto it = m_valueHashMap.constFind(valueName);
+	if (it == m_valueHashMap.cend())
 	{
-		value.lineCounts = valueData.count('\n');
-		needLayout = true;
-	}
+		const auto valueIndex = m_valueVector.size();
+		const int sequenceNumber = static_cast<int>(valueIndex);
 
-	if (insert)
-	{
-		endInsertRows();
+		if (m_sortColumn == COLUMN_NONE)
+		{
+			const int newRow = m_sortedValues.size();
+			beginInsertRows({}, newRow, newRow);
+			m_valueVector.append({ sequenceNumber, updateTime, updateTimeStr, valueName, valueData, backColor, frontColor });
+			m_valueHashMap.insert(valueName, valueIndex);
+			m_sortedValues.append(valueIndex);
+			endInsertRows();
+		}
+		else
+		{
+			m_valueVector.append({ sequenceNumber, updateTime, updateTimeStr, valueName, valueData, backColor, frontColor });
+			m_valueHashMap.insert(valueName, valueIndex);
+			const auto insertionPoint = std::upper_bound(
+				m_sortedValues.cbegin(), m_sortedValues.cend(), valueIndex,
+				[this](ValueVector::size_type newIndex, ValueVector::size_type existingIndex)
+				{
+					return lessThan(newIndex, existingIndex);
+				}
+			);
+			const int newRow = static_cast<int>(std::distance(m_sortedValues.cbegin(), insertionPoint));
+			beginInsertRows({}, newRow, newRow);
+			m_sortedValues.insert(newRow, valueIndex);
+			endInsertRows();
+		}
 	}
 	else
 	{
-		emit dataChanged(index(idx, 0), index(idx, COLUMN_COUNTS), { Qt::DisplayRole });
+		const auto valueIndex = it.value();
+		Value& value = m_valueVector[valueIndex];
+		value.updateTime = updateTime;
+		value.updateTimeStr = updateTimeStr;
+		value.valueData = valueData;
+		value.backColor = backColor;
+		value.frontColor = frontColor;
 
-		if(needLayout) m_view->doItemsLayout();
+		if (m_sortColumn != COLUMN_UPDATE_TIME)
+		{
+			const auto row = m_sortedValues.indexOf(valueIndex);
+			emit dataChanged(index(row, COLUMN_UPDATE_TIME), index(row, COLUMN_VALUE_DATA), { Qt::DisplayRole });
+		}
+		else
+		{
+			const int oldRow = 	static_cast<int>(m_sortedValues.indexOf(valueIndex));
+			const int newRow = m_sortOrder == Qt::AscendingOrder ? static_cast<int>(m_sortedValues.size() - 1) : 0;
+
+			if (oldRow != newRow) 
+			{
+				const int destinationChild = m_sortOrder == Qt::AscendingOrder ? static_cast<int>(m_sortedValues.size()) : 0;
+				beginMoveRows({}, oldRow, oldRow, {}, destinationChild);
+				m_sortedValues.removeAt(oldRow);
+				m_sortedValues.insert(newRow, valueIndex);
+				endMoveRows();
+			}
+
+			emit dataChanged(index(newRow, COLUMN_UPDATE_TIME), index(newRow, COLUMN_VALUE_DATA), { Qt::DisplayRole });
+		}
+
+		int lineCounts = valueData.count('\n');
+		bool needLayout = false;
+		if (value.lineCounts != lineCounts)
+		{
+			value.lineCounts = valueData.count('\n');
+			needLayout = true;
+		}
+		if (needLayout) m_view->doItemsLayout();
 	}
 }
 
@@ -103,10 +132,10 @@ void ValueDataModel::clearAllValue(void)
 //--------------------------------------------------------------------------------------------
 QVariant ValueDataModel::data(const QModelIndex &index, int role) const
 {
-	if (!index.isValid() || index.row() >= m_valueVector.size() || index.column() >= COLUMN_COUNTS)
+	if (!index.isValid() || index.row() >= m_sortedValues.size() || index.column() >= COLUMN_COUNTS)
 		return QVariant();
 
-	const Value& value = m_valueVector[index.row()];
+	const Value& value = m_valueVector[m_sortedValues[index.row()]];
 
 	switch (role)
 	{
@@ -121,14 +150,14 @@ QVariant ValueDataModel::data(const QModelIndex &index, int role) const
 //--------------------------------------------------------------------------------------------
 QString ValueDataModel::data(int row, int column) const
 {
-	if (row >= m_valueVector.size() || column >= COLUMN_COUNTS)
+	if (row >= m_sortedValues.size() || column >= COLUMN_COUNTS)
 		return QString();
 
-	const Value& value = m_valueVector[row];
+	const Value& value = m_valueVector[m_sortedValues[row]];
 	switch (column)
 	{
 	case COLUMN_INDEX: return QString::number(value.index);
-	case COLUMN_UPDATE_TIME: return value.updateTime;
+	case COLUMN_UPDATE_TIME: return value.updateTimeStr;
 	case COLUMN_VALUE_NAME: return value.valueName;
 	case COLUMN_VALUE_DATA: return value.valueData;
 		default: return QString();
@@ -163,6 +192,68 @@ QModelIndex ValueDataModel::index(int row, int column, const QModelIndex &parent
 		return createIndex(row, column);
 	else
 		return QModelIndex();
+}
+
+//--------------------------------------------------------------------------------------------
+void ValueDataModel::sort(int column, Qt::SortOrder order)
+{
+	if (column < COLUMN_INDEX || column > COLUMN_VALUE_NAME) return;
+
+	emit layoutAboutToBeChanged({}, VerticalSortHint);
+
+	const QModelIndexList oldPersistentIndexes = persistentIndexList();
+	ValueIndexVector persistentValueIndexes;
+	persistentValueIndexes.reserve(oldPersistentIndexes.size());
+	for (const QModelIndex& persistentIndex : oldPersistentIndexes) 
+	{
+		persistentValueIndexes.append(m_sortedValues.at(persistentIndex.row()));
+	}
+
+	m_sortColumn = static_cast<ValueColumn>(column);
+	m_sortOrder = order;
+	std::stable_sort(
+		m_sortedValues.begin(), m_sortedValues.end(),
+		[this](QVector<Value>::size_type leftIndex, QVector<Value>::size_type rightIndex)
+		{
+			return lessThan(leftIndex, rightIndex);
+		}
+	);
+
+	QModelIndexList newPersistentIndexes;
+	newPersistentIndexes.reserve(oldPersistentIndexes.size());
+	for (qsizetype i = 0; i < oldPersistentIndexes.size(); ++i) 
+	{
+		const int newRow = m_sortedValues.indexOf(persistentValueIndexes.at(i));
+		newPersistentIndexes.append(
+			index(newRow, oldPersistentIndexes.at(i).column()));
+	}
+	changePersistentIndexList(oldPersistentIndexes, newPersistentIndexes);
+	emit layoutChanged({}, VerticalSortHint);
+}
+
+//--------------------------------------------------------------------------------------------
+bool ValueDataModel::lessThan(ValueVector::size_type leftIndex, ValueVector::size_type rightIndex) const
+{
+	const Value& left = m_valueVector.at(leftIndex);
+	const Value& right = m_valueVector.at(rightIndex);
+
+	if(m_sortColumn == COLUMN_UPDATE_TIME)
+	{
+		if (left.updateTime.epochTime != right.updateTime.epochTime)
+		{
+			return m_sortOrder == Qt::AscendingOrder ? left.updateTime.epochTime < right.updateTime.epochTime : left.updateTime.epochTime > right.updateTime.epochTime;
+		}
+	}
+	else if(m_sortColumn == COLUMN_VALUE_NAME)
+	{
+		const int comparison = QString::localeAwareCompare(left.valueName, right.valueName);
+		if (comparison != 0)
+		{
+			return m_sortOrder == Qt::AscendingOrder ? comparison < 0 : comparison > 0;
+		}
+	}
+
+	return m_sortOrder == Qt::AscendingOrder ? left.index < right.index : left.index > right.index;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -294,10 +385,16 @@ void ValueChild::init(void)
 	this->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	this->setSelectionBehavior(QAbstractItemView::SelectRows);
 	this->setUniformRowHeights(false);
+	this->setAlternatingRowColors(false);
+	this->header()->setSectionsClickable(true);
+	this->header()->setStretchLastSection(true);
+	this->header()->setSortIndicatorShown(false);
 
 	connect(this->selectionModel(), &QItemSelectionModel::selectionChanged, this, []() {
 		System::getSingleton()->getMainWindow()->notifySelectionChanged();
 	});
+
+	connect(this->header(), &QHeaderView::sectionClicked, this, &ValueChild::sortByHeader);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -330,3 +427,39 @@ void ValueChild::switchPause(void)
 {
 	m_pause = !m_pause;
 }
+
+//--------------------------------------------------------------------------------------------
+void ValueChild::sortByHeader(int column)
+{
+	ValueDataModel* model = (ValueDataModel*)(this->model());
+	ValueDataModel::ValueColumn sortColumn = model->getSortColumn();
+	Qt::SortOrder sortOrder = model->getSortOrder();
+
+	if (column < 0 || column >= ValueDataModel::COLUMN_VALUE_DATA) 
+	{
+		if (sortColumn >= ValueDataModel::COLUMN_INDEX)
+		{
+			header()->setSortIndicator(sortColumn, sortOrder);
+		}
+		else 
+		{
+			header()->setSortIndicatorShown(false);
+		}
+		return;
+	}
+
+	if (sortColumn == column) 
+	{
+		sortOrder = (sortOrder == Qt::AscendingOrder) ? Qt::DescendingOrder : Qt::AscendingOrder;
+	}
+	else 
+	{
+		sortColumn = (ValueDataModel::ValueColumn)column;
+		sortOrder = Qt::AscendingOrder;
+	}
+
+	header()->setSortIndicatorShown(true);
+	header()->setSortIndicator(sortColumn, sortOrder);
+	model->sort(sortColumn, sortOrder);
+}
+
