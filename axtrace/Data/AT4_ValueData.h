@@ -6,7 +6,7 @@
 ***************************************************/
 #pragma once
 
-#include "AT4_Interface.h"
+#include "Data/AT4_CommonStruct.h"
 
 struct Value
 {

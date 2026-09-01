@@ -12,6 +12,8 @@ set(AT4_DATA_SOURCES
 	Data/AT4_Scene2DData.cpp
 	Data/AT4_Scene2DActorData.h
 	Data/AT4_Scene2DActorData.cpp
+	Data/AT4_CommonStruct.h
+	Data/AT4_CommonStruct.cpp
 )
 source_group("Data" FILES ${AT4_DATA_SOURCES})
 

@@ -35,12 +35,7 @@ void ValueDataModel::insertValue(const ValueMessage* valueMessage, const ValueFi
 	valueMessage->getValueAsString(valueData);
 
 	const MessageTime updateTime = valueMessage->getTime();
-	const QTime t = QDateTime::fromMSecsSinceEpoch(updateTime.epochTime).time();
-	const QString updateTimeStr = tr("%1:%2 %3.%4")
-		.arg(t.hour(), 2, 10, QLatin1Char('0'))
-		.arg(t.minute(), 2, 10, QLatin1Char('0'))
-		.arg(t.second(), 2, 10, QLatin1Char('0'))
-		.arg(t.msec(), 3, 10, QLatin1Char('0'));
+	const QString updateTimeStr = updateTime.toString();
 
 	const QColor backColor = LuaVirtualMachine::toQColor(filterResult.backColor);
 	const QColor frontColor = LuaVirtualMachine::toQColor(filterResult.fontColor);
@@ -239,9 +234,9 @@ bool ValueDataModel::lessThan(ValueVector::size_type leftIndex, ValueVector::siz
 
 	if(m_sortColumn == COLUMN_UPDATE_TIME)
 	{
-		if (left.updateTime.epochTime != right.updateTime.epochTime)
+		if (left.updateTime != right.updateTime)
 		{
-			return m_sortOrder == Qt::AscendingOrder ? left.updateTime.epochTime < right.updateTime.epochTime : left.updateTime.epochTime > right.updateTime.epochTime;
+			return m_sortOrder == Qt::AscendingOrder ? left.updateTime < right.updateTime : left.updateTime > right.updateTime;
 		}
 	}
 	else if(m_sortColumn == COLUMN_VALUE_NAME)

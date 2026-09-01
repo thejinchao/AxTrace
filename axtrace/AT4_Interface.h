@@ -146,9 +146,4 @@ typedef struct
 									/* [actor log(utf8) buf  with '\0' ended]*/
 } axtrace_2d_actor_log_s;
 
-struct MessageTime
-{
-	qint64 epochTime;
-};
-
 #pragma pack(pop)
