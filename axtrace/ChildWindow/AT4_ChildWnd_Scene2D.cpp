@@ -136,7 +136,10 @@ void Map2DChild::clean(void)
 	if (m_scene)
 	{
 		m_scene->clean();
+		m_hasSelectedActor = false;
 		update();
+
+		System::getSingleton()->getMainWindow()->notifySelectionChanged();
 	}
 }
 
@@ -145,7 +148,7 @@ void Map2DChild::beginScene(Begin2DSceneMessage* msg)
 {
 	if (m_pause) return;
 
-	if (!m_scene)
+	if (m_scene==nullptr)
 	{
 		m_scene = new Scene2D(msg);
 		m_camera->reset(size(), m_scene->getSceneRect());
