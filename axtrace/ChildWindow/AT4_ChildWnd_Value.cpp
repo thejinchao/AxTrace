@@ -118,9 +118,12 @@ void ValueDataModel::insertValue(const ValueMessage* valueMessage, const ValueFi
 //--------------------------------------------------------------------------------------------
 void ValueDataModel::clearAllValue(void)
 {
+	if (m_valueVector.empty()) return;
+
 	beginRemoveRows(QModelIndex(), 0, rowCount()-1);
 	m_valueVector.clear();
 	m_valueHashMap.clear();
+	m_sortedValues.clear();
 	endRemoveRows();
 }
 

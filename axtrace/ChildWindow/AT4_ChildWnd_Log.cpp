@@ -52,6 +52,8 @@ void LogDataModel::insertLog(const LogMessage* logMessage, const LogFilterResult
 //--------------------------------------------------------------------------------------------
 void LogDataModel::clearAllLog(void)
 {
+	if (m_logVector.empty()) return;
+
 	beginRemoveRows(QModelIndex(), 0, rowCount()-1);
 	m_logVector.clear();
 	endRemoveRows();
