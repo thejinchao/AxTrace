@@ -154,107 +154,6 @@ void LogDataModel::switchColumn(qint32 index)
 }
 
 //--------------------------------------------------------------------------------------------
-class LogChildInterface : public IChild
-{
-public:
-	virtual Type getType(void) const { return CT_LOG; }
-
-	virtual bool copyAble(void) const {
-		return !(m_proxy->selectionModel()->selectedRows().empty());
-	}
-
-	virtual bool isPause(void) const {
-		return m_proxy->isPause();
-	}
-
-	virtual void switchPause(void) {
-		m_proxy->switchPause();
-	}
-
-	virtual void onCopy(void) const
-	{
-		LogDataModel* model = (LogDataModel*)(m_proxy->model());
-		const LogColumnGroup& columnGroup = model->getColumns();
-
-		QModelIndexList rows = m_proxy->selectionModel()->selectedRows();
-	
-		//sort by id
-		std::sort(rows.begin(), rows.end(), [model](const QModelIndex &s1, const QModelIndex &s2){ 
-			return s1.row() < s2.row();
-		});
-
-		QString lines;
-		foreach(auto row, rows)
-		{
-			int rowIndex = row.row();
-
-			QString line;
-			model->getColumns().walk(true, [&](const LogColumn* column) {
-				line += model->data(rowIndex, column->getActiveIndex());
-
-				if (column->getActiveIndex() == columnGroup.getActiveCounts() - 1) line += "\n";
-				else line += "\t";
-			});
-
-			lines += line;
-		}
-
-		QApplication::clipboard()->setText(lines);
-	}
-
-	virtual QString getTitle(void) const {
-		return m_proxy->windowTitle();
-	}
-
-	virtual void clean(void)
-	{
-		LogDataModel* model = (LogDataModel*)(m_proxy->model());
-
-		model->clearAllLog();
-		update();
-	}
-
-	virtual void saveAs(void)
-	{
-		QString fileName = QFileDialog::getSaveFileName(nullptr, QString("Save As..."), QString("axtrace.log"), QString("Log file (*.log *.txt)"));
-		if (fileName.isEmpty()) return;
-
-		LogDataModel* model = (LogDataModel*)(m_proxy->model());
-		const LogColumnGroup& columnGroup = model->getColumns();
-
-		QFile file(fileName);
-		if (file.open(QFile::WriteOnly))
-		{
-			QTextStream stream(&file);
-			for (int rowIndex = 0; rowIndex < model->rowCount(); rowIndex++)
-			{
-				QString line;
-				model->getColumns().walk(true, [&](const LogColumn* column) {
-					line += model->data(rowIndex, column->getActiveIndex());
-
-					if (column->getActiveIndex() == columnGroup.getActiveCounts() - 1) line += "\n";
-					else line += "\t";
-				});
-
-				stream << line;
-			}
-			file.close();
-		}
-	}
-
-	virtual void update(void)
-	{
-		m_proxy->update();
-	}
-private:
-	LogChild* m_proxy;
-
-public:
-	LogChildInterface(LogChild* proxy) : m_proxy(proxy) { }
-	~LogChildInterface() {}
-};
-
-//--------------------------------------------------------------------------------------------
 LogChild::LogChild(const QString& title)
 	: m_pause(false)
 {
@@ -265,20 +164,11 @@ LogChild::LogChild(const QString& title)
 	setWindowTitle(windowTitle);
 	
 	m_bNeedScrollDown = false;
-
-	QVariant v;
-	v.setValue(ChildVariant(new LogChildInterface(this)));
-	this->setProperty(LogChildInterface::PropertyName, v);
 }
 
 //--------------------------------------------------------------------------------------------
 LogChild::~LogChild()
 {
-	QVariant v = this->property(LogChildInterface::PropertyName);
-	LogChildInterface* i = (LogChildInterface*)(v.value<ChildVariant>().child);
-	delete i;
-
-	this->setProperty(LogChildInterface::PropertyName, QVariant());
 }
 
 //--------------------------------------------------------------------------------------------
@@ -318,7 +208,7 @@ void LogChild::init(void)
 //--------------------------------------------------------------------------------------------
 void LogChild::closeEvent(QCloseEvent *event)
 {
-	System::getSingleton()->getMainWindow()->notifySubWindowClose(IChild::CT_LOG, m_title);
+	System::getSingleton()->getMainWindow()->notifySubWindowClose(IChildWindow::CT_LOG, m_title);
 	event->accept();
 }
 
@@ -402,4 +292,80 @@ void LogChild::onHeadContextMenu(const QPoint & pos)
 
 	this->selectionModel()->clearSelection();
 	model->switchColumn(index);
+}
+
+//--------------------------------------------------------------------------------------------
+bool LogChild::copyAble(void) const
+{
+	return !(this->selectionModel()->selectedRows().empty());
+}
+
+//--------------------------------------------------------------------------------------------
+void LogChild::onCopy(void) const
+{
+	LogDataModel* model = (LogDataModel*)(this->model());
+	const LogColumnGroup& columnGroup = model->getColumns();
+
+	QModelIndexList rows = this->selectionModel()->selectedRows();
+
+	//sort by id
+	std::sort(rows.begin(), rows.end(), [model](const QModelIndex& s1, const QModelIndex& s2) {
+		return s1.row() < s2.row();
+		});
+
+	QString lines;
+	foreach(auto row, rows)
+	{
+		int rowIndex = row.row();
+
+		QString line;
+		model->getColumns().walk(true, [&](const LogColumn* column) {
+			line += model->data(rowIndex, column->getActiveIndex());
+
+			if (column->getActiveIndex() == columnGroup.getActiveCounts() - 1) line += "\n";
+			else line += "\t";
+			});
+
+		lines += line;
+	}
+
+	QApplication::clipboard()->setText(lines);
+}
+
+//--------------------------------------------------------------------------------------------
+void LogChild::clean(void)
+{
+	LogDataModel* model = (LogDataModel*)(this->model());
+
+	model->clearAllLog();
+	update();
+}
+
+//--------------------------------------------------------------------------------------------
+void LogChild::saveAs(void)
+{
+	QString fileName = QFileDialog::getSaveFileName(nullptr, QString("Save As..."), QString("axtrace.log"), QString("Log file (*.log *.txt)"));
+	if (fileName.isEmpty()) return;
+
+	LogDataModel* model = (LogDataModel*)(this->model());
+	const LogColumnGroup& columnGroup = model->getColumns();
+
+	QFile file(fileName);
+	if (file.open(QFile::WriteOnly))
+	{
+		QTextStream stream(&file);
+		for (int rowIndex = 0; rowIndex < model->rowCount(); rowIndex++)
+		{
+			QString line;
+			model->getColumns().walk(true, [&](const LogColumn* column) {
+				line += model->data(rowIndex, column->getActiveIndex());
+
+				if (column->getActiveIndex() == columnGroup.getActiveCounts() - 1) line += "\n";
+				else line += "\t";
+				});
+
+			stream << line;
+		}
+		file.close();
+	}
 }

@@ -8,6 +8,7 @@
 
 #include <QTreeView>
 #include "Data/AT4_ValueData.h"
+#include "AT4_ChildInterface.h"
 
 class ValueMessage;
 
@@ -70,16 +71,27 @@ private:
 };
 
 
-class ValueChild : public QTreeView
+class ValueChild : public QTreeView, public IChildWindow
 {
 	Q_OBJECT
+	Q_INTERFACES(IChildWindow)
 
 public:
 	void init(void);
 	void insertValue(const ValueMessage* valueMessage, const ValueFilterResult& filterResult);
 	void clearAllValue(void);
-	bool isPause(void) const { return m_pause; }
-	void switchPause(void);
+
+	virtual Type getType(void) const { return CT_VALUE; }
+
+	virtual bool isPause(void) const { return m_pause; }
+	virtual void switchPause(void);
+
+	virtual bool copyAble(void) const;
+	virtual void onCopy(void) const;
+
+	virtual void clean(void);
+
+	virtual void saveAs(void);
 
 private:
 	void sortByHeader(int column);

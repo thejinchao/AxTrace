@@ -255,96 +255,6 @@ bool ValueDataModel::lessThan(ValueVector::size_type leftIndex, ValueVector::siz
 }
 
 //--------------------------------------------------------------------------------------------
-class ValueChildInterface : public IChild
-{
-public:
-	virtual Type getType(void) const { return CT_VALUE; }
-
-	virtual bool copyAble(void) const {
-		return !(m_proxy->selectionModel()->selectedRows().empty());
-	}
-
-	virtual bool isPause(void) const {
-		return m_proxy->isPause();
-	}
-
-	virtual void switchPause(void) {
-		m_proxy->switchPause();
-	}
-
-	virtual void onCopy(void) const
-	{
-		ValueDataModel* model = (ValueDataModel*)(m_proxy->model());
-
-		QModelIndexList rows = m_proxy->selectionModel()->selectedRows();
-		//sort by id
-		std::sort(rows.begin(), rows.end(), [model](const QModelIndex &s1, const QModelIndex &s2) {
-			return s1.row() < s2.row();
-		});
-
-		QString lines;
-		foreach(auto row, rows)
-		{
-			QString line = QString("%1\t%2\t%3\t%4\n").arg(
-				model->data(row.row(), 0),
-				model->data(row.row(), 1),
-				model->data(row.row(), 2),
-				model->data(row.row(), 3));
-
-			lines += line;
-		}
-
-		QApplication::clipboard()->setText(lines);
-	}
-
-	virtual QString getTitle(void) const 
-	{
-		return m_proxy->windowTitle();
-	}
-
-	virtual void clean(void)
-	{
-		ValueDataModel* model = (ValueDataModel*)(m_proxy->model());
-		model->clearAllValue();
-	}
-	
-	virtual void saveAs(void)
-	{
-		QString fileName = QFileDialog::getSaveFileName(nullptr, QString("Save As..."), QString("axtrace.log"), QString("Log file (*.log *.txt)"));
-		if (fileName.isEmpty()) return;
-
-		ValueDataModel* model = (ValueDataModel*)(m_proxy->model());
-
-		QFile file(fileName);
-		if (file.open(QFile::WriteOnly))
-		{
-			QTextStream stream(&file);
-			for (int rowIndex = 0; rowIndex < model->rowCount(); rowIndex++)
-			{
-				QString line = QString("%1\t%2\t%3\t%4\n").arg(
-					model->data(rowIndex, 0),
-					model->data(rowIndex, 1),
-					model->data(rowIndex, 2),
-					model->data(rowIndex, 3));
-				stream << line;
-			}
-			file.close();
-		}
-	}
-
-	virtual void update(void)
-	{
-		m_proxy->update();
-	}
-private:
-	ValueChild* m_proxy;
-
-public:
-	ValueChildInterface(ValueChild* proxy) : m_proxy(proxy) { }
-	~ValueChildInterface() {}
-};
-
-//--------------------------------------------------------------------------------------------
 ValueChild::ValueChild(const QString& title)
 	: m_pause(false)
 {
@@ -353,20 +263,11 @@ ValueChild::ValueChild(const QString& title)
 	m_title = title;
 	QString windowTitle = tr("Value:%1").arg(title);
 	setWindowTitle(windowTitle);
-
-	QVariant v;
-	v.setValue(ChildVariant(new ValueChildInterface(this)));
-	this->setProperty(ValueChildInterface::PropertyName, v);
 }
 
 //--------------------------------------------------------------------------------------------
 ValueChild::~ValueChild()
 {
-	QVariant v = this->property(ValueChildInterface::PropertyName);
-	ValueChildInterface* i = (ValueChildInterface*)(v.value<ChildVariant>().child);
-	delete i;
-
-	this->setProperty(ValueChildInterface::PropertyName, QVariant());
 }
 
 //--------------------------------------------------------------------------------------------
@@ -408,7 +309,7 @@ void ValueChild::insertValue(const ValueMessage* valueMessage, const ValueFilter
 //--------------------------------------------------------------------------------------------
 void ValueChild::closeEvent(QCloseEvent *event)
 {
-	System::getSingleton()->getMainWindow()->notifySubWindowClose(IChild::CT_VALUE, m_title);
+	System::getSingleton()->getMainWindow()->notifySubWindowClose(IChildWindow::CT_VALUE, m_title);
 	event->accept();
 }
 
@@ -461,3 +362,66 @@ void ValueChild::sortByHeader(int column)
 	model->sort(sortColumn, sortOrder);
 }
 
+//--------------------------------------------------------------------------------------------
+bool ValueChild::copyAble(void) const
+{
+	return !(this->selectionModel()->selectedRows().empty());
+}
+
+//--------------------------------------------------------------------------------------------
+void ValueChild::onCopy(void) const
+{
+	ValueDataModel* model = (ValueDataModel*)(this->model());
+
+	QModelIndexList rows = this->selectionModel()->selectedRows();
+	//sort by id
+	std::sort(rows.begin(), rows.end(), [model](const QModelIndex& s1, const QModelIndex& s2) {
+		return s1.row() < s2.row();
+		});
+
+	QString lines;
+	foreach(auto row, rows)
+	{
+		QString line = QString("%1\t%2\t%3\t%4\n").arg(
+			model->data(row.row(), 0),
+			model->data(row.row(), 1),
+			model->data(row.row(), 2),
+			model->data(row.row(), 3));
+
+		lines += line;
+	}
+
+	QApplication::clipboard()->setText(lines);
+}
+
+//--------------------------------------------------------------------------------------------
+void ValueChild::clean(void)
+{
+	ValueDataModel* model = (ValueDataModel*)(this->model());
+	model->clearAllValue();
+}
+
+//--------------------------------------------------------------------------------------------
+void ValueChild::saveAs(void)
+{
+	QString fileName = QFileDialog::getSaveFileName(nullptr, QString("Save As..."), QString("axtrace.log"), QString("Log file (*.log *.txt)"));
+	if (fileName.isEmpty()) return;
+
+	ValueDataModel* model = (ValueDataModel*)(this->model());
+
+	QFile file(fileName);
+	if (file.open(QFile::WriteOnly))
+	{
+		QTextStream stream(&file);
+		for (int rowIndex = 0; rowIndex < model->rowCount(); rowIndex++)
+		{
+			QString line = QString("%1\t%2\t%3\t%4\n").arg(
+				model->data(rowIndex, 0),
+				model->data(rowIndex, 1),
+				model->data(rowIndex, 2),
+				model->data(rowIndex, 3));
+			stream << line;
+		}
+		file.close();
+	}
+}

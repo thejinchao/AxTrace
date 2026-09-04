@@ -2,13 +2,15 @@
 
 				AXIA|Trace4
 
-	(C) Copyright thecodeway.com 2023
+	(C) Copyright thecodeway.com 2026
 ***************************************************/
 #pragma once
 
-class IChild
+class IChildWindow
 {
 public:
+	virtual ~IChildWindow() = default;
+
 	enum Type
 	{
 		CT_LOG,
@@ -16,10 +18,7 @@ public:
 		CT_2DMAP,
 	};
 
-	const static char* PropertyName;// = "ChildInterface";
-
 	virtual Type getType(void) const = 0;
-	virtual QString getTitle(void) const = 0;
 
 	virtual bool isPause(void) const = 0;
 	virtual void switchPause(void) = 0;
@@ -30,22 +29,6 @@ public:
 	virtual void clean(void) = 0;
 
 	virtual void saveAs(void) = 0;
-
-	virtual void update(void) = 0;
-
-	//for map2d only
-	virtual void flipX(void) { }
-
-	virtual void rotateCW(void) { }
 };
+Q_DECLARE_INTERFACE(IChildWindow, "AT4.IChildWindow")
 
-class ChildVariant
-{
-public:
-	IChild* child;
-
-	ChildVariant(IChild* _child = nullptr) : child(_child) {}
-	ChildVariant(const ChildVariant& other) : child(other.child) {}
-};
-
-Q_DECLARE_METATYPE(ChildVariant)

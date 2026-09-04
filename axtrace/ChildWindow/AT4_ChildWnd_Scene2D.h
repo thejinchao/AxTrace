@@ -12,6 +12,7 @@
 #include <QFont>
 #include <QPen>
 #include "Data/AT4_Scene2DData.h"
+#include "AT4_ChildInterface.h"
 
 class Camera2D;
 class Begin2DSceneMessage;
@@ -20,25 +21,35 @@ class End2DSceneMessage;
 class Add2DActorLogMessage;
 struct Actor2DFilterResult;
 
-class Map2DChild : public QOpenGLWidget, protected QOpenGLFunctions
+class Map2DChild : public QOpenGLWidget, protected QOpenGLFunctions, public IChildWindow
 {
 	Q_OBJECT
+	Q_INTERFACES(IChildWindow)
 
 public:
 	void init(QWidget* parent);
-	void clean(void);
 	void beginScene(Begin2DSceneMessage* msg);
 	void updateActor(Update2DActorMessage* msg, const Actor2DFilterResult& filterResult);
 	void endScene(End2DSceneMessage* msg);
 	void addActorLog(Add2DActorLogMessage* msg);
-	bool isPause(void) const { return m_pause; }
-	void switchPause(void);
+	void flipX();
+	void rotateCW();
 
 	bool hasSelectActor(void) const { return m_hasSelectedActor; }
 	QString getSelectActorBrief(void) const;
 
-	void flipX();
-	void rotateCW();
+	virtual Type getType(void) const { return CT_2DMAP; }
+
+	virtual bool isPause(void) const { return m_pause; }
+	virtual void switchPause(void);
+
+	virtual bool copyAble(void) const;
+
+	virtual void onCopy(void) const;
+
+	virtual void clean(void);
+
+	virtual void saveAs(void) { }
 
 protected:
 	void closeEvent(QCloseEvent *event) override;

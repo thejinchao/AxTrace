@@ -17,66 +17,6 @@
 #include "Data/AT4_Scene2DData.h"
 
 //--------------------------------------------------------------------------------------------
-class Map2DChildInterface : public IChild
-{
-public:
-	virtual Type getType(void) const { return CT_2DMAP; }
-
-	virtual QString getTitle(void) const {
-		return m_proxy->windowTitle();
-	}
-
-	virtual bool copyAble(void) const {
-		return m_proxy->hasSelectActor();
-	}
-
-	virtual bool isPause(void) const {
-		return m_proxy->isPause();
-	}
-
-	virtual void switchPause(void) {
-		m_proxy->switchPause();
-	}
-
-	virtual void onCopy(void) const {
-		if (!(m_proxy->hasSelectActor())) return;
-
-		QApplication::clipboard()->setText(m_proxy->getSelectActorBrief());
-	}
-
-	virtual void clean(void) 
-	{
-		m_proxy->clean();
-	}
-
-	virtual void saveAs(void) {
-
-	}
-
-	virtual void update(void)
-	{
-		m_proxy->update();
-	}
-
-	virtual void flipX(void) 
-	{
-		m_proxy->flipX();
-	}
-
-	virtual void rotateCW(void) 
-	{ 
-		m_proxy->rotateCW();
-	}
-
-private:
-	Map2DChild* m_proxy;
-
-public:
-	Map2DChildInterface(Map2DChild* proxy) : m_proxy(proxy) { }
-	~Map2DChildInterface() {}
-};
-
-//--------------------------------------------------------------------------------------------
 QPen* Map2DChild::m_cachedPen[Map2DChild::MAX_COLOR_COUNTS] = { nullptr };
 QBrush*	Map2DChild::m_cachedBrush[Map2DChild::MAX_COLOR_COUNTS] = { nullptr };
 
@@ -95,22 +35,16 @@ Map2DChild::Map2DChild(const QString& title)
 	setAutoFillBackground(false);
 
 	m_camera = new Camera2D();
-
-	QVariant v;
-	v.setValue(ChildVariant(new Map2DChildInterface(this)));
-	this->setProperty(Map2DChildInterface::PropertyName, v);
 }
 
 //--------------------------------------------------------------------------------------------
 Map2DChild::~Map2DChild()
 {
-	QVariant v = this->property(Map2DChildInterface::PropertyName);
-	Map2DChildInterface* i = (Map2DChildInterface*)(v.value<ChildVariant>().child);
-	delete i;
-
-	this->setProperty(Map2DChildInterface::PropertyName, QVariant());
 	delete m_camera;
-	delete m_scene;
+	if (m_scene)
+	{
+		delete m_scene;
+	}
 }
 
 //--------------------------------------------------------------------------------------------
@@ -212,7 +146,7 @@ void Map2DChild::switchPause(void)
 //--------------------------------------------------------------------------------------------
 void Map2DChild::closeEvent(QCloseEvent *event)
 {
-	System::getSingleton()->getMainWindow()->notifySubWindowClose(IChild::CT_2DMAP, m_title);
+	System::getSingleton()->getMainWindow()->notifySubWindowClose(IChildWindow::CT_2DMAP, m_title);
 	event->accept();
 }
 
@@ -726,4 +660,18 @@ void Map2DChild::rotateCW()
 
 	m_camera->rotateCW();
 	update();
+}
+
+//--------------------------------------------------------------------------------------------
+bool Map2DChild::copyAble(void) const
+{
+	return this->hasSelectActor();
+}
+
+//--------------------------------------------------------------------------------------------
+void Map2DChild::onCopy(void) const 
+{
+	if (!(this->hasSelectActor())) return;
+
+	QApplication::clipboard()->setText(this->getSelectActorBrief());
 }

@@ -14,6 +14,7 @@
 #include "AT4_LogWndColumn.h"
 #include "AT4_Config.h"
 #include "Data/AT4_LogData.h"
+#include "AT4_ChildInterface.h"
 
 class LogMessage;
 struct LogFilterResult;
@@ -63,15 +64,27 @@ private:
 	LogParserPtr m_logParser;
 };
 
-class LogChild : public QTreeView
+class LogChild : public QTreeView, public IChildWindow
 {
     Q_OBJECT
+	Q_INTERFACES(IChildWindow)
 
 public:
 	void init(void);
 	void insertLog(const LogMessage* logMessage, const LogFilterResult& filterResult);
-	bool isPause(void) const { return m_pause; }
-	void switchPause(void);
+
+	virtual Type getType(void) const { return CT_LOG; }
+
+	virtual bool isPause(void) const { return m_pause; }
+	virtual void switchPause(void);
+
+	virtual bool copyAble(void) const;
+
+	virtual void onCopy(void) const;
+
+	virtual void clean(void);
+
+	virtual void saveAs(void);
 
 protected:
 	bool eventFilter(QObject *target, QEvent *event);

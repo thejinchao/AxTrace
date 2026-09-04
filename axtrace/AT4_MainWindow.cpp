@@ -285,7 +285,7 @@ Map2DChild* MainWindow::getMap2DChild(const QString& title)
 //--------------------------------------------------------------------------------------------
 void MainWindow::_onSaveAs()
 {
-	IChild* activeChild = activeMdiChild();
+	IChildWindow* activeChild = activeMdiChild();
 	if (activeChild)
 		activeChild->saveAs();
 }
@@ -300,7 +300,7 @@ void MainWindow::_onCapture()
 //--------------------------------------------------------------------------------------------
 void MainWindow::_onDocumentPause()
 {
-	IChild* activeChild = activeMdiChild();
+	IChildWindow* activeChild = activeMdiChild();
 	if (activeChild)
 		activeChild->switchPause();
 }
@@ -318,14 +318,9 @@ void MainWindow::_onShowGrid()
 	Config* config = System::getSingleton()->getConfig();
 	config->setShowGrid(!(config->getShowGrid()));
 
-	auto windows = m_mdiArea->subWindowList();
-
-	foreach(auto window, windows) {
-		QVariant v = window->widget()->property(IChild::PropertyName);
-		IChild* child = v.value<ChildVariant>().child;
-
-		if (child && child->getType() == IChild::CT_2DMAP)
-			child->update();
+	foreach(auto mapChild, m_map2dChildMap)
+	{
+		mapChild->update();
 	}
 }
 
@@ -335,64 +330,61 @@ void MainWindow::_onShowTail()
 	Config* config = System::getSingleton()->getConfig();
 	config->setShowTail(!(config->getShowTail()));
 
-	auto windows = m_mdiArea->subWindowList();
-
-	foreach(auto window, windows) {
-		QVariant v = window->widget()->property(IChild::PropertyName);
-		IChild* child = v.value<ChildVariant>().child;
-
-		if (child && child->getType() == IChild::CT_2DMAP)
-			child->update();
+	foreach(auto mapChild, m_map2dChildMap)
+	{
+		mapChild->update();
 	}
 }
 
 //--------------------------------------------------------------------------------------------
 void MainWindow::_onFlipX()
 {
-	IChild* activeChild = activeMdiChild();
-	if (activeChild && activeChild->getType() == IChild::CT_2DMAP)
+	Map2DChild* map2dChild = qobject_cast<Map2DChild*>(m_mdiArea->activeSubWindow()->widget());
+	if (map2dChild)
 	{
-		activeChild->flipX();
+		map2dChild->flipX();
 	}
 }
 
 //--------------------------------------------------------------------------------------------
 void MainWindow::_onRotateCW()
 {
-	IChild* activeChild = activeMdiChild();
-	if (activeChild && activeChild->getType() == IChild::CT_2DMAP)
+	Map2DChild* map2dChild = qobject_cast<Map2DChild*>(m_mdiArea->activeSubWindow()->widget());
+	if (map2dChild)
 	{
-		activeChild->rotateCW();
+		map2dChild->rotateCW();
 	}
 }
 
 //--------------------------------------------------------------------------------------------
 void MainWindow::_onCopy()
 {
-	IChild* activeChild = activeMdiChild();
+	IChildWindow* activeChild = activeMdiChild();
 	if (activeChild)
+	{
 		activeChild->onCopy();
+	}
 }
 
 //--------------------------------------------------------------------------------------------
 void MainWindow::_onClean()
 {
-	IChild* activeChild = activeMdiChild();
+	IChildWindow* activeChild = activeMdiChild();
 	if (activeChild)
+	{
 		activeChild->clean();
+	}
 }
 
 //--------------------------------------------------------------------------------------------
 void MainWindow::_onCleanAll()
 {
-	auto windows = m_mdiArea->subWindowList();
-
-	foreach(auto window, windows) {
-		QVariant v = window->widget()->property(IChild::PropertyName);
-		IChild* child = v.value<ChildVariant>().child;
-
-		if (child) {
-			child->clean();
+	foreach(auto window, m_mdiArea->subWindowList())
+	{
+		IChildWindow* childWindow = qobject_cast<IChildWindow*>(window->widget());
+		if (childWindow) 
+		{
+			childWindow->clean();
 		}
 	}
 }
@@ -418,23 +410,23 @@ void MainWindow::_onAbout()
 }
 
 //--------------------------------------------------------------------------------------------
-void MainWindow::notifySubWindowClose(IChild::Type t, const QString& title)
+void MainWindow::notifySubWindowClose(IChildWindow::Type t, const QString& title)
 {
 	switch (t)
 	{
-	case IChild::CT_LOG:
+	case IChildWindow::CT_LOG:
 	{
 		m_logChildMap.remove(title);
 	}
-		break;
+	break;
 
-	case IChild::CT_VALUE:
+	case IChildWindow::CT_VALUE:
 	{
 		m_valueChildMap.remove(title);
 	}
 	break;
 
-	case IChild::CT_2DMAP:
+	case IChildWindow::CT_2DMAP:
 	{
 		m_map2dChildMap.remove(title);
 	}
@@ -447,7 +439,7 @@ void MainWindow::notifySubWindowClose(IChild::Type t, const QString& title)
 void MainWindow::updateMenus()
 {
     bool hasMdiChild = (activeMdiChild() != 0);
-	IChild* activeChild = activeMdiChild();
+	IChildWindow* activeChild = activeMdiChild();
 	Config* config = System::getSingleton()->getConfig();
 
 	m_saveAsAct->setEnabled(hasMdiChild);
@@ -456,17 +448,17 @@ void MainWindow::updateMenus()
 	m_docPauseAct->setEnabled(hasMdiChild);
 	m_docPauseAct->setChecked(activeChild && activeChild->isPause());
 
-	m_autoScrollAct->setEnabled(activeChild && activeChild->getType() == IChild::CT_LOG);
+	m_autoScrollAct->setEnabled(activeChild && activeChild->getType() == IChildWindow::CT_LOG);
 	m_autoScrollAct->setChecked(config->getAutoScroll());
 
-	m_showGridAct->setEnabled(activeChild && activeChild->getType() == IChild::CT_2DMAP);
+	m_showGridAct->setEnabled(activeChild && activeChild->getType() == IChildWindow::CT_2DMAP);
 	m_showGridAct->setChecked(config->getShowGrid());
 
-	m_showTailAct->setEnabled(activeChild && activeChild->getType() == IChild::CT_2DMAP);
+	m_showTailAct->setEnabled(activeChild && activeChild->getType() == IChildWindow::CT_2DMAP);
 	m_showTailAct->setChecked(config->getShowTail());
 
-	m_flipXAct->setEnabled(activeChild && activeChild->getType() == IChild::CT_2DMAP);
-	m_rotateCWAct->setEnabled(activeChild && activeChild->getType() == IChild::CT_2DMAP);
+	m_flipXAct->setEnabled(activeChild && activeChild->getType() == IChildWindow::CT_2DMAP);
+	m_rotateCWAct->setEnabled(activeChild && activeChild->getType() == IChildWindow::CT_2DMAP);
 
 	m_copyAct->setEnabled(activeChild && activeChild->copyAble());
 	m_cleanAct->setEnabled(hasMdiChild);
@@ -498,20 +490,13 @@ void MainWindow::updateWindowMenu()
     QList<QMdiSubWindow *> windows = m_mdiArea->subWindowList();
 	m_windowMenuSeparatorAct->setVisible(!windows.isEmpty());
 	
-    for (int i = 0; i < windows.size(); ++i) {
-        QMdiSubWindow *mdiSubWindow = windows.at(i);
-
-		QVariant v = mdiSubWindow->widget()->property(IChild::PropertyName);
-		IChild* child = v.value<ChildVariant>().child;
-		if (!child) continue;
-
-		QString text = child->getTitle();
-
-		QAction *action = m_windowMenu->addAction(text, mdiSubWindow, [this, mdiSubWindow]() {
+	foreach(auto mdiSubWindow, windows)
+	{
+		QAction *action = m_windowMenu->addAction(mdiSubWindow->windowTitle(), mdiSubWindow, [this, mdiSubWindow]() {
             m_mdiArea->setActiveSubWindow(mdiSubWindow);
         });
         action->setCheckable(true);
-        action ->setChecked(child == activeMdiChild());
+        action ->setChecked(mdiSubWindow == m_mdiArea->activeSubWindow());
     }
 }
 
@@ -706,11 +691,11 @@ void MainWindow::_restoreSettings(void)
 }
 
 //--------------------------------------------------------------------------------------------
-IChild *MainWindow::activeMdiChild() const
+IChildWindow *MainWindow::activeMdiChild() const
 {
-	if (QMdiSubWindow* activeSubWindow = m_mdiArea->activeSubWindow()) {
-		QVariant v = activeSubWindow->widget()->property(IChild::PropertyName);
-		return v.value<ChildVariant>().child;
+	if (QMdiSubWindow* activeSubWindow = m_mdiArea->activeSubWindow()) 
+	{
+		return qobject_cast<IChildWindow*>(activeSubWindow->widget());
 	}
     return nullptr;
 }

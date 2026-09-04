@@ -10,7 +10,6 @@
 #include <QEvent>
 #include "ChildWindow/AT4_ChildInterface.h"
 
-class IChild;
 class LogChild;
 class ValueChild;
 class Map2DChild;
@@ -69,7 +68,7 @@ public:
 		updateMenus();
 	}
 
-	void notifySubWindowClose(IChild::Type t, const QString& title);
+	void notifySubWindowClose(IChildWindow::Type t, const QString& title);
 
 	qint32 getLogChildCounts(void) const {
 		return m_logChildMap.size();
@@ -125,7 +124,7 @@ private:
 
 	void _updateStatusBar(void);
 
-	IChild *activeMdiChild() const;
+	IChildWindow* activeMdiChild() const;
 
     QMdiArea *m_mdiArea;
 
