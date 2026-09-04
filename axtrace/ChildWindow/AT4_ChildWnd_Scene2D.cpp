@@ -665,6 +665,9 @@ void Map2DChild::_unSelectActor(void)
 	m_hasSelectedActor = false;
 
 	m_scene->enablePositionTail(m_selectActor, false);
+
+	update();
+	System::getSingleton()->getMainWindow()->notifySelectionChanged();
 }
 
 //--------------------------------------------------------------------------------------------
