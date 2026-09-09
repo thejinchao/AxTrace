@@ -21,6 +21,7 @@ public:
 	virtual QString getTitle(void) const = 0;
 	virtual QString getString(const LogData& logData) const  = 0;
 
+	virtual bool searchAble(void) const { return false; }
 protected:
 	const qint32 m_index;
 	bool m_active;
@@ -100,6 +101,8 @@ public:
 	virtual qint32 getWidth(void) const { return m_width; }
 	virtual QString getTitle(void) const { return m_title; }
 	virtual QString getString(const LogData& logData) const;
+	virtual bool searchAble(void) const { return true; }
+
 public:
 	LogColumn_LogContent(const QString& title, qint32 indexOfList, bool isLast, qint32 index, qint32 width, bool active = true)
 		: LogColumn(index, active) 

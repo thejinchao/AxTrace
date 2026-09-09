@@ -89,6 +89,10 @@ public:
 	virtual bool copyAble(void) const;
 	virtual void onCopy(void) const;
 
+	virtual bool searchAble(void) const { return true; }
+	virtual QList<QPair<int, int>> searchMatchRanges(const QModelIndex& index,
+		const QString& searchText, const QRegularExpression& searchExpression) const;
+
 	virtual void clean(void);
 
 	virtual void saveAs(void);

@@ -11,6 +11,7 @@
 #include "AT4_ChildInterface.h"
 #include "AT4_System.h"
 #include "AT4_MainWindow.h"
+#include "SearchWindow/AT4_SearchWindow.h"
 
 //--------------------------------------------------------------------------------------------
 ValueDataModel::ValueDataModel(QObject* parent)
@@ -263,6 +264,8 @@ ValueChild::ValueChild(const QString& title)
 	m_title = title;
 	QString windowTitle = tr("Value:%1").arg(title);
 	setWindowTitle(windowTitle);
+
+	setItemDelegate(new SearchHighlightDelegate(this));
 }
 
 //--------------------------------------------------------------------------------------------
@@ -424,4 +427,25 @@ void ValueChild::saveAs(void)
 		}
 		file.close();
 	}
+}
+
+//--------------------------------------------------------------------------------------------
+QList<QPair<int, int>> ValueChild::searchMatchRanges(const QModelIndex& index,
+	const QString& searchText, const QRegularExpression& searchExpression) const
+{
+	QList<QPair<int, int>> ranges;
+	if ((index.column() != ValueDataModel::COLUMN_VALUE_NAME && index.column() != ValueDataModel::COLUMN_VALUE_DATA)
+		|| searchText.isEmpty() || !searchExpression.isValid())
+	{
+		return ranges;
+	}
+
+	const QString text = index.data(Qt::DisplayRole).toString();
+	auto iterator = searchExpression.globalMatch(text);
+	while (iterator.hasNext())
+	{
+		const QRegularExpressionMatch match = iterator.next();
+		ranges.append(qMakePair(match.capturedStart(), match.capturedLength()));
+	}
+	return ranges;
 }

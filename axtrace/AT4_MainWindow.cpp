@@ -19,6 +19,8 @@
 #include "ChildWindow/AT4_ChildWnd_Value.h"
 #include "ChildWindow/AT4_ChildWnd_Scene2D.h"
 #include "SettingWindow/AT4_SettingDialog.h"
+#include "SearchWindow/AT4_SearchWindow.h"
+
 #include <QOpenGLWidget>
 #include <QShowEvent>
 
@@ -28,6 +30,7 @@ MainWindow::MainWindow()
 	, m_sessionDialog(nullptr)
 	, m_openglPlaceholder(nullptr)
 	, m_openglPlaceholderSubWindow(nullptr)
+	, m_searchWindow(nullptr)
 {
 	m_mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	m_mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -44,8 +47,8 @@ MainWindow::MainWindow()
 	m_openglPlaceholderSubWindow = m_mdiArea->addSubWindow(m_openglPlaceholder);
 	m_openglPlaceholderSubWindow->resize(1, 1);
 	m_openglPlaceholderSubWindow->show();
-    connect(m_mdiArea, &QMdiArea::subWindowActivated,
-            this, &MainWindow::updateMenus);
+    connect(m_mdiArea, &QMdiArea::subWindowActivated, this, &MainWindow::updateMenus);
+	connect(m_mdiArea, &QMdiArea::subWindowActivated, this, &MainWindow::updateSearchWindow);
 
     createActions();
     createStatusBar();
@@ -339,7 +342,7 @@ void MainWindow::_onShowTail()
 //--------------------------------------------------------------------------------------------
 void MainWindow::_onFlipX()
 {
-	Map2DChild* map2dChild = qobject_cast<Map2DChild*>(m_mdiArea->activeSubWindow()->widget());
+	Map2DChild* map2dChild = qobject_cast<Map2DChild*>(activeMdiView());
 	if (map2dChild)
 	{
 		map2dChild->flipX();
@@ -349,7 +352,7 @@ void MainWindow::_onFlipX()
 //--------------------------------------------------------------------------------------------
 void MainWindow::_onRotateCW()
 {
-	Map2DChild* map2dChild = qobject_cast<Map2DChild*>(m_mdiArea->activeSubWindow()->widget());
+	Map2DChild* map2dChild = qobject_cast<Map2DChild*>(activeMdiView());
 	if (map2dChild)
 	{
 		map2dChild->rotateCW();
@@ -364,6 +367,26 @@ void MainWindow::_onCopy()
 	{
 		activeChild->onCopy();
 	}
+}
+
+//--------------------------------------------------------------------------------------------
+void MainWindow::_onSearch()
+{
+	if (m_searchWindow != nullptr) return;
+
+	IChildWindow* activeChild = activeMdiChild();
+	if (activeChild == nullptr || !(activeChild->searchAble())) return;
+
+	m_searchWindow = new SearchWindow(activeMdiView());
+	connect(m_searchWindow, &QObject::destroyed, this, [this]
+		{
+			m_searchWindow = nullptr;
+		}
+	);
+	m_searchWindow->show();
+	m_searchWindow->raise();
+	m_searchWindow->activateWindow();
+	m_searchWindow->focusFindInput();
 }
 
 //--------------------------------------------------------------------------------------------
@@ -461,6 +484,7 @@ void MainWindow::updateMenus()
 	m_rotateCWAct->setEnabled(activeChild && activeChild->getType() == IChildWindow::CT_2DMAP);
 
 	m_copyAct->setEnabled(activeChild && activeChild->copyAble());
+	m_searchAct->setEnabled(activeChild && activeChild->searchAble());
 	m_cleanAct->setEnabled(hasMdiChild);
 	m_cleanAllAct->setEnabled(hasMdiChild);
 
@@ -578,6 +602,13 @@ void MainWindow::createActions()
     connect(m_copyAct, &QAction::triggered, this, &MainWindow::_onCopy);
     editMenu->addAction(m_copyAct);
 
+	const QIcon searchIcon = QIcon::fromTheme("edit-search", QIcon(":/images/search.png"));
+	m_searchAct = new QAction(searchIcon, tr("&Search"), this);
+	m_searchAct->setShortcuts(QKeySequence::Find);
+	m_searchAct->setStatusTip(tr("Search text"));
+	connect(m_searchAct, &QAction::triggered, this, &MainWindow::_onSearch);
+	editMenu->addAction(m_searchAct);
+
 	const QIcon cleanIcon = QIcon(":/images/clean.png");
 	m_cleanAct = new QAction(cleanIcon, tr("C&lean"), this);
 	m_cleanAct->setStatusTip(tr("Clean current window"));
@@ -655,6 +686,7 @@ void MainWindow::createActions()
 	mainToolBar->addAction(m_flipXAct);
 	mainToolBar->addAction(m_rotateCWAct);
 	mainToolBar->addAction(m_copyAct);
+	mainToolBar->addAction(m_searchAct);
 	mainToolBar->addAction(m_cleanAct);
 	mainToolBar->addAction(m_cleanAllAct);
 	mainToolBar->addAction(m_closeAllAct);
@@ -701,6 +733,16 @@ IChildWindow *MainWindow::activeMdiChild() const
 }
 
 //--------------------------------------------------------------------------------------------
+QWidget* MainWindow::activeMdiView() const
+{
+	if (QMdiSubWindow* activeSubWindow = m_mdiArea->activeSubWindow()) 
+	{
+		return activeSubWindow->widget();
+	}
+    return nullptr;
+}
+
+//--------------------------------------------------------------------------------------------
 void MainWindow::_updateStatusBar(void)
 {
 	int sessionCounts = System::getSingleton()->getSessionManager()->getSessionCounts();
@@ -716,4 +758,16 @@ void MainWindow::_onStatusButton()
 	m_sessionDialog = &dialog;
 	dialog.exec();
 	m_sessionDialog = nullptr;
+}
+
+//--------------------------------------------------------------------------------------------
+void MainWindow::updateSearchWindow()
+{
+	if (m_searchWindow == nullptr) return;
+	
+	QWidget* activeView = activeMdiView();
+	if(activeView==nullptr || activeView != m_searchWindow->getActiveWindow())
+	{
+		m_searchWindow->close();
+	}
 }

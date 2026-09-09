@@ -26,6 +26,10 @@ public:
 	virtual bool copyAble(void) const = 0;
 	virtual void onCopy(void) const = 0;
 
+	virtual bool searchAble(void) const = 0;
+	virtual QList<QPair<int, int>> searchMatchRanges(const QModelIndex& index, 
+		const QString& searchText, const QRegularExpression& searchExpression) const = 0;
+
 	virtual void clean(void) = 0;
 
 	virtual void saveAs(void) = 0;

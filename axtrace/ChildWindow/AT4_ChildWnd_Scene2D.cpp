@@ -675,3 +675,10 @@ void Map2DChild::onCopy(void) const
 
 	QApplication::clipboard()->setText(this->getSelectActorBrief());
 }
+
+//--------------------------------------------------------------------------------------------
+QList<QPair<int, int>> Map2DChild::searchMatchRanges(const QModelIndex& index,
+	const QString& searchText, const QRegularExpression& searchExpression) const
+{
+	return {};
+}

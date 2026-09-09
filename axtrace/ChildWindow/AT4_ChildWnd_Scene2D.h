@@ -44,8 +44,11 @@ public:
 	virtual void switchPause(void);
 
 	virtual bool copyAble(void) const;
-
 	virtual void onCopy(void) const;
+
+	virtual bool searchAble(void) const { return false; }
+	virtual QList<QPair<int, int>> searchMatchRanges(const QModelIndex& index,
+		const QString& searchText, const QRegularExpression& searchExpression) const;
 
 	virtual void clean(void);
 

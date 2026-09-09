@@ -58,6 +58,12 @@ set(AT4_SESSION_SOURCES
 )
 source_group("Session" FILES ${AT4_SESSION_SOURCES})
 
+set(AT4_SEARCH_WINDOW_SOURCES
+	SearchWindow/AT4_SearchWindow.h
+	SearchWindow/AT4_SearchWindow.cpp
+)
+source_group("SearchWindow" FILES ${AT4_SEARCH_WINDOW_SOURCES})
+
 set(AT4_CPP_SOURCES
     AT4_Main.cpp
     AT4_MainWindow.cpp
@@ -90,7 +96,7 @@ set(AT4_RC_SOURCES
 set(AT4_PRECOMPILE_FILE
 	stdafx.cpp)
 
-foreach(filename ${AT4_CHILD_WND_SOURCES} ${AT4_CPP_SOURCES} ${AT4_DATA_SOURCES}
+foreach(filename ${AT4_CHILD_WND_SOURCES} ${AT4_CPP_SOURCES} ${AT4_DATA_SOURCES} ${AT4_SEARCH_WINDOW_SOURCES}
 	${AT4_SETTING_WND_SOURCES} ${AT4_SCRIPT_EDITOR_WND_SOURCES} ${AT4_SESSION_SOURCES})
 	get_filename_component(ext ${filename} LAST_EXT ABSOLUTE)
 	string(TOLOWER ${ext} ext_lower)
@@ -115,6 +121,7 @@ add_executable(AxTrace4 WIN32
 	${AT4_SETTING_WND_SOURCES}
 	${AT4_SCRIPT_EDITOR_WND_SOURCES}
 	${AT4_SESSION_SOURCES}
+	${AT4_SEARCH_WINDOW_SOURCES}
 	${AT4_CPP_SOURCES}
 	${AT4_H_SOURCES}
 	${AT4_PRECOMPILE_FILE}

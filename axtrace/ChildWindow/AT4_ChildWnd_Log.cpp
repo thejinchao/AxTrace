@@ -13,6 +13,7 @@
 #include "AT4_Config.h"
 #include "AT4_MainWindow.h"
 #include "AT4_LuaVirtualMachine.h"
+#include "SearchWindow/AT4_SearchWindow.h"
 
 //--------------------------------------------------------------------------------------------
 LogDataModel::LogDataModel(LogParserPtr logParserPtr, QObject *parent)
@@ -164,6 +165,8 @@ LogChild::LogChild(const QString& title)
 	setWindowTitle(windowTitle);
 	
 	m_bNeedScrollDown = false;
+
+	setItemDelegate(new SearchHighlightDelegate(this));
 }
 
 //--------------------------------------------------------------------------------------------
@@ -368,4 +371,30 @@ void LogChild::saveAs(void)
 		}
 		file.close();
 	}
+}
+
+//--------------------------------------------------------------------------------------------
+QList<QPair<int, int>> LogChild::searchMatchRanges(const QModelIndex& index,
+	const QString& searchText, const QRegularExpression& searchExpression) const
+{
+	QList<QPair<int, int>> ranges;
+	if (searchText.isEmpty() || !searchExpression.isValid())
+	{
+		return ranges;
+	}
+
+	const LogColumnGroup& columns = ((LogDataModel*)model())->getColumns();
+
+	int column = index.column();
+	if (column >= 0 && column < columns.getActiveCounts() && columns.getActiveColumn(column)->searchAble())
+	{
+		const QString text = index.data(Qt::DisplayRole).toString();
+		auto iterator = searchExpression.globalMatch(text);
+		while (iterator.hasNext())
+		{
+			const QRegularExpressionMatch match = iterator.next();
+			ranges.append(qMakePair(match.capturedStart(), match.capturedLength()));
+		}
+	}
+	return ranges;
 }

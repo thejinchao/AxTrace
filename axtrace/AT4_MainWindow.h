@@ -22,6 +22,7 @@ class Update2DActorMessage;
 class End2DSceneMessage;
 class Add2DActorLogMessage;
 class SessionDialog;
+class SearchWindow;
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -70,9 +71,9 @@ public:
 
 	void notifySubWindowClose(IChildWindow::Type t, const QString& title);
 
-	qint32 getLogChildCounts(void) const {
-		return m_logChildMap.size();
-	}
+	qint32 getLogChildCounts(void) const { return m_logChildMap.size();	}
+
+	SearchWindow* getSearchWindow(void) const { return m_searchWindow; }
 private:
 	void _processAxTraceData(Message* msg);
 	void _onShakeHand(ShakehandMessage* msg);
@@ -103,6 +104,7 @@ private slots:
 	void _onFlipX();
 	void _onRotateCW();
 	void _onCopy();
+	void _onSearch();
 	void _onClean();
 	void _onCleanAll();
 	void _onSetting();
@@ -111,6 +113,7 @@ private slots:
 
     void updateMenus();
     void updateWindowMenu();
+	void updateSearchWindow();
 
 private:
 	void closeEvent(QCloseEvent *event) override;
@@ -125,6 +128,7 @@ private:
 	void _updateStatusBar(void);
 
 	IChildWindow* activeMdiChild() const;
+	QWidget* activeMdiView() const;
 
     QMdiArea *m_mdiArea;
 
@@ -145,6 +149,7 @@ private:
 	QAction* m_flipXAct;
 	QAction* m_rotateCWAct;
 	QAction* m_copyAct;
+	QAction* m_searchAct;
 	QAction* m_cleanAct;
 	QAction* m_cleanAllAct;
 
@@ -162,4 +167,5 @@ private:
 
 	QPushButton  *m_statusBtn;
 	SessionDialog *m_sessionDialog;
+	SearchWindow* m_searchWindow;
 };
