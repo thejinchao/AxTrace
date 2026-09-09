@@ -6,7 +6,7 @@
 ***************************************************/
 #pragma once
 
-#include "Data/AT4_CommonStruct.h"
+#include "Data/AT4_Common.h"
 #include "Session/AT4_Session.h"
 
 class Message

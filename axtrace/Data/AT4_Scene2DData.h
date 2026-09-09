@@ -5,7 +5,7 @@
 	(C) Copyright thecodeway.com 2026
 ***************************************************/
 #pragma once
-#include "AT4_CommonStruct.h"
+#include "AT4_Common.h"
 #include "AT4_Scene2DActorData.h"
 
 #include <QJsonObject>

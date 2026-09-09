@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Session/AT4_Session.h"
-#include "Data/AT4_CommonStruct.h"
+#include "Data/AT4_Common.h"
 
 struct LogData
 {
