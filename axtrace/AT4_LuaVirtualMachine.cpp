@@ -46,11 +46,7 @@ bool LuaVirtualMachine::init(Config* cfg)
 
 	//reload script
 	QString filterScript = m_config->getFilterScript();
-	//QByteArray byteArray = filterScript.toUtf8();
-	std::string strFilterScript = filterScript.toStdString();
-	qDebug() << strFilterScript;
-	const char* szFilterScript = strFilterScript.c_str();
-	if (!reloadScript(szFilterScript))
+	if (!reloadScript(filterScript.toStdString().c_str()))
 		return false;
 
 	return true;
@@ -98,27 +94,27 @@ bool LuaVirtualMachine::tryLoadScript(const char* script, QString& errorMsg)
 //--------------------------------------------------------------------------------------------
 void LuaVirtualMachine::_luaopen(lua_State* L)
 {
-	lua_pushinteger(L, 0x000); 	lua_setglobal(L, "COL_BLACK");
-	lua_pushinteger(L, 0xFFF); 	lua_setglobal(L, "COL_WHITE");
-	lua_pushinteger(L, 0x00F); 	lua_setglobal(L, "COL_RED");
-	lua_pushinteger(L, 0x0F0); 	lua_setglobal(L, "COL_GREEN");
-	lua_pushinteger(L, 0xF00); 	lua_setglobal(L, "COL_BLUE");
-	lua_pushinteger(L, 0x777); 	lua_setglobal(L, "COL_GRAY");
-	lua_pushinteger(L, 0x0FF); 	lua_setglobal(L, "COL_YELLOW");
-	lua_pushinteger(L, 0x06F); 	lua_setglobal(L, "COL_ORANGE");
-	lua_pushinteger(L, 0xF0F); 	lua_setglobal(L, "COL_VIOLET");
+	lua_pushinteger(L, kColBlack); 		lua_setglobal(L, "COL_BLACK");
+	lua_pushinteger(L, kColWhite); 		lua_setglobal(L, "COL_WHITE");
+	lua_pushinteger(L, kColRed); 		lua_setglobal(L, "COL_RED");
+	lua_pushinteger(L, kColGreen); 		lua_setglobal(L, "COL_GREEN");
+	lua_pushinteger(L, kColBlue); 		lua_setglobal(L, "COL_BLUE");
+	lua_pushinteger(L, kColGray); 		lua_setglobal(L, "COL_GRAY");
+	lua_pushinteger(L, kColYellow); 	lua_setglobal(L, "COL_YELLOW");
+	lua_pushinteger(L, kColOrange); 	lua_setglobal(L, "COL_ORANGE");
+	lua_pushinteger(L, kColViolet); 	lua_setglobal(L, "COL_VIOLET");
 
-	lua_pushinteger(L, 0); 	lua_setglobal(L, "AXT_TRACE");
-	lua_pushinteger(L, 1); 	lua_setglobal(L, "AXT_DEBUG");
-	lua_pushinteger(L, 2); 	lua_setglobal(L, "AXT_INFO");
-	lua_pushinteger(L, 3); 	lua_setglobal(L, "AXT_WARN");
-	lua_pushinteger(L, 4); 	lua_setglobal(L, "AXT_ERROR");
-	lua_pushinteger(L, 5); 	lua_setglobal(L, "AXT_FATAL");
-	lua_pushinteger(L, 10); lua_setglobal(L, "AXT_USERDEF");
+	lua_pushinteger(L, AXT_TRACE); 		lua_setglobal(L, "AXT_TRACE");
+	lua_pushinteger(L, AXT_DEBUG); 		lua_setglobal(L, "AXT_DEBUG");
+	lua_pushinteger(L, AXT_INFO); 		lua_setglobal(L, "AXT_INFO");
+	lua_pushinteger(L, AXT_WARN); 		lua_setglobal(L, "AXT_WARN");
+	lua_pushinteger(L, AXT_ERROR); 		lua_setglobal(L, "AXT_ERROR");
+	lua_pushinteger(L, AXT_FATAL); 		lua_setglobal(L, "AXT_FATAL");
+	lua_pushinteger(L, AXT_USERDEF);	lua_setglobal(L, "AXT_USERDEF");
 
-	lua_pushinteger(L, 0); 	lua_setglobal(L, "ACTOR_CIRCLE");
-	lua_pushinteger(L, 1); 	lua_setglobal(L, "ACTOR_QUAD");
-	lua_pushinteger(L, 2); 	lua_setglobal(L, "ACTOR_TRIANGLE");
+	lua_pushinteger(L, AT_CIRCLE); 		lua_setglobal(L, "ACTOR_CIRCLE");
+	lua_pushinteger(L, AT_QUAD); 		lua_setglobal(L, "ACTOR_QUAD");
+	lua_pushinteger(L, AT_TRIANGLE); 	lua_setglobal(L, "ACTOR_TRIANGLE");
 }
 
 //--------------------------------------------------------------------------------------------
