@@ -34,15 +34,6 @@ bool LuaVirtualMachine::init(Config* cfg)
 
 	m_config = cfg;
 
-	L = luaL_newstate();
-	luaL_openlibs(L);
-
-	//register functions
-	_luaopen(L);
-	LogMessage::_luaopen(L);
-	ValueMessage::_luaopen(L);
-	Begin2DSceneMessage::_luaopen(L);
-	Update2DActorMessage::_luaopen(L);
 
 	//reload script
 	QString filterScript = m_config->getFilterScript();
@@ -55,6 +46,21 @@ bool LuaVirtualMachine::init(Config* cfg)
 //--------------------------------------------------------------------------------------------
 bool LuaVirtualMachine::reloadScript(const char* script)
 {
+	//reset lua machine
+	if (L) {
+		lua_close(L);
+	}
+
+	L = luaL_newstate();
+	luaL_openlibs(L);
+
+	//register functions
+	_luaopen(L);
+	LogMessage::_luaopen(L);
+	ValueMessage::_luaopen(L);
+	Begin2DSceneMessage::_luaopen(L);
+	Update2DActorMessage::_luaopen(L);
+
 	//run init lua script
 	if (luaL_dostring(L, script)) {
 		const char* error_msg = lua_tostring(L, -1);
