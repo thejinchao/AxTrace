@@ -126,7 +126,19 @@ void LuaVirtualMachine::_luaopen(lua_State* L)
 //--------------------------------------------------------------------------------------------
 void LuaVirtualMachine::onLogMessage(const LogMessage* message, LogFilterResult& result)
 {
+	const char* kDefaultLogTitle = "default";
+
 	lua_getglobal(L, "onLogMessage");
+	if (!lua_isfunction(L, -1))
+	{
+		result.display = true;
+		result.wndTitle = kDefaultLogTitle;
+		result.fontColor = kColBlack;
+		result.backColor = kColWhite;
+
+		lua_pop(L, 1);
+		return;
+	}
 
 	lua_pushlightuserdata(L, (void*)message);
 
@@ -147,7 +159,20 @@ void LuaVirtualMachine::onLogMessage(const LogMessage* message, LogFilterResult&
 //--------------------------------------------------------------------------------------------
 void LuaVirtualMachine::onValueMessage(const ValueMessage* message, ValueFilterResult& result)
 {
+	const char* kDefaultValueTitle = "default";
+
 	lua_getglobal(L, "onValueMessage");
+	if (!lua_isfunction(L, -1))
+	{
+		result.display = true;
+		result.wndTitle = kDefaultValueTitle;
+		result.fontColor = kColBlack;
+		result.backColor = kColWhite;
+
+		lua_pop(L, 1);
+		return;
+	}
+
 	lua_pushlightuserdata(L, (void*)message);
 
 	luaL_getmetatable(L, ValueMessage::MetaName);
@@ -167,6 +192,18 @@ void LuaVirtualMachine::onValueMessage(const ValueMessage* message, ValueFilterR
 void LuaVirtualMachine::onActor2DMessage(const Update2DActorMessage* message, Actor2DFilterResult& result)
 {
 	lua_getglobal(L, "onActor2DMessage");
+	if (!lua_isfunction(L, -1))
+	{
+		result.display = true;
+		result.type = Actor2DType::AT_CIRCLE;
+		result.size = 10;
+		result.borderColor = kColBlack;
+		result.fillColor = kColWhite;
+
+		lua_pop(L, 1);
+		return;
+	}
+
 	lua_pushlightuserdata(L, (void*)message);
 
 	luaL_getmetatable(L, Update2DActorMessage::MetaName);
