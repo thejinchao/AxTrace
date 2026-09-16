@@ -28,4 +28,6 @@ struct LogFilterResult
 	QString		wndTitle;
 	uint16_t	fontColor;
 	uint16_t	backColor;
+
+	void fillDefault();
 };

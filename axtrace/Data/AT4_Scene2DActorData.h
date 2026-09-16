@@ -32,4 +32,6 @@ struct Actor2DFilterResult
 	int				size;
 	uint16_t		borderColor;
 	uint16_t		fillColor;
+
+	void fillDefault();
 };
