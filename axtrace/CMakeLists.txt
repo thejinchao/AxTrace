@@ -128,16 +128,6 @@ add_executable(AxTrace4 WIN32
 	AxTrace.rc
 )
 
-target_include_directories(AxTrace4
-PRIVATE
-	${LuaJIT_DIR}/include
-)
-
-target_link_directories(AxTrace4
-PRIVATE
-	${LuaJIT_DIR}/lib
-)
-
 target_link_libraries(AxTrace4 
     Qt6::Core
     Qt6::Gui
