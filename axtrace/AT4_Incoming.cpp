@@ -109,8 +109,9 @@ void Incoming::on_message(cyclone::TcpServer* server, int32_t thread_index, cycl
 		}
 
 		//message type or message size is not valid
+		qint32 minMessageSize = Message::getMessageMinSize(head.type);
 		qint32 maxMessageSize = Message::getMessageMaxSize(head.type);
-		if (maxMessageSize<0 || head.length>maxMessageSize) {
+		if (minMessageSize<0 || maxMessageSize<0 || head.length<minMessageSize || head.length>maxMessageSize) {
 			//error!, kick off this session
 			m_server->shutdown_connection(conn);
 			return;

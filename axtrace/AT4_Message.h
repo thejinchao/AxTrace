@@ -20,6 +20,7 @@ public:
 	const MessageTime& getTime(void) const { return m_time; }
 
 	static qint32 getMessageMaxSize(qint32 msgType);
+	static qint32 getMessageMinSize(qint32 msgType);
 protected:
 	SessionPtr		m_session;
 	MessageTime		m_time;
