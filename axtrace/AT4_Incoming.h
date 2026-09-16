@@ -11,7 +11,9 @@ class Incoming
 public:
 	// create receive thread and start listen port
 	bool init(qint32 listenPort);
-	// try close current network thread
+	// try start network thread
+	bool start(void);
+	// try close network thread
 	void close(void);
 	//kick out connection
 	void kickConnection(cyclone::TcpConnectionPtr conn);

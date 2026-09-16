@@ -102,6 +102,12 @@ int System::run(void)
 	m_mainWindow = new MainWindow();
 	m_mainWindow->show();
 
+	//start incomming server
+	if (!(m_incoming->start()))
+	{
+		return -1;
+	}
+
 	//enter loop...
 	int retCode = m_theApplication->exec();
 

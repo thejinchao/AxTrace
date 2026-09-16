@@ -43,6 +43,15 @@ bool Incoming::init(qint32 listenPort)
 
 	if (!(m_server->bind(address, false))) return false;
 	m_listenPort = listenPort;
+	return true;
+}
+
+//--------------------------------------------------------------------------------------------
+bool Incoming::start(void)
+{
+	Q_ASSERT(m_server != nullptr);
+	if (m_server == nullptr) return false;
+	
 	return m_server->start(cyclone::sys_api::get_cpu_counts());
 }
 
