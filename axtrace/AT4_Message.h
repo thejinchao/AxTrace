@@ -78,15 +78,15 @@ public:
 	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
 	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_SHAKEHAND; }
 
-	int32_t getVersion(void) const { return m_version; }
-	unsigned int getProcessID(void) const { return m_processID; }
-	unsigned int getThreadID(void) const { return m_threadID; }
+	qint32 getVersion(void) const { return m_version; }
+	quint32 getProcessID(void) const { return m_processID; }
+	quint32 getThreadID(void) const { return m_threadID; }
 	const QString& getSessionName(void) const { return m_sessionName; }
 
 private:
-	int32_t m_version;
-	uint32_t m_processID;
-	uint32_t m_threadID;
+	qint32 m_version;
+	quint32 m_processID;
+	quint32 m_threadID;
 	QString m_sessionName;
 
 public:
@@ -105,11 +105,11 @@ public:
 	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
 	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_LOG; }
 
-	unsigned int getLogType(void) const { return m_logType; }
+	quint32 getLogType(void) const { return m_logType; }
 	const QString& getLog(void) const { return m_log; }
 
 private:
-	unsigned int m_logType;
+	quint32 m_logType;
 	QString m_log;
 
 protected:
@@ -138,7 +138,7 @@ public:
 private:
 	QString m_name;
 
-	unsigned int	m_valueType;
+	quint32			m_valueType;
 	size_t			m_valueSize;
 	void*			m_valueBuf;
 
@@ -193,7 +193,7 @@ public:
 	qint64 getActorID(void) const { return m_actorID; }
 	const QPointF& getActorPosition(void) const { return m_position; }
 	qreal getActorDir(void) const { return m_dir; }
-	quint32 getActorStyle(void) const { return m_style; }
+	quint32 getActorStyle(void) const { return m_actorStyle; }
 	const QString& getActorInfo(void) const { return m_actorInfo; }
 
 private:
@@ -201,7 +201,7 @@ private:
 	qint64			m_actorID;
 	QPointF			m_position;
 	qreal			m_dir;
-	quint32			m_style;
+	quint32			m_actorStyle;
 	QString			m_actorInfo;
 
 protected:

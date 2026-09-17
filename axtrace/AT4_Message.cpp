@@ -90,6 +90,9 @@ QQueue<ShakehandMessage*> ShakehandMessage::s_messagePool;
 //--------------------------------------------------------------------------------------------
 ShakehandMessage::ShakehandMessage(SessionPtr session, const MessageTime& traceTime)
 	: Message(session, traceTime)
+	, m_version(0)
+	, m_processID(0)
+	, m_threadID(0)
 {
 
 }
@@ -138,6 +141,7 @@ QQueue<LogMessage*> LogMessage::s_messagePool;
 //--------------------------------------------------------------------------------------------
 LogMessage::LogMessage(SessionPtr session, const MessageTime& traceTime)
 	: Message(session, traceTime)
+	, m_logType(0)
 {
 
 }
@@ -248,9 +252,11 @@ QQueue<ValueMessage*> ValueMessage::s_messagePool;
 //--------------------------------------------------------------------------------------------
 ValueMessage::ValueMessage(SessionPtr session, const MessageTime& traceTime)
 	: Message(session, traceTime)
+	, m_valueType(0)
+	, m_valueSize(0)
 	, m_valueBuf(nullptr)
 {
-
+	memset(m_standValueBuf, 0, sizeof(m_standValueBuf));
 }
 
 //--------------------------------------------------------------------------------------------
@@ -530,6 +536,9 @@ QQueue<Update2DActorMessage*> Update2DActorMessage::s_messagePool;
 //--------------------------------------------------------------------------------------------
 Update2DActorMessage::Update2DActorMessage(SessionPtr session, const MessageTime& traceTime)
 	: Message(session, traceTime)
+	, m_actorID(0)
+	, m_dir(0)
+	, m_actorStyle(0)
 {
 
 }
@@ -552,7 +561,7 @@ bool Update2DActorMessage::build(const axtrace_head_s& head, cyclone::RingBuf* r
 	m_actorID = (qint64)actor_head.actor_id;
 	m_position = QPointF((qreal)actor_head.x, (qreal)actor_head.y);
 	m_dir = (qreal)actor_head.dir;
-	m_style = (quint32)actor_head.style;
+	m_actorStyle = (quint32)actor_head.style;
 
 	//check scene name
 	qint32 name_length = actor_head.name_len;
@@ -743,6 +752,7 @@ QQueue<Add2DActorLogMessage*> Add2DActorLogMessage::s_messagePool;
 //--------------------------------------------------------------------------------------------
 Add2DActorLogMessage::Add2DActorLogMessage(SessionPtr session, const MessageTime& traceTime)
 	: Message(session, traceTime)
+	, m_actorID(0)
 {
 
 }
