@@ -104,7 +104,7 @@ bool MainWindow::event(QEvent* e)
 			m_sessionDialog->updateSessionList();
 		}
 	}
-		break;
+	break;
 
 	case AxTraceEvent::ET_Message:
 	{

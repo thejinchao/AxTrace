@@ -67,12 +67,13 @@ void SessionDialog::updateSessionList()
 	m_sessionModel->removeRows(0, m_sessionModel->rowCount());
 
 	//fill session list
-	sessionManager->walk([this](int32_t id, SessionPtr session) {
-
+	QVector<SessionPtr> sessions = sessionManager->getAllSessions();
+	for (const SessionPtr& session : sessions) 
+	{
 		int index = this->m_sessionModel->rowCount();
 		session->setUserData(index);
 
-		QStandardItem *item_id = new QStandardItem(QString("%0").arg(id));
+		QStandardItem *item_id = new QStandardItem(QString("%0").arg(session->getID()));
 		this->m_sessionModel->setItem(index, 0, item_id);
 
 		QStandardItem *item_Name = new QStandardItem(QString("%0").arg(session->getSessionName()));
@@ -86,7 +87,7 @@ void SessionDialog::updateSessionList()
 
 		QStandardItem *item_Address = new QStandardItem(QString("%0").arg(session->getPeerAddress()));
 		this->m_sessionModel->setItem(index, 4, item_Address);
-	});
+	}
 }
 
 //--------------------------------------------------------------------------------------------

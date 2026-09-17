@@ -56,8 +56,8 @@ public:
 	void onSessionConnected(cyclone::TcpConnectionPtr connPtr);
 	void onSessionClose(cyclone::TcpConnectionPtr connPtr);
 
-	typedef std::function<void(int32_t id, SessionPtr session)> WalkCallback;
-	void walk(WalkCallback callback);
+	QVector<SessionPtr> getAllSessions(void) const;
+
 private:
 	typedef QMap<int32_t, SessionPtr> SessionMap;
 

@@ -105,9 +105,9 @@ void SessionManager::onSessionClose(cyclone::TcpConnectionPtr connPtr)
 }
 
 //--------------------------------------------------------------------------------------------
-void SessionManager::walk(SessionManager::WalkCallback callback)
+QVector<SessionPtr> SessionManager::getAllSessions(void) const
 {
-	for (auto it = m_sessionMap.begin(); it != m_sessionMap.end(); it++) {
-		callback(it.key(), it.value());
-	}
+	QMutexLocker locker(&m_lock);
+
+	return m_sessionMap.values().toVector();
 }
