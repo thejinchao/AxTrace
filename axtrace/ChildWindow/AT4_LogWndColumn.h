@@ -29,6 +29,8 @@ protected:
 
 public:
 	LogColumn(qint32 index, bool active = true) : m_index(index), m_active(active), m_activeIndex(-1){ }
+	virtual ~LogColumn() = default;
+
 	friend class LogColumnGroup;
 };
 
@@ -145,6 +147,6 @@ private:
 	qint32 m_activeCounts;
 
 public:
-	LogColumnGroup() : m_activeCounts(0) { }
-	~LogColumnGroup() { }
+	LogColumnGroup();
+	~LogColumnGroup();
 };

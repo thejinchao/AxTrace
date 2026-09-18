@@ -29,7 +29,7 @@ public:
 	};
 
 public:
-	explicit ValueDataModel(QObject *parent = 0);
+	explicit ValueDataModel(QObject *parent);
 	~ValueDataModel();
 
 	void insertValue(const ValueMessage* valueMessage, const ValueFilterResult& filterResult);

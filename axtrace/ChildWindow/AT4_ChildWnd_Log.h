@@ -24,7 +24,7 @@ class LogDataModel : public QAbstractItemModel
 	Q_OBJECT
 
 public:
-	explicit LogDataModel(LogParserPtr logParser, QObject *parent = 0);
+	explicit LogDataModel(LogParserPtr logParser, QObject *parent);
 	~LogDataModel();
 
 	void insertLog(const LogMessage* logMessage, const LogFilterResult& filterResult);

@@ -46,9 +46,9 @@ QString LogColumn_LogType::getString(const LogData& logData) const
 	{
 		"Trace", "Debug","Info","Warn","Error","Fatal"
 	};
-	const static int sStandardLogTypeCounts = 6;
+	const static qint32 kStandardLogTypeCounts = sizeof(sStandardLogType)/sizeof(sStandardLogType[0]);
 
-	if (logData.logType < sStandardLogTypeCounts)
+	if (logData.logType < kStandardLogTypeCounts)
 	{
 		return sStandardLogType[logData.logType];
 	}
@@ -67,6 +67,23 @@ QString LogColumn_LogContent::getString(const LogData& logData) const
 
 	Q_ASSERT(m_indexOfList >= 0 && m_indexOfList < logData.logContent.size()-1);
 	return logData.logContent[m_indexOfList];
+}
+
+//--------------------------------------------------------------------------------------------
+LogColumnGroup::LogColumnGroup() 
+	: m_activeCounts(0) 
+{
+
+}
+
+//--------------------------------------------------------------------------------------------
+LogColumnGroup::~LogColumnGroup() 
+{
+	foreach(auto column, m_columns)
+	{
+		delete column;
+	}
+	m_columns.clear();
 }
 
 //--------------------------------------------------------------------------------------------

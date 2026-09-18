@@ -178,7 +178,7 @@ LogChild::~LogChild()
 void LogChild::init(void)
 {
 	Config* config = System::getSingleton()->getConfig();
-	LogDataModel* model = new LogDataModel(config->getLogParser(m_title));
+	LogDataModel* model = new LogDataModel(config->getLogParser(m_title), this);
 	this->setModel(model);
 
 	QHeaderView* header = this->header();
