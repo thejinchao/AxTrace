@@ -130,7 +130,7 @@ add_custom_command(
 # genversion.lua must update src/luajit.h in place, just like msvcbuild.bat.
 # Many source files include it with quotes after defining per-file macros, so
 # forcing a binary-tree copy with /FI would change LUA_API linkage semantics.
-set(GENERATED_LUAJIT_H "${LUAJIT_SRC}/luajit.h")
+set(GENERATED_LUAJIT_H "${GENERATED_DIR}/luajit.h")
 set(GENERATED_VERSION_STAMP "${GENERATED_DIR}/luajit_version.stamp")
 add_custom_command(
   OUTPUT "${GENERATED_VERSION_STAMP}"
@@ -183,7 +183,7 @@ add_custom_command(
     /D_CRT_SECURE_NO_DEPRECATE
     "/D_CRT_STDIO_INLINE=__declspec(dllexport)__inline"
     ${BUILDVM_DEFINITION_FLAGS}
-    "/I${LUAJIT_SRC}" "/I${DYNASM_DIR}" "/I${GENERATED_HOST_DIR}"
+    "/I${LUAJIT_SRC}" "/I${DYNASM_DIR}" "/I${GENERATED_HOST_DIR}" "/I${GENERATED_DIR}"
     ${BUILDVM_SOURCES} "/Fe${BUILDVM_EXE}" "/Fo${GENERATED_HOST_DIR}/"
     /link /nologo /INCREMENTAL:NO
     "/IMPLIB:${GENERATED_HOST_DIR}/buildvm.lib"
