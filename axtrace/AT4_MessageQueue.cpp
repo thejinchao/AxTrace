@@ -2,7 +2,7 @@
 
 				AXIA|Trace4
 
-	(C) Copyright thecodeway.com 2023
+	(C) Copyright thecodeway.com 2026
 ***************************************************/
 #include "stdafx.h"
 #include "AT4_MessageQueue.h"
@@ -13,31 +13,32 @@
 
 //--------------------------------------------------------------------------------------------
 MessageQueue::MessageQueue()
+	: m_ringBuf(DEFAULT_RINGBUF_SIZE)
+	, m_msgCountsInBuff(0)
 {
-	m_ring_buf = new cyclone::RingBuf();
-	m_counts = 0;
 }
 
 //--------------------------------------------------------------------------------------------
 MessageQueue::~MessageQueue()
 {
-	delete m_ring_buf; m_ring_buf = 0;
 }
 
 //--------------------------------------------------------------------------------------------
-void MessageQueue::insertMessage(cyclone::RingBuf* buf, size_t msg_length, const QDateTime& timeNow, qint32 sessionID)
+void MessageQueue::insertMessage(cyclone::RingBuf& sourceBuf, size_t msgLength, const QDateTime& timeNow, qint32 sessionID)
 {
+	if (sourceBuf.size() < msgLength) return;
+
 	MessageTime t;
 	t.epochTime = timeNow.toMSecsSinceEpoch();
 
 	{
 		QMutexLocker locker(&m_lock);
 
-		m_ring_buf->memcpy_into(&sessionID, sizeof(qint32));
-		m_ring_buf->memcpy_into(&t, sizeof(MessageTime));
-		buf->moveto(*m_ring_buf, msg_length);
+		m_ringBuf.memcpy_into(&sessionID, sizeof(qint32));
+		m_ringBuf.memcpy_into(&t, sizeof(MessageTime));
+		sourceBuf.moveto(m_ringBuf, msgLength);
 		
-		m_counts++;
+		m_msgCountsInBuff++;
 
 		QCoreApplication::postEvent(System::getSingleton()->getMainWindow(), new MainWindow::AxTraceEvent(MainWindow::AxTraceEvent::ET_Message));
 	}
@@ -48,26 +49,42 @@ Message* MessageQueue::_popMessage(void)
 {
 	MessageTime traceTime;
 
-	//pop session id
-	qint32 sessionID;
-	size_t len = m_ring_buf->memcpy_out(&sessionID, sizeof(qint32));
-	Q_ASSERT(len == sizeof(qint32));
-
-	//pop time and session id
-	len = m_ring_buf->memcpy_out(&traceTime, sizeof(MessageTime));
-	Q_ASSERT(len == sizeof(MessageTime));
-
+	qint32 sessionID = 0;
 	axtrace_head_s head;
-	len = m_ring_buf->peek(0, &head, sizeof(head));
-	Q_ASSERT(len == sizeof(axtrace_head_s));
+	SessionPtr session = nullptr;
 
-	//find session
-	SessionPtr session = System::getSingleton()->getSessionManager()->findSession(sessionID);
-	if (session == nullptr)
 	{
-		//discard message
-		m_ring_buf->discard(head.length);
-		return nullptr;
+		QMutexLocker locker(&m_lock);
+
+		//pop session id
+		size_t len = m_ringBuf.memcpy_out(&sessionID, sizeof(qint32));
+		Q_ASSERT(len == sizeof(qint32));
+
+		//pop time and session id
+		len = m_ringBuf.memcpy_out(&traceTime, sizeof(MessageTime));
+		Q_ASSERT(len == sizeof(MessageTime));
+
+		len = m_ringBuf.peek(0, &head, sizeof(head));
+		Q_ASSERT(len == sizeof(axtrace_head_s));
+
+		//find session
+		session = System::getSingleton()->getSessionManager()->findSession(sessionID);
+		if (session == nullptr)
+		{
+			//discard message if session closed
+			m_msgCountsInBuff--;
+			m_ringBuf.discard(head.length);
+			return nullptr;
+		}
+
+		//read message to temp buffer
+		if (m_tempBuf.size() < head.length)
+		{
+			m_tempBuf.resize(head.length);
+		}
+		m_ringBuf.memcpy_out(m_tempBuf.data(), head.length);
+
+		m_msgCountsInBuff--;
 	}
 
 	Message* message = nullptr;
@@ -116,19 +133,13 @@ Message* MessageQueue::_popMessage(void)
 	break;
 
 	default:
-		//discard message
-		m_ring_buf->discard(head.length);
 		return nullptr;
 	}
-
-	if (!(message->build(head, m_ring_buf)))
+	
+	if (!(message->build(QByteArrayView(m_tempBuf.data(), head.length))))
 	{
-		//discard message
-		m_ring_buf->discard(head.length);
-
 		//Close Net Connection 
 		session->closeConnection();
-
 		return nullptr;
 	}
 	return message;
@@ -137,23 +148,16 @@ Message* MessageQueue::_popMessage(void)
 //--------------------------------------------------------------------------------------------
 void MessageQueue::popMessage(MessageVector& msgVector)
 {
-	if (m_counts <= 0) return;
+	qint32 msgCountsOfThisTick = m_msgCountsInBuff;
+	if (msgCountsOfThisTick <= 0) return;
+	msgVector.reserve(msgVector.size() + msgCountsOfThisTick);
 
+	do 
 	{
-		QMutexLocker locker(&m_lock);
-		msgVector.reserve(m_counts);
-
-		do 
+		Message* msg = _popMessage();
+		if (msg)
 		{
-			if (m_ring_buf->empty()) break;
-
-			Message* msg = _popMessage();
-			if (msg == nullptr) continue;
-
 			msgVector.push_back(msg);
-
-		} while (true);
-
-		m_counts = 0;
-	}
+		}
+	} while (m_msgCountsInBuff>0 && --msgCountsOfThisTick > 0);
 }

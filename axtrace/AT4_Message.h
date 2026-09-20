@@ -2,7 +2,7 @@
 
 				AXIA|Trace4
 
-	(C) Copyright thecodeway.com 2023
+	(C) Copyright thecodeway.com 2026
 ***************************************************/
 #pragma once
 
@@ -12,7 +12,7 @@
 class Message
 {
 public:
-	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf) = 0;
+	virtual bool build(QByteArrayView data) = 0;
 	virtual qint32 getType(void) const = 0;
 
 	SessionPtr getSession(void) { return m_session; }
@@ -21,9 +21,16 @@ public:
 
 	static qint32 getMessageMaxSize(qint32 msgType);
 	static qint32 getMessageMinSize(qint32 msgType);
+
 protected:
 	SessionPtr		m_session;
 	MessageTime		m_time;
+
+protected:
+	bool readBytes(char* target, QByteArrayView& dataBuff, qint32 byteSize);
+	bool readString_Utf8(QString& value, QByteArrayView& dataBuff, qint32 stringByteSize, qint32 maxStringByteSize);
+	bool readString_Utf16(QString& value, QByteArrayView& dataBuff, qint32 stringByteSize, qint32 maxStringByteSize);
+	bool readString_Local8Bit(QString& value, QByteArrayView& dataBuff, qint32 stringByteSize, qint32 maxStringByteSize);
 
 protected:
 	static int _lua_get_type(lua_State *L);
@@ -75,7 +82,7 @@ private: \
 class ShakehandMessage : public Message 
 {
 public:
-	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
+	virtual bool build(QByteArrayView data);
 	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_SHAKEHAND; }
 
 	qint32 getVersion(void) const { return m_version; }
@@ -102,7 +109,7 @@ public:
 	static const char* MetaName;
 	static void _luaopen(lua_State *L);
 
-	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
+	virtual bool build(QByteArrayView data);
 	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_LOG; }
 
 	quint32 getLogType(void) const { return m_logType; }
@@ -129,7 +136,7 @@ public:
 	static const char* MetaName;
 	static void _luaopen(lua_State *L);
 
-	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
+	virtual bool build(QByteArrayView data);
 	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_VALUE; }
 
 	const QString& getName(void) const { return m_name; }
@@ -140,10 +147,9 @@ private:
 
 	quint32			m_valueType;
 	size_t			m_valueSize;
-	void*			m_valueBuf;
+	QByteArray		m_valueBuf;
 
 	enum { STANDARD_VALUE_SIZE = 32 };
-	unsigned char m_standValueBuf[STANDARD_VALUE_SIZE];
 
 protected:
 	static int _lua_get_value(lua_State *L);
@@ -161,7 +167,7 @@ public:
 	static const char* MetaName;
 	static void _luaopen(lua_State *L);
 
-	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
+	virtual bool build(QByteArrayView data);
 	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_2D_BEGIN_SCENE; }
 
 	const QString& getSceneName(void) const { return m_sceneName; }
@@ -186,7 +192,7 @@ public:
 	static const char* MetaName;
 	static void _luaopen(lua_State *L);
 
-	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
+	virtual bool build(QByteArrayView data);
 	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_2D_ACTOR; }
 
 	const QString& getSceneName(void) const { return m_sceneName; }
@@ -225,7 +231,7 @@ public:
 	static const char* MetaName;
 	static void _luaopen(lua_State *L);
 
-	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
+	virtual bool build(QByteArrayView data);
 	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_2D_END_SCENE; }
 
 	const QString& getSceneName(void) const { return m_sceneName; }
@@ -246,7 +252,7 @@ public:
 	static const char* MetaName;
 	static void _luaopen(lua_State *L);
 
-	virtual bool build(const axtrace_head_s& head, cyclone::RingBuf* ringBuf);
+	virtual bool build(QByteArrayView data);
 	virtual qint32 getType(void) const { return AXTRACE_CMD_TYPE_2D_ACTOR_LOG; }
 
 	qint64 getActorID(void) const { return m_actorID; }
