@@ -147,7 +147,29 @@ typedef struct
 #pragma pack(pop)
 
 /*---------------------------------------------------------------------------------------------*/
-static void _send_handshake_message(axtrace_contex_s* ctx)
+static int _send_data_to_server(axtrace_contex_s* ctx, const void* data, size_t length)
+{
+	int send_len = 0;
+	if (ctx == 0 || data == 0 || length <= 0) return -1;
+	while(send_len < length)
+	{
+		int ret = send(ctx->sfd, (const char*)data + send_len, (int)(length - send_len), 0);
+		if (ret == SOCKET_ERROR)
+		{
+			int err = WSAGetLastError();
+			if (err == WSAEWOULDBLOCK || err == WSAEINTR || err == WSAEINPROGRESS)
+			{
+				continue;
+			}
+			break;
+		}
+		send_len += ret;
+	}
+	return send_len;
+}
+
+/*---------------------------------------------------------------------------------------------*/
+static int _send_handshake_message(axtrace_contex_s* ctx)
 {
 	/* buf for send , call send() once*/
 	char buf[sizeof(axtrace_shakehand_s) + AXTRACE_MAX_PROCESSNAME_LENGTH] = { 0 };
@@ -181,10 +203,15 @@ static void _send_handshake_message(axtrace_contex_s* ctx)
 	shakehand_head->pid = GetCurrentProcessId();
 	shakehand_head->tid = GetCurrentThreadId();
 
-	/* send to axtrace server*/
-	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
+	/* send to axtrace server */
+	send_len = _send_data_to_server(ctx, buf, (int)final_length);
+	if(send_len != final_length)
+	{
+		return -1;
+	}
 
-	return;
+	/* send success */
+	return 0;
 }
 
 /*---------------------------------------------------------------------------------------------*/
@@ -199,34 +226,47 @@ static axtrace_contex_s* _axtrace_try_init(const char* server_ip, unsigned short
 	memset(ctx, 0, sizeof(axtrace_contex_s));
 
 	WSADATA wsadata;
-	WSAStartup(MAKEWORD(2, 1), &wsadata);
+	if(0 != WSAStartup(MAKEWORD(2, 1), &wsadata))
+	{
+		return ctx;
+	}
 
 	ctx->address.sin_family = AF_INET;
 	ctx->address.sin_port = htons(server_port);
-	if (0 == InetPtonA(AF_INET, server_ip, &(ctx->address.sin_addr)))
+	if (1 != InetPtonA(AF_INET, server_ip, &(ctx->address.sin_addr)))
 	{
 		return ctx;
 	}
 
 	/* connect to axtrace server*/
 	ctx->sfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-	/* TODO: create non-blocking socket, so we can save some time when connect to server */
+	if(INVALID_SOCKET == ctx->sfd)
+	{
+		return ctx;
+	}
 
 	/* set SO_LINGER off, make sure all data in send buf can be sended */
 	struct linger linger_;
 	linger_.l_onoff = 0;
 	linger_.l_linger = 0;
-	setsockopt(ctx->sfd, SOL_SOCKET, SO_LINGER, (const char*)&linger_, sizeof(linger_));
+	if(0 != setsockopt(ctx->sfd, SOL_SOCKET, SO_LINGER, (const char*)&linger_, sizeof(linger_)))
+	{
+		closesocket(ctx->sfd);
+		return ctx;
+	}
 
 	/* connect to server */
-	if (connect(ctx->sfd, (const struct sockaddr*)&(ctx->address), sizeof(struct sockaddr_in)) == SOCKET_ERROR)
+	if (0 != connect(ctx->sfd, (const struct sockaddr*)&(ctx->address), sizeof(struct sockaddr_in)))
 	{
 		closesocket(ctx->sfd);
 		return ctx;
 	}
 	/* send hand shake message */
-	_send_handshake_message(ctx);
+	if (0 != _send_handshake_message(ctx))
+	{
+		closesocket(ctx->sfd);
+		return ctx;
+	}
 
 	/* init success */
 	ctx->is_init_succ = 1;
@@ -293,7 +333,7 @@ void axlog(unsigned int log_type, const char *format, ...)
 	trace_head->length = (unsigned short)contents_byte_size;
 
 	/* send to axtrace server*/
-	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
+	send_len = _send_data_to_server(ctx, buf, (int)final_length);
 
 	/*TODO: check result, may be reconnect to server */
 	return;
@@ -380,7 +420,7 @@ void axvalue(unsigned int value_type, const char* value_name, const void* value)
 	memcpy(value_name_buf + value_name_length, value, value_length);
 
 	/* send to axtrace server*/
-	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
+	send_len = _send_data_to_server(ctx, buf, (int)final_length);
 
 	/*TODO: check result, may be reconnect to server */
 	return;
@@ -454,7 +494,7 @@ void ax2d_begin_scene(const char* scene_name, double x_min, double y_min, double
 	trace_head->define_len = (unsigned short)scene_define_size;
 
 	/* send to axtrace server*/
-	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
+	send_len = _send_data_to_server(ctx, buf, (int)final_length);
 
 	/*TODO: check result, may be reconnect to server */
 	return;
@@ -528,7 +568,7 @@ void ax2d_actor(const char* scene_name, __int64 actor_id, double x, double y, do
 	trace_head->info_len = (unsigned short)actor_info_size;
 
 	/* send to axtrace server*/
-	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
+	send_len = _send_data_to_server(ctx, buf, (int)final_length);
 
 	/*TODO: check result, may be reconnect to server */
 	return;
@@ -573,7 +613,7 @@ void ax2d_end_scene(const char* scene_name)
 	trace_head->name_len = (unsigned short)scene_name_size;
 
 	/* send to axtrace server*/
-	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
+	send_len = _send_data_to_server(ctx, buf, (int)final_length);
 
 	/*TODO: check result, may be reconnect to server */
 	return;
@@ -639,7 +679,7 @@ void ax2d_actor_log(const char* scene_name, __int64 actor_id, const char* actor_
 	trace_head->log_len = (unsigned short)actor_log_size;
 
 	/* send to axtrace server*/
-	send_len = send(ctx->sfd, buf, (int)final_length, MSG_DONTROUTE);
+	send_len = _send_data_to_server(ctx, buf, (int)final_length);
 
 	return;
 }
