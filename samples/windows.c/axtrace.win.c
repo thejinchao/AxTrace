@@ -161,15 +161,13 @@ static void _send_handshake_message(axtrace_contex_s* ctx)
 	DWORD dwPNameLengthAsChar = GetModuleFileNameW(NULL, wszProcessModuleName, MAX_PATH-1);
 	if (dwPNameLengthAsChar > 0)
 	{
-		pname_length = WideCharToMultiByte(CP_UTF8, 0, PathFindFileNameW(wszProcessModuleName), dwPNameLengthAsChar, pname_string, AXTRACE_MAX_PROCESSNAME_LENGTH - 1, NULL, NULL);
+		pname_length = WideCharToMultiByte(CP_UTF8, 0, PathFindFileNameW(wszProcessModuleName), -1, pname_string, AXTRACE_MAX_PROCESSNAME_LENGTH - 1, NULL, NULL);
 	}
 	if (pname_length == 0)
 	{
 		pname_string[0] = 0; /* fill '\0' as empty process name */
+		pname_length = 1;
 	}
-	
-	/* add '\0' ended */
-	pname_length += 1;
 
 	/*calc final length*/
 	final_length = sizeof(axtrace_shakehand_s) + pname_length;
