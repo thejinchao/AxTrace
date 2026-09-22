@@ -2,7 +2,7 @@
 
 				AXIA|Trace4
 
-	(C) Copyright thecodeway.com 2019
+	(C) Copyright thecodeway.com 2026
 ***************************************************/
 
 #include "axtrace.win.h"
@@ -29,9 +29,9 @@
 #define AXTRACE_MAX_ACTOR_INFO_LENGTH	(2048)
 #define AXTRACE_MAX_ACTOR_LOG_LENGTH	(2048)
 
-#define ATC_ACP		(0)	//Default Windows ANSI code page.
-#define ATC_UTF8	(1)	//Unicode 8
-#define ATC_UTF16	(2)	//Unicode 16
+#define ATC_ACP		(0)	/* Default Windows ANSI code page. */
+#define ATC_UTF8	(1)	/* Unicode 8 */
+#define ATC_UTF16	(2)	/* Unicode 16 */
 
 #define AXTRACE_PROTO_VERSION			(4)
 
@@ -147,6 +147,23 @@ typedef struct
 #pragma pack(pop)
 
 /*---------------------------------------------------------------------------------------------*/
+static INIT_ONCE g_axtrace_global_init_once = INIT_ONCE_STATIC_INIT;	/* global init flag */
+
+/*---------------------------------------------------------------------------------------------*/
+static BOOL CALLBACK _global_init(PINIT_ONCE once, PVOID param, PVOID* ctx)
+{
+	/* init wsa */
+	WSADATA wsadata;
+	if (0 != WSAStartup(MAKEWORD(2, 1), &wsadata))
+	{
+		return FALSE;
+	}
+
+	/* success */
+	return TRUE;
+}
+
+/*---------------------------------------------------------------------------------------------*/
 static int _send_data_to_server(axtrace_contex_s* ctx, const void* data, size_t length)
 {
 	int send_len = 0;
@@ -220,16 +237,10 @@ static axtrace_contex_s* _axtrace_try_init(const char* server_ip, unsigned short
 	axtrace_contex_s* ctx = (axtrace_contex_s*)LocalAlloc(LPTR, sizeof(axtrace_contex_s));
 	if (ctx == 0)
 	{
-		//TODO: fatal error, should stop the process
+		/* TODO: fatal error, should stop the process */
 		return 0;
 	}
 	memset(ctx, 0, sizeof(axtrace_contex_s));
-
-	WSADATA wsadata;
-	if(0 != WSAStartup(MAKEWORD(2, 1), &wsadata))
-	{
-		return ctx;
-	}
 
 	ctx->address.sin_family = AF_INET;
 	ctx->address.sin_port = htons(server_port);
@@ -277,6 +288,11 @@ static axtrace_contex_s* _axtrace_try_init(const char* server_ip, unsigned short
 static axtrace_contex_s* _axtrace_get_thread_contex()
 {
 	static __declspec(thread) axtrace_contex_s* s_the_thread_data = 0;
+	/* global init */
+	if (!InitOnceExecuteOnce(&g_axtrace_global_init_once, _global_init, NULL, NULL))
+	{
+		return 0;
+	}
 
 	if (s_the_thread_data != 0) {
 		/* already try init in this thread */
