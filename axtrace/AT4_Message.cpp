@@ -470,8 +470,8 @@ bool Begin2DSceneMessage::build(QByteArrayView data)
 	axtrace_2d_begin_scene_s beginSceneHead;
 	if (!readBytes((char*)(&beginSceneHead), data, sizeof(beginSceneHead))) return false;
 
-	m_sceneRect = QRectF(beginSceneHead.x_min, beginSceneHead.y_min,
-		beginSceneHead.x_max - beginSceneHead.x_min, beginSceneHead.y_max - beginSceneHead.y_min);
+	m_sceneRect = QRectF(beginSceneHead.x_left, beginSceneHead.y_top,
+		beginSceneHead.x_right - beginSceneHead.x_left, beginSceneHead.y_bottom - beginSceneHead.y_top);
 
 	//check scene name
 	qint32 nameLength = beginSceneHead.name_len;

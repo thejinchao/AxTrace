@@ -101,10 +101,10 @@ typedef struct
 typedef struct
 {
 	axtrace_head_s	head;			/* common head */
-	double			x_min;			/* left of scene*/
-	double			y_min;			/* top of scene*/
-	double			x_max;			/* right of scene*/
-	double			y_max;			/* bottom of scene*/
+	double			x_left;			/* left of scene*/
+	double			y_top;			/* top of scene*/
+	double			x_right;		/* right of scene*/
+	double			y_bottom;		/* bottom of scene*/
 	unsigned short	name_len;		/* length of scene name */
 	unsigned short	define_len;		/* length of scene define */
 

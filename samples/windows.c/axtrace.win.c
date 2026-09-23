@@ -99,10 +99,10 @@ typedef struct
 typedef struct
 {
 	axtrace_head_s	head;			/* common head */
-	double			x_min;			/* left of scene*/
-	double			y_min;			/* top of scene*/
-	double			x_max;			/* right of scene*/
-	double			y_max;			/* bottom of scene*/
+	double			x_left;			/* left of scene*/
+	double			y_top;			/* top of scene*/
+	double			x_right;		/* right of scene*/
+	double			y_bottom;		/* bottom of scene*/
 	unsigned short	name_len;		/* length of scene name */
 	unsigned short	define_len;		/* length of scene define */
 
@@ -444,7 +444,7 @@ void axvalue(unsigned int value_type, const char* value_name, const void* value)
 }
 
 /*---------------------------------------------------------------------------------------------*/
-void ax2d_begin_scene(const char* scene_name, double x_min, double y_min, double x_max, double y_max, const char* scene_define)
+void ax2d_begin_scene(const char* scene_name, double x_left, double y_top, double x_right, double y_bottom, const char* scene_define)
 {
 	axtrace_contex_s* ctx;
 	HRESULT hr;
@@ -502,10 +502,10 @@ void ax2d_begin_scene(const char* scene_name, double x_min, double y_min, double
 	trace_head->head.flag = 'A';
 	trace_head->head.type = AXTRACE_CMD_TYPE_2D_BEGIN_SCENE;
 
-	trace_head->x_min = x_min;
-	trace_head->y_min = y_min;
-	trace_head->x_max = x_max;
-	trace_head->y_max = y_max;
+	trace_head->x_left = x_left;
+	trace_head->y_top = y_top;
+	trace_head->x_right = x_right;
+	trace_head->y_bottom = y_bottom;
 	trace_head->name_len = (unsigned short)scene_name_size;
 	trace_head->define_len = (unsigned short)scene_define_size;
 
