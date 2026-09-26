@@ -2,6 +2,10 @@
 
 project(AxTrace4)
 
+if(NOT (WIN32 OR APPLE))
+  message(FATAL_ERROR "This CMake build currently supports Windows (MSVC) and macOS only.")
+endif()
+
 # find Qt6
 # Download and install Qt6 online installer for open source users: https://www.qt.io/development/download-qt-installer-oss
 # Set cmake variable Qt6_DIR="<Qt6_prebuilt_path>/lib/cmake/Qt6"
