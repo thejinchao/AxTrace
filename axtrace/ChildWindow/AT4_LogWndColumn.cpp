@@ -162,7 +162,7 @@ void LogColumnGroup::walk(bool activeOnly, ColumnWalkFunc walkFunc) const
 {
 	for (LogColumn* column : m_columns)
 	{
-		if (activeOnly && column->isActive() || !activeOnly)
+		if ((activeOnly && column->isActive()) || !activeOnly)
 		{
 			walkFunc(column);
 		}
