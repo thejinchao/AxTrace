@@ -73,25 +73,25 @@ public:
 	void init(void);
 	void insertLog(const LogMessage* logMessage, const LogFilterResult& filterResult);
 
-	virtual Type getType(void) const { return CT_LOG; }
+	virtual Type getType(void) const override { return CT_LOG; }
 
-	virtual bool isPause(void) const { return m_pause; }
-	virtual void switchPause(void);
+	virtual bool isPause(void) const override{ return m_pause; }
+	virtual void switchPause(void) override;
 
-	virtual bool copyAble(void) const;
+	virtual bool copyAble(void) const override;
 
-	virtual void onCopy(void) const;
+	virtual void onCopy(void) const override;
 
-	virtual bool searchAble(void) const { return true; }
+	virtual bool searchAble(void) const override{ return true; }
 	virtual QList<QPair<int, int>> searchMatchRanges(const QModelIndex& index,
-		const QString& searchText, const QRegularExpression& searchExpression) const;
+		const QString& searchText, const QRegularExpression& searchExpression) const override;
 
-	virtual void clean(void);
+	virtual void clean(void) override;
 
-	virtual void saveAs(void);
+	virtual void saveAs(void) override;
 
 protected:
-	bool eventFilter(QObject *target, QEvent *event);
+	bool eventFilter(QObject *target, QEvent *event) override;
 	void closeEvent(QCloseEvent *event) override;
 	void timerEvent(QTimerEvent *event) override;
 	

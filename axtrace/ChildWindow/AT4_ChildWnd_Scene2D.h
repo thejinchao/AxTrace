@@ -38,21 +38,21 @@ public:
 	bool hasSelectActor(void) const { return m_hasSelectedActor; }
 	QString getSelectActorBrief(void) const;
 
-	virtual Type getType(void) const { return CT_2DMAP; }
+	virtual Type getType(void) const override { return CT_2DMAP; }
 
-	virtual bool isPause(void) const { return m_pause; }
-	virtual void switchPause(void);
+	virtual bool isPause(void) const override { return m_pause; }
+	virtual void switchPause(void) override;
 
-	virtual bool copyAble(void) const;
-	virtual void onCopy(void) const;
+	virtual bool copyAble(void) const override;
+	virtual void onCopy(void) const override;
 
-	virtual bool searchAble(void) const { return false; }
+	virtual bool searchAble(void) const override { return false; }
 	virtual QList<QPair<int, int>> searchMatchRanges(const QModelIndex& index,
-		const QString& searchText, const QRegularExpression& searchExpression) const;
+		const QString& searchText, const QRegularExpression& searchExpression) const override;
 
-	virtual void clean(void);
+	virtual void clean(void) override;
 
-	virtual void saveAs(void) { }
+	virtual void saveAs(void) override { }
 
 protected:
 	void closeEvent(QCloseEvent *event) override;
