@@ -29,9 +29,9 @@ struct Actor2DFilterResult
 {
 	bool			display;
 	Actor2DType		type;
-	int				size;
-	uint16_t		borderColor;
-	uint16_t		fillColor;
+    qint32		size;
+    quint16		borderColor;
+    quint16		fillColor;
 
 	void fillDefault();
 };

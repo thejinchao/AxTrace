@@ -110,7 +110,7 @@ void LuaHighlighter::highlightBlock(const QString &text)
 		QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
 		while (matchIterator.hasNext()) {
 			QRegularExpressionMatch match = matchIterator.next();
-			setFormat(match.capturedStart(), match.capturedLength(), rule.format);
+			setFormat((int)match.capturedStart(), (int)match.capturedLength(), rule.format);
 		}
 	}
 
@@ -118,21 +118,20 @@ void LuaHighlighter::highlightBlock(const QString &text)
 
 	int startIndex = 0;
 	if (previousBlockState() != 1)
-		startIndex = text.indexOf(commentStartExpression);
+		startIndex = (int)text.indexOf(commentStartExpression);
 
 	while (startIndex >= 0) {
 		QRegularExpressionMatch match = commentEndExpression.match(text, startIndex);
-		int endIndex = match.capturedStart();
+		int endIndex = (int)match.capturedStart();
 		int commentLength = 0;
 		if (endIndex == -1) {
 			setCurrentBlockState(1);
-			commentLength = text.length() - startIndex;
+			commentLength = (int)text.length() - startIndex;
 		}
 		else {
-			commentLength = endIndex - startIndex
-				+ match.capturedLength();
+			commentLength = endIndex - startIndex + (int)match.capturedLength();
 		}
 		setFormat(startIndex, commentLength, multiLineCommentFormat);
-		startIndex = text.indexOf(commentStartExpression, startIndex + commentLength);
+		startIndex = (int)text.indexOf(commentStartExpression, startIndex + commentLength);
 	}
 }

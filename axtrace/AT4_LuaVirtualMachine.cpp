@@ -217,7 +217,7 @@ void LuaVirtualMachine::onActor2DMessage(const Update2DActorMessage* message, Ac
 	if (result.display) 
 	{
 		result.type = (Actor2DType)lua_tointeger(L, -4);
-		result.size = lua_tointeger(L, -3);
+		result.size = (qint32)lua_tointeger(L, -3);
 		result.borderColor = (uint16_t)(lua_tointeger(L, -2) & 0xFFFF);
 		result.fillColor = (uint16_t)(lua_tointeger(L, -1) & 0xFFFF);
 	}

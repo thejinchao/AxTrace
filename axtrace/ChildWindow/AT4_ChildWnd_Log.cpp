@@ -63,7 +63,7 @@ void LogDataModel::clearAllLog(void)
 //--------------------------------------------------------------------------------------------
 void LogDataModel::autoCheckOverflow(void)
 {
-	qint32 currentCounts = m_logVector.size();
+	const qint32 currentCounts = (const qint32)m_logVector.size();
 	qint32 maxLogCounts = System::getSingleton()->getConfig()->getMaxLogCounts();
 
 	if (currentCounts > maxLogCounts + m_maxOverflowCounts) {

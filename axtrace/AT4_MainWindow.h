@@ -71,7 +71,7 @@ public:
 
 	void notifySubWindowClose(IChildWindow::Type t, const QString& title);
 
-	qint32 getLogChildCounts(void) const { return m_logChildMap.size();	}
+	qint32 getLogChildCounts(void) const { return (qint32)m_logChildMap.size();	}
 
 	SearchWindow* getSearchWindow(void) const { return m_searchWindow; }
 private:

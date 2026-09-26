@@ -49,7 +49,7 @@ public:
 		return QModelIndex();
 	}
 	int rowCount(const QModelIndex &parent = QModelIndex()) const override {
-		return parent.isValid() ? 0 : m_valueVector.size();
+		return parent.isValid() ? 0 : (int)m_valueVector.size();
 	}
 	int columnCount(const QModelIndex &parent = QModelIndex()) const override {
 		return parent.isValid() ? 0 : COLUMN_COUNTS;

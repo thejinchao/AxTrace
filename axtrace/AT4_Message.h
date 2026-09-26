@@ -146,7 +146,7 @@ private:
 	QString m_name;
 
 	quint32			m_valueType;
-	size_t			m_valueSize;
+    qint32			m_valueSize;
 	QByteArray		m_valueBuf;
 
 	enum { STANDARD_VALUE_SIZE = 32 };

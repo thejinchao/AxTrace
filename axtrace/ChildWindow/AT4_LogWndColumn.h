@@ -130,7 +130,7 @@ public:
 	void initDefaulGroup(const LogParser& logParser);
 
 	void activeColumn(qint32 index, bool active);
-	qint32 getCounts(void) const { return m_columns.size(); }
+	qint32 getCounts(void) const { return (qint32)m_columns.size(); }
 	qint32 getActiveCounts(void) const { return m_activeCounts; }
 
 	const LogColumn* getColumn(qint32 index) const;

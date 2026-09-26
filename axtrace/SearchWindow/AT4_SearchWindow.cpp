@@ -164,7 +164,7 @@ void SearchHighlightDelegate::paint(QPainter* painter, const QStyleOptionViewIte
 
     QTextLayout::FormatRange baseFormat;
     baseFormat.start = 0;
-    baseFormat.length = text.size();
+    baseFormat.length = (int)text.size();
     baseFormat.format.setForeground(textColor);
 
     QList<QTextLayout::FormatRange> formats;

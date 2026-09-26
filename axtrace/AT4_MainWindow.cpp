@@ -94,7 +94,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 //--------------------------------------------------------------------------------------------
 bool MainWindow::event(QEvent* e)
 {
-	switch (e->type())
+	switch (static_cast<int>(e->type()))
 	{
 	case AxTraceEvent::ET_NewSession:
 	case AxTraceEvent::ET_CloseSession:

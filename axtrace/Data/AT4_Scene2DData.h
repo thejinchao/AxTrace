@@ -53,7 +53,7 @@ public:
 	const QString& getSceneName(void) const { return m_sceneName; }
 	const QRectF& getSceneRect(void) const { return m_sceneRect; }
 	quint32 getFrameIndex(void) const {	return m_frameIndex; }
-	qint32 getActorCounts(void) const { return m_actorMap[m_actorMapIndex].count(); }
+	qint32 getActorCounts(void) const { return (qint32)m_actorMap[m_actorMapIndex].count(); }
 
 	bool isGridDefined(void) const { return m_gridDefined; }
 	const QSizeF& getGridSize(void) const { return m_gridSize; }

@@ -40,7 +40,7 @@ public:
 		return QModelIndex();
 	}
 	int rowCount(const QModelIndex &parent = QModelIndex()) const override {
-		return m_logVector.size();
+		return (int)m_logVector.size();
 	}
 
 	const LogColumnGroup& getColumns(void) const {

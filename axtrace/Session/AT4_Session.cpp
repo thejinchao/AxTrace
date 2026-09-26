@@ -83,7 +83,7 @@ qint32 SessionManager::getSessionCounts(void) const
 { 
 	QMutexLocker locker(&m_lock);
 
-	return m_sessionMap.size();
+	return (qint32)m_sessionMap.size();
 }
 
 //--------------------------------------------------------------------------------------------

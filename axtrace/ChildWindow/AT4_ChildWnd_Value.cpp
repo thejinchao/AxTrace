@@ -49,7 +49,7 @@ void ValueDataModel::insertValue(const ValueMessage* valueMessage, const ValueFi
 
 		if (m_sortColumn == COLUMN_NONE)
 		{
-			const int newRow = m_sortedValues.size();
+			const int newRow = (const int)m_sortedValues.size();
 			beginInsertRows({}, newRow, newRow);
 			m_valueVector.append({ sequenceNumber, updateTime, updateTimeStr, valueName, valueData, backColor, frontColor });
 			m_valueHashMap.insert(valueName, valueIndex);
@@ -85,7 +85,7 @@ void ValueDataModel::insertValue(const ValueMessage* valueMessage, const ValueFi
 
 		if (m_sortColumn != COLUMN_UPDATE_TIME)
 		{
-			const auto row = m_sortedValues.indexOf(valueIndex);
+			const int row = (const int)m_sortedValues.indexOf(valueIndex);
 			emit dataChanged(index(row, COLUMN_UPDATE_TIME), index(row, COLUMN_VALUE_DATA), { Qt::DisplayRole });
 		}
 		else
@@ -105,11 +105,11 @@ void ValueDataModel::insertValue(const ValueMessage* valueMessage, const ValueFi
 			emit dataChanged(index(newRow, COLUMN_UPDATE_TIME), index(newRow, COLUMN_VALUE_DATA), { Qt::DisplayRole });
 		}
 
-		int lineCounts = valueData.count('\n');
+		int lineCounts = (int)valueData.count('\n');
 		bool needLayout = false;
 		if (value.lineCounts != lineCounts)
 		{
-			value.lineCounts = valueData.count('\n');
+			value.lineCounts = (int)valueData.count('\n');
 			needLayout = true;
 		}
 		if (needLayout) m_view->doItemsLayout();
@@ -222,7 +222,7 @@ void ValueDataModel::sort(int column, Qt::SortOrder order)
 	newPersistentIndexes.reserve(oldPersistentIndexes.size());
 	for (qsizetype i = 0; i < oldPersistentIndexes.size(); ++i) 
 	{
-		const int newRow = m_sortedValues.indexOf(persistentValueIndexes.at(i));
+		const int newRow = (const int)m_sortedValues.indexOf(persistentValueIndexes.at(i));
 		newPersistentIndexes.append(
 			index(newRow, oldPersistentIndexes.at(i).column()));
 	}
