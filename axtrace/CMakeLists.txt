@@ -96,6 +96,7 @@ set(AT4_RC_SOURCES
 set(AT4_PRECOMPILE_FILE
 	stdafx.cpp)
 
+if(WIN32 AND MSVC)
 foreach(filename ${AT4_CHILD_WND_SOURCES} ${AT4_CPP_SOURCES} ${AT4_DATA_SOURCES} ${AT4_SEARCH_WINDOW_SOURCES}
 	${AT4_SETTING_WND_SOURCES} ${AT4_SCRIPT_EDITOR_WND_SOURCES} ${AT4_SESSION_SOURCES})
 	get_filename_component(ext ${filename} LAST_EXT ABSOLUTE)
@@ -113,6 +114,7 @@ set_source_files_properties(${AT4_PRECOMPILE_FILE}
 	PROPERTIES
 	COMPILE_FLAGS "/Ycstdafx.h"
 )
+endif()
 
 add_executable(AxTrace4 WIN32 
 	${AT4_RC_SOURCES}
@@ -128,6 +130,7 @@ add_executable(AxTrace4 WIN32
 	AxTrace.rc
 )
 
+if(WIN32)
 target_link_libraries(AxTrace4 
     Qt6::Core
     Qt6::Gui
@@ -138,6 +141,16 @@ target_link_libraries(AxTrace4
 	ws2_32 
 	Shlwapi
 )
+elseif(APPLE)
+target_link_libraries(AxTrace4 
+    Qt6::Core
+    Qt6::Gui
+	Qt6::Widgets
+	Qt6::OpenGLWidgets
+	cyclone::cyclone
+	lua51
+)
+endif()
 
 #install
 install(TARGETS AxTrace4
