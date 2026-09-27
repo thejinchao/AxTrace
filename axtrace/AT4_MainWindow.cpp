@@ -529,7 +529,7 @@ void MainWindow::createActions()
 {
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
 
-    const QIcon saveAsIcon = QIcon::fromTheme("document-save-as", QIcon(":/images/save.png"));
+    const QIcon saveAsIcon = QIcon(":/images/save.png");
     m_saveAsAct = new QAction(saveAsIcon, tr("Save &As..."), this);
     m_saveAsAct->setShortcuts(QKeySequence::SaveAs);
     m_saveAsAct->setStatusTip(tr("Save the document under a new name"));
@@ -595,14 +595,14 @@ void MainWindow::createActions()
 	connect(m_rotateCWAct, &QAction::triggered, this, &MainWindow::_onRotateCW);
 	editMenu->addAction(m_rotateCWAct);
 
-    const QIcon copyIcon = QIcon::fromTheme("edit-copy", QIcon(":/images/copy.png"));
+    const QIcon copyIcon = QIcon(":/images/copy.png");
     m_copyAct = new QAction(copyIcon, tr("&Copy"), this);
     m_copyAct->setShortcuts(QKeySequence::Copy);
     m_copyAct->setStatusTip(tr("Copy the current selection's contents to the clipboard"));
     connect(m_copyAct, &QAction::triggered, this, &MainWindow::_onCopy);
     editMenu->addAction(m_copyAct);
 
-	const QIcon searchIcon = QIcon::fromTheme("edit-search", QIcon(":/images/search.png"));
+	const QIcon searchIcon = QIcon(":/images/search.png");
 	m_searchAct = new QAction(searchIcon, tr("&Search"), this);
 	m_searchAct->setShortcuts(QKeySequence::Find);
 	m_searchAct->setStatusTip(tr("Search text"));
