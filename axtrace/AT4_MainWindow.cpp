@@ -627,6 +627,7 @@ void MainWindow::createActions()
 	m_settingAct = new QAction(settingIcon, tr("S&etting..."), this);
 	m_settingAct->setStatusTip(tr("Open setting window"));
 	m_settingAct->setEnabled(true);
+	m_settingAct->setShortcuts(QKeySequence::Preferences);
 	connect(m_settingAct, &QAction::triggered, this, &MainWindow::_onSetting);
 	editMenu->addAction(m_settingAct);
 
@@ -638,12 +639,12 @@ void MainWindow::createActions()
 	const QIcon closeIcon = QIcon(":/images/close.png");
 	m_closeAct = new QAction(closeIcon, tr("Cl&ose"), this);
 	m_closeAct->setStatusTip(tr("Close the active window"));
-    connect(m_closeAct, &QAction::triggered,
-            m_mdiArea, &QMdiArea::closeActiveSubWindow);
+	connect(m_closeAct, &QAction::triggered, m_mdiArea, &QMdiArea::closeActiveSubWindow);
 
 	const QIcon closeAllIcon = QIcon(":/images/close-all.png");
 	m_closeAllAct = new QAction(closeAllIcon, tr("Close &All"), this);
-	m_closeAllAct->setStatusTip(tr("Close all the windows"));
+	m_closeAllAct->setStatusTip(tr("Close all windows"));
+	m_closeAllAct->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_F4));
     connect(m_closeAllAct, &QAction::triggered, m_mdiArea, &QMdiArea::closeAllSubWindows);
 
 	m_tileAct = new QAction(tr("&Tile"), this);
@@ -673,6 +674,7 @@ void MainWindow::createActions()
 
     QAction *aboutAct = helpMenu->addAction(QIcon(":/images/about.png"), tr("&About"), this, &MainWindow::_onAbout);
     aboutAct->setStatusTip(tr("Show the application's About box"));
+	aboutAct->setShortcuts(QKeySequence::WhatsThis);
 
 	//Main Toolbar
 	QToolBar *mainToolBar = addToolBar(tr("Main"));
