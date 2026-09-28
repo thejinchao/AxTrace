@@ -7,14 +7,35 @@
 
 #include "axtrace.win.h"
 
-#if defined(_MSC_VER)
-#include <WinSock2.h>
-#include <Ws2tcpip.h>
-#include <Windows.h>
-#include <strsafe.h>
-#include <Shlwapi.h>
-#pragma comment(lib, "ws2_32.lib")
-#pragma comment(lib, "shlwapi.lib")
+#include <stdint.h>
+#include <assert.h>
+
+#if defined(_WIN32)
+	#include <WinSock2.h>
+	#include <Ws2tcpip.h>
+	#include <Windows.h>
+	#include <strsafe.h>
+	#include <Shlwapi.h>
+	#if defined(_MSC_VER)
+		#pragma comment(lib, "ws2_32.lib")
+		#pragma comment(lib, "shlwapi.lib")
+	#endif
+#endif
+
+#if defined(__cplusplus) && __cplusplus >= 201103L
+	//c++
+	#define THREAD_LOCAL thread_local
+#elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+	// C11
+	#define THREAD_LOCAL _Thread_local
+#elif defined(_MSC_VER)
+	// Microsoft MSVC
+	#define THREAD_LOCAL __declspec(thread)
+#elif defined(__GNUC__) || defined(__clang__) || defined(__SUNPRO_C)
+	// GCC / Clang / ICC
+	#define THREAD_LOCAL __thread
+#else
+	#error "Current compiler or standard level does not support Thread-Local Storage!"
 #endif
 
 /*---------------------------------------------------------------------------------------------*/
@@ -58,43 +79,51 @@ typedef struct
 /* axtrace communication data struct*/
 typedef struct
 {
-	unsigned short	length;			/* length */
-	unsigned char	flag;			/* magic flag, always 'A' */
-	unsigned char	type;			/* command type AXTRACE_CMD_TYPE_* */
+	uint16_t		length;			/* length */
+	uint8_t			flag;			/* magic flag, always 'A' */
+	uint8_t			type;			/* command type AXTRACE_CMD_TYPE_* */
 } axtrace_head_s;
+
+static_assert(sizeof(axtrace_head_s) == 4, "size error");
 
 typedef struct  
 {
 	axtrace_head_s	head;			/* common head */
-	unsigned short	ver;			/* proto ver */
-	unsigned short	sname_len;		/* length of session name */
-	unsigned int	pid;			/* process id*/
-	unsigned int	tid;			/* thread id*/
+	uint16_t		ver;			/* proto ver */
+	uint16_t		sname_len;		/* length of session name */
+	uint32_t		pid;			/* process id*/
+	uint32_t		tid;			/* thread id*/
 
 									/* [session name buf  with '\0' ended]*/
 } axtrace_shakehand_s;
+
+static_assert(sizeof(axtrace_shakehand_s) == 16, "size error");
 
 /* axtrace log data struct*/
 typedef struct
 {
 	axtrace_head_s	head;			/* common head */
-	unsigned int	log_type;		/* trace style AXT_* */
-	unsigned short	code_page;		/* code page */
-	unsigned short	length;			/* trace string length */
+	uint32_t		log_type;		/* trace style AXT_* */
+	uint16_t		code_page;		/* code page */
+	uint16_t		length;			/* trace string length */
 
 									/* [trace string data with '\0' ended] */
 } axtrace_log_s;
 
+static_assert(sizeof(axtrace_log_s) == 12, "size error");
+
 typedef struct
 {
 	axtrace_head_s	head;			/* common head */
-	unsigned int	value_type;		/* value type AXV_* */
-	unsigned short	name_len;		/* length of value name */
-	unsigned short	value_len;		/* length of value */
+	uint32_t		value_type;		/* value type AXV_* */
+	uint16_t		name_len;		/* length of value name */
+	uint16_t		value_len;		/* length of value */
 
 									/* [name buf  with '\0' ended]*/
 									/* [value buf] */
 } axtrace_value_s;
+
+static_assert(sizeof(axtrace_value_s) == 12, "size error");
 
 typedef struct
 {
@@ -103,46 +132,54 @@ typedef struct
 	double			y_top;			/* top of scene*/
 	double			x_right;		/* right of scene*/
 	double			y_bottom;		/* bottom of scene*/
-	unsigned short	name_len;		/* length of scene name */
-	unsigned short	define_len;		/* length of scene define */
+	uint16_t		name_len;		/* length of scene name */
+	uint16_t		define_len;		/* length of scene define */
 
 									/* [scene name buf  with '\0' ended]*/
 									/* [scene define buf  with '\0' ended]*/
 } axtrace_2d_begin_scene_s;
 
+static_assert(sizeof(axtrace_2d_begin_scene_s) == 40, "size error");
+
 typedef struct
 {
 	axtrace_head_s	head;			/* common head */
-	__int64			actor_id;		/* id of actor */
+	int64_t			actor_id;		/* id of actor */
 	double			x;				/* position (x)*/
 	double			y;				/* position (y)*/
 	double			dir;			/* direction */
-	unsigned int	style;			/* user define style */
-	unsigned short	name_len;		/* length of actor name */
-	unsigned short	info_len;		/* length of actor information */
+	uint32_t		style;			/* user define style */
+	uint16_t		name_len;		/* length of actor name */
+	uint16_t		info_len;		/* length of actor information */
 
 									/* [actor name buf  with '\0' ended]*/
 									/* [actor information buf  with '\0' ended]*/
 } axtrace_2d_actor_s;
 
+static_assert(sizeof(axtrace_2d_actor_s) == 44, "size error");
+
 typedef struct
 {
 	axtrace_head_s	head;			/* common head */
-	unsigned short	name_len;		/* length of scene name */
+	uint16_t		name_len;		/* length of scene name */
 
 									/* [scene name buf  with '\0' ended]*/
 } axtrace_2d_end_scene_s;
 
+static_assert(sizeof(axtrace_2d_end_scene_s) == 6, "size error");
+
 typedef struct
 {
 	axtrace_head_s	head;			/* common head */
-	__int64			actor_id;		/* id of actor */
-	unsigned short	name_len;		/* length of scene name */
-	unsigned short	log_len;		/* length of actor log */
+	int64_t			actor_id;		/* id of actor */
+	uint16_t		name_len;		/* length of scene name */
+	uint16_t		log_len;		/* length of actor log */
 
 									/* [scene name buf  with '\0' ended]*/
 									/* [actor log(utf8) buf  with '\0' ended]*/
 } axtrace_2d_actor_log_s;
+
+static_assert(sizeof(axtrace_2d_actor_log_s) == 16, "size error");
 
 #pragma pack(pop)
 
@@ -287,7 +324,7 @@ static axtrace_contex_s* _axtrace_try_init(const char* server_ip, unsigned short
 /*---------------------------------------------------------------------------------------------*/
 static axtrace_contex_s* _axtrace_get_thread_contex()
 {
-	static __declspec(thread) axtrace_contex_s* s_the_thread_data = 0;
+	static THREAD_LOCAL axtrace_contex_s* s_the_thread_data = 0;
 	/* global init */
 	if (!InitOnceExecuteOnce(&g_axtrace_global_init_once, _global_init, NULL, NULL))
 	{
@@ -517,7 +554,7 @@ void ax2d_begin_scene(const char* scene_name, double x_left, double y_top, doubl
 }
 
 /*---------------------------------------------------------------------------------------------*/
-void ax2d_actor(const char* scene_name, __int64 actor_id, double x, double y, double dir, unsigned int actor_style, const char* actor_info)
+void ax2d_actor(const char* scene_name, long long actor_id, double x, double y, double dir, unsigned int actor_style, const char* actor_info)
 {
 	axtrace_contex_s* ctx;
 	HRESULT hr;
@@ -636,7 +673,7 @@ void ax2d_end_scene(const char* scene_name)
 }
 
 /*---------------------------------------------------------------------------------------------*/
-void ax2d_actor_log(const char* scene_name, __int64 actor_id, const char* actor_log)
+void ax2d_actor_log(const char* scene_name, long long actor_id, const char* actor_log)
 {
 	axtrace_contex_s* ctx;
 	HRESULT hr;

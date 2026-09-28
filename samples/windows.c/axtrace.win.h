@@ -2,7 +2,7 @@
 
 				AXIA|Trace4
 
-	(C) Copyright thecodeway.com 2019
+	(C) Copyright thecodeway.com 2026
 ***************************************************/
 #ifndef __AXIA_TRACE_WINDOWS_INCLUDE__
 #define __AXIA_TRACE_WINDOWS_INCLUDE__
@@ -87,7 +87,7 @@ create/update a actor in the scene
 @param actor_style user define style
 @param actor_info extra information of actor
 */
-AXTRACE_EXTERN_C void ax2d_actor(const char* scene_name, __int64 actor_id, double x, double y, double dir, unsigned int actor_style, const char* actor_info);
+AXTRACE_EXTERN_C void ax2d_actor(const char* scene_name, long long actor_id, double x, double y, double dir, unsigned int actor_style, const char* actor_info);
 
 /*
 draw all actors between ax2d_begin_scene and ax2d_end_scene
@@ -101,5 +101,5 @@ push log to a actor, It can be called any time, not necessarily between begin_sc
 @param actor_id actor id
 @param actor_log actor log
 */
-AXTRACE_EXTERN_C void ax2d_actor_log(const char* scene_name, __int64 actor_id, const char* actor_log);
+AXTRACE_EXTERN_C void ax2d_actor_log(const char* scene_name, long long actor_id, const char* actor_log);
 #endif
