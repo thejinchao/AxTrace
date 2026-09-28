@@ -1,5 +1,7 @@
-ï»¿#include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
+#include <float.h>
 #include "ctpl.h"
 #include "axtrace.win.h"
 
@@ -94,8 +96,8 @@ int main(int argc, char* argv[])
 
 		//test AxTrace
 		axlog(AXT_TRACE, "-=-=-=-=-=-= Hello,World -=-=-=-=-=-=-=-=-=-");
-		axlog(AXT_TRACE, "ä¸­æ–‡å­—ç¬¦+Ascii");
-		axlog(AXT_TRACE, "MultiLineTest\nLine1:ç¬¬ä¸€è¡Œ\nLine2:ç¬¬äºŒè¡Œ\nLine%d:ç¬¬ä¸‰è¡Œ", 3);
+		axlog(AXT_TRACE, "ÖÐÎÄ×Ö·û+Ascii");
+		axlog(AXT_TRACE, "MultiLineTest\nLine1:µÚÒ»ÐÐ\nLine2:µÚ¶þÐÐ\nLine%d:µÚÈýÐÐ", 3);
 
 		//test axlog type
 		axlog(AXT_DEBUG, "DEBUG: This is a debug message");
@@ -208,12 +210,12 @@ int main(int argc, char* argv[])
 		AXVALUE(uint_32, "_MAX", AXV_UINT32, "%u", UINT_MAX);
 
 		__int64 int_64 = 0;
-		AXVALUE(int_64, "_0", AXV_INT64, "%I64d", 0i64);
+		AXVALUE(int_64, "_0", AXV_INT64, "%I64d", 0LL);
 		AXVALUE(int_64, "_MIN", AXV_INT64, "%I64d", LLONG_MIN);
 		AXVALUE(int_64, "_MAX", AXV_INT64, "%I64d", LLONG_MAX);
 
 		unsigned __int64 uint_64 = 0;
-		AXVALUE(uint_64, "_MIN", AXV_UINT64, "%I64u", 0i64);
+		AXVALUE(uint_64, "_MIN", AXV_UINT64, "%I64u", 0LL);
 		AXVALUE(uint_64, "_MAX", AXV_UINT64, "%I64u", ULLONG_MAX);
 
 		float float_32 = 0.f;
@@ -226,19 +228,19 @@ int main(int argc, char* argv[])
 		AXVALUE(double_64, "_MAX", AXV_FLOAT64, "%e", DBL_MAX);
 		AXVALUE(double_64, "_MIN", AXV_FLOAT64, "%e", DBL_MIN);
 
-		const char* pszString = "String æ±‰å­—(ACP)";
+		const char* pszString = "String ºº×Ö(ACP)";
 		axvalue(AXV_STR_ACP, "String_ACP", pszString);
 
-		const char* pszString_UTF8 = "String \xE6\xB1\x89\xE5\xAD\x97(UTF8)"; //String æ±‰å­—ï¼ˆutf8)
+		const char* pszString_UTF8 = "String \xE6\xB1\x89\xE5\xAD\x97(UTF8)"; //String ºº×Ö(UTF8)
 		axvalue(AXV_STR_UTF8, "String_UTF8", pszString_UTF8);
 
-		const wchar_t* wszString = L"String æ±‰å­—(UTF16)";
+		const wchar_t* wszString = L"String \x6C49\x5B57(UTF16)";	//String ºº×Ö(UTF16)
 		axvalue(AXV_STR_UTF16, "String_UTF16", wszString);
 
 	}
 
 
-	axvalue(AXV_STR_ACP, "MultiLineTest", "MultiLineTest\nLine1:ç¬¬ä¸€è¡Œ");
+	axvalue(AXV_STR_ACP, "MultiLineTest", "MultiLineTest\nLine1:µÚÒ»ÐÐ");
 
 	//--------------------------
 	{
@@ -283,7 +285,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	axvalue(AXV_STR_ACP, "MultiLineTest", "MultiLineTest\nLine1:ç¬¬ä¸€è¡Œ\nLine2:ç¬¬äºŒè¡Œ\nLine3:ç¬¬ä¸‰è¡Œ");
+	axvalue(AXV_STR_ACP, "MultiLineTest", "MultiLineTest\nLine1:µÚÒ»ÐÐ\nLine2:µÚ¶þÐÐ\nLine3:µÚÈýÐÐ");
 
 	{
 		ctpl::thread_pool tp(std::thread::hardware_concurrency());
