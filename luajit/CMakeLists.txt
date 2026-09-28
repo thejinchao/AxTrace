@@ -496,38 +496,3 @@ else()
     set_target_properties(lua51 PROPERTIES MACOSX_RPATH ON)
   endif()
 endif()
-
-# ---------------------------------------------------------------------------
-# luajit executable
-# ---------------------------------------------------------------------------
-add_executable(luajit "${LUAJIT_SRC}/luajit.c")
-set_source_files_properties("${LUAJIT_SRC}/luajit.c" PROPERTIES
-  OBJECT_DEPENDS "${GENERATED_VERSION_STAMP}")
-target_link_libraries(luajit PRIVATE ${LUAJIT_LINK_LIB})
-target_include_directories(luajit PRIVATE "${GENERATED_DIR}" "${LUAJIT_SRC}")
-target_compile_definitions(luajit PRIVATE ${LUAJIT_TARGET_DEFINITIONS})
-
-if(MSVC)
-  set_property(TARGET luajit PROPERTY MSVC_RUNTIME_CHECKS "")
-  target_compile_options(luajit PRIVATE
-    /nologo /O2 /W3 /Zi
-    "/D_CRT_STDIO_INLINE=__declspec(dllexport)__inline")
-  if(LUAJIT_ARCH STREQUAL "x86")
-    target_compile_options(luajit PRIVATE /arch:SSE2)
-  endif()
-  target_link_options(luajit PRIVATE
-    /DEBUG /OPT:REF /OPT:ICF /INCREMENTAL:NO
-    $<$<NOT:$<CONFIG:Debug>>:/RELEASE>)
-else()
-  target_compile_options(luajit PRIVATE -O2 -fomit-frame-pointer -Wall)
-  target_link_libraries(luajit PRIVATE m)
-endif()
-
-# Build-tree layout: jit/*.lua next to the executable (Windows-style and
-# convenient for local runs; install uses platform-appropriate paths).
-add_custom_command(TARGET luajit POST_BUILD
-  COMMAND "${CMAKE_COMMAND}" -E copy_directory
-    "${LUAJIT_SRC}/jit" "$<TARGET_FILE_DIR:luajit>/jit"
-  COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-    "${GENERATED_VMDEF}" "$<TARGET_FILE_DIR:luajit>/jit/vmdef.lua"
-  VERBATIM)
