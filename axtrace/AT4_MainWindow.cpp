@@ -57,8 +57,6 @@ MainWindow::MainWindow()
     _restoreSettings();
 
     setWindowTitle(tr("AxTrace"));
-
-    setUnifiedTitleAndToolBarOnMac(true);
 }
 
 //--------------------------------------------------------------------------------------------
