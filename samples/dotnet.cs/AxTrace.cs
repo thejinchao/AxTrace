@@ -2,7 +2,7 @@
 
 				AXIA|Trace4
 
-	(C) Copyright thecodeway.com 2023
+	(C) Copyright thecodeway.com 2026
 ***************************************************/
 using System;
 using System.Runtime.InteropServices;
@@ -71,7 +71,7 @@ namespace com.thecodeway
 		private class axtrace_context_s
 		{
 			public bool init_success = false;
-			public Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+			public Socket? socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 		};
 
 		[ThreadStatic]
@@ -97,7 +97,7 @@ namespace com.thecodeway
 			public ushort sname_len;    /* length of session name*/
 			public uint pid;            /* process id*/
 			public uint tid;            /* thread id*/
-			/* [session name buf  with '\0' ended]*/
+			                            /* [session name buf  with '\0' ended]*/
 		};
 
 		[Serializable]
@@ -108,7 +108,7 @@ namespace com.thecodeway
 			public uint log_type;       /* trace style AXT_* */
 			public ushort code_page;    /* code page */
 			public ushort length;       /* trace string length */
-			/* [trace string data with '\0' ended] */
+			                            /* [trace string data with '\0' ended] */
 		};
 
 		[Serializable]
@@ -183,6 +183,7 @@ namespace com.thecodeway
 			try
 			{
 				g_context = new axtrace_context_s();
+				if (g_context.socket == null) return null;
 
 				//try connect to server
 				IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse(server_addr), server_port);
@@ -202,6 +203,27 @@ namespace com.thecodeway
 			}
 			return g_context;
 		}
+
+		static private void _sendDataToServer(axtrace_context_s ctx, byte[] data, int length)
+		{
+			try
+			{
+				if(ctx.socket != null && ctx.socket.Connected)
+				{
+					ctx.socket.Send(data, 0, length, SocketFlags.DontRoute);
+                }
+            }
+			catch (Exception)
+			{
+				ctx.init_success = false;
+				if (ctx.socket != null)
+				{
+					ctx.socket.Close();
+                    ctx.socket = null;
+				}
+            }
+        }
+
 		static private void _sendHandShakeMessage(axtrace_context_s ctx)
 		{
 			int headSize = Marshal.SizeOf(typeof(axtrace_shakehand_s));
@@ -231,14 +253,8 @@ namespace com.thecodeway
 			buf[final_length - 1] = 0; //add '\0'
 			Marshal.FreeHGlobal(headPtr);
 
-			ctx.socket.Send(buf, 0, final_length, SocketFlags.DontRoute);
+			_sendDataToServer(ctx, buf, final_length);
 		}
-		static public void SetServer(string ip, int port)
-		{
-			server_addr = ip;
-			server_port = port;
-		}
-
 		static public void Log(uint style, string format, params object[] args)
 		{
 			axtrace_context_s? ctx = _getContext();
@@ -270,7 +286,7 @@ namespace com.thecodeway
 			buf[final_length - 1] = 0; //add '\0'
 			Marshal.FreeHGlobal(headPtr);
 
-			ctx.socket.Send(buf, 0, final_length, SocketFlags.DontRoute);
+			_sendDataToServer(ctx, buf, final_length);
 		}
 
 		static private void _value(axtrace_context_s ctx, string name, uint value_type, byte[] valueBytes)
@@ -300,7 +316,7 @@ namespace com.thecodeway
 			valueBytes.CopyTo(buf, headSize + head.name_len);
 			Marshal.FreeHGlobal(headPtr);
 
-			ctx.socket.Send(buf, 0, final_length, SocketFlags.DontRoute);
+			_sendDataToServer(ctx, buf, final_length);
 		}
 		static public void Value(string name, sbyte value)
 		{
@@ -447,7 +463,7 @@ namespace com.thecodeway
 			}
 			Marshal.FreeHGlobal(headPtr);
 
-			ctx.socket.Send(buf, 0, final_length, SocketFlags.DontRoute);
+			_sendDataToServer(ctx, buf, final_length);
 		}
 		static public void Scene2DActor(string sceneName, Int64 actorId, double x, double y, double dir, uint actorStyle, string actorInfo)
 		{
@@ -492,7 +508,7 @@ namespace com.thecodeway
 			}
 			Marshal.FreeHGlobal(headPtr);
 
-			ctx.socket.Send(buf, 0, final_length, SocketFlags.DontRoute);
+			_sendDataToServer(ctx, buf, final_length);
 		}
 
 		static public void Scene2DEnd(string sceneName)
@@ -523,7 +539,7 @@ namespace com.thecodeway
 			buf[headSize + sceneNameBytes.Length] = 0; //add '\0'
 			Marshal.FreeHGlobal(headPtr);
 
-			ctx.socket.Send(buf, 0, final_length, SocketFlags.DontRoute);
+			_sendDataToServer(ctx, buf, final_length);
 		}
 
 		static public void Scene2DActorLog(string sceneName, Int64 actorId, string actorLog)
@@ -563,7 +579,7 @@ namespace com.thecodeway
 
 			Marshal.FreeHGlobal(headPtr);
 
-			ctx.socket.Send(buf, 0, final_length, SocketFlags.DontRoute);
+			_sendDataToServer(ctx, buf, final_length);
 		}
 	}
 }
