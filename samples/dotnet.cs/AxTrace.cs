@@ -185,8 +185,11 @@ namespace com.thecodeway
 				g_context = new axtrace_context_s();
 				if (g_context.socket == null) return null;
 
-				//try connect to server
-				IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse(server_addr), server_port);
+                //set socket 
+                g_context.socket.NoDelay = true;
+
+                //try connect to server
+                IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse(server_addr), server_port);
 				g_context.socket.Connect(endPoint);
 
 				//send shakehand message
@@ -210,7 +213,7 @@ namespace com.thecodeway
 			{
 				if(ctx.socket != null && ctx.socket.Connected)
 				{
-					ctx.socket.Send(data, 0, length, SocketFlags.DontRoute);
+					ctx.socket.Send(data, 0, length, SocketFlags.None);
                 }
             }
 			catch (Exception)
