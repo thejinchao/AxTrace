@@ -303,6 +303,13 @@ static axtrace_contex_s* _axtrace_try_init(const char* server_ip, unsigned short
 		return ctx;
 	}
 
+	int optval = 1; /* enable TCP_NODELAY(disable Nagle) */
+	if (0 != setsockopt(ctx->sfd, IPPROTO_TCP, TCP_NODELAY, (void*)&optval, sizeof(optval)))
+	{
+		closesocket(ctx->sfd);
+		return ctx;
+	}
+
 	/* connect to server */
 	if (0 != connect(ctx->sfd, (const struct sockaddr*)&(ctx->address), sizeof(struct sockaddr_in)))
 	{
