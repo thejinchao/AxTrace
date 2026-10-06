@@ -549,13 +549,13 @@ namespace com.thecodeway
 			if (ctx == null || !ctx.init_success) return;
 
 			int headSize = Marshal.SizeOf(typeof(axtrace_2d_actor_log_s));
-			byte[] buf = new byte[headSize + AXTRACE_MAX_SCENE_NAME_LENGTH + AXTRACE_MAX_ACTOR_INFO_LENGTH];
+			byte[] buf = new byte[headSize + AXTRACE_MAX_SCENE_NAME_LENGTH + AXTRACE_MAX_ACTOR_LOG_LENGTH];
 
 			byte[] sceneNameBytes = System.Text.Encoding.UTF8.GetBytes(sceneName);
             int sceneNameLength = Math.Min(sceneNameBytes.Length + 1, AXTRACE_MAX_SCENE_NAME_LENGTH); // add '\0'
 
             byte[] actorLogBytes = System.Text.Encoding.UTF8.GetBytes(actorLog);
-			int actorLogLength = Math.Min(actorLogBytes.Length + 1, AXTRACE_MAX_ACTOR_INFO_LENGTH);
+			int actorLogLength = Math.Min(actorLogBytes.Length + 1, AXTRACE_MAX_ACTOR_LOG_LENGTH);
 
             int final_length = headSize + sceneNameLength + actorLogLength;
 
