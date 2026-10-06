@@ -192,29 +192,41 @@ namespace com.thecodeway
                 IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse(server_addr), server_port);
 				g_context.socket.Connect(endPoint);
 
-				//send shakehand message
-				_sendHandShakeMessage(g_context);
-
-				g_context.init_success = true;
+                //send shakehand message
+                g_context.init_success = _sendHandShakeMessage(g_context);
 			}
 			catch (Exception)
 			{
 				if (g_context != null)
 				{
 					g_context.init_success = false;
-				}
+					if(g_context.socket != null)
+					{
+						g_context.socket.Close();
+						g_context.socket = null;
+                    }
+                }
 			}
 			return g_context;
 		}
 
-		static private void _sendDataToServer(axtrace_context_s ctx, byte[] data, int length)
+		static private bool _sendDataToServer(axtrace_context_s ctx, byte[] data, int length)
 		{
 			try
 			{
 				if(ctx.socket != null && ctx.socket.Connected)
 				{
-					ctx.socket.Send(data, 0, length, SocketFlags.None);
+					int totalSent = 0;
+					while(totalSent < length)
+					{
+						int sent = ctx.socket.Send(data, totalSent, length - totalSent, SocketFlags.None);
+                        if (sent <= 0) throw new SocketException((int)SocketError.ConnectionReset);
+  
+						totalSent += sent;
+                    }
                 }
+
+				return true;
             }
 			catch (Exception)
 			{
@@ -224,10 +236,11 @@ namespace com.thecodeway
 					ctx.socket.Close();
                     ctx.socket = null;
 				}
+				return false;
             }
         }
 
-		static private void _sendHandShakeMessage(axtrace_context_s ctx)
+		static private bool _sendHandShakeMessage(axtrace_context_s ctx)
 		{
 			int headSize = Marshal.SizeOf(typeof(axtrace_shakehand_s));
 			byte[] buf = new byte[headSize + AXTRACE_MAX_PROCESSNAME_LENGTH];
@@ -258,7 +271,7 @@ namespace com.thecodeway
 			buf[headSize + pname_length - 1] = 0;
 			Marshal.FreeHGlobal(headPtr);
 
-			_sendDataToServer(ctx, buf, final_length);
+			return _sendDataToServer(ctx, buf, final_length);
 		}
 		static public void Log(uint style, string content)
 		{
