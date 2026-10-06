@@ -234,7 +234,8 @@ namespace com.thecodeway
 
 			//get current process name
 			string currentAppName = Process.GetCurrentProcess().ProcessName;
-			int pname_length = currentAppName.Length + 1;
+			byte[] appNameBytes = System.Text.Encoding.UTF8.GetBytes(currentAppName);
+            int pname_length = Math.Min(appNameBytes.Length + 1, AXTRACE_MAX_PROCESSNAME_LENGTH); // add '\0'
 
 			//calc final length
 			int final_length = headSize + pname_length;
@@ -252,8 +253,9 @@ namespace com.thecodeway
 			IntPtr headPtr = Marshal.AllocHGlobal(headSize);
 			Marshal.StructureToPtr(shakehand, headPtr, false);
 			Marshal.Copy(headPtr, buf, 0, headSize);
-			System.Text.Encoding.UTF8.GetBytes(currentAppName).CopyTo(buf, headSize);
-			buf[final_length - 1] = 0; //add '\0'
+            Buffer.BlockCopy(appNameBytes, 0, buf, headSize, pname_length - 1);
+
+			buf[headSize + pname_length - 1] = 0;
 			Marshal.FreeHGlobal(headPtr);
 
 			_sendDataToServer(ctx, buf, final_length);
@@ -270,7 +272,7 @@ namespace com.thecodeway
 			byte[] contentBytes = System.Text.Encoding.UTF8.GetBytes(content);
 
 			//add '\0'
-			int content_length = contentBytes.Length + 1;
+			int content_length = Math.Min(contentBytes.Length + 1, AXTRACE_MAX_TRACE_STRING_LENGTH);
 			int final_length = Marshal.SizeOf(typeof(axtrace_log_s)) + content_length;
 
 			axtrace_log_s head = new axtrace_log_s();
@@ -285,8 +287,8 @@ namespace com.thecodeway
 			IntPtr headPtr = Marshal.AllocHGlobal(headSize);
 			Marshal.StructureToPtr(head, headPtr, false);
 			Marshal.Copy(headPtr, buf, 0, headSize);
-			contentBytes.CopyTo(buf, headSize);
-			buf[final_length - 1] = 0; //add '\0'
+			Buffer.BlockCopy(contentBytes, 0, buf, headSize, content_length - 1);
+			buf[headSize + content_length - 1] = 0;
 			Marshal.FreeHGlobal(headPtr);
 
 			_sendDataToServer(ctx, buf, final_length);
@@ -295,8 +297,8 @@ namespace com.thecodeway
 		static private void _value(axtrace_context_s ctx, string name, uint value_type, byte[] valueBytes)
 		{
 			byte[] nameBytes = System.Text.Encoding.UTF8.GetBytes(name);
-			int name_length = nameBytes.Length + 1; // add '\0'
-			int value_length = valueBytes.Length;
+			int name_length = Math.Min(nameBytes.Length + 1, AXTRACE_MAX_VALUENAME_LENGTH); // add '\0'
+			int value_length = Math.Min(valueBytes.Length, AXTRACE_MAX_VALUE_LENGTH);
 
 			int headSize = Marshal.SizeOf(typeof(axtrace_value_s));
 			byte[] buf = new byte[headSize + AXTRACE_MAX_VALUENAME_LENGTH + AXTRACE_MAX_VALUE_LENGTH];
@@ -314,9 +316,10 @@ namespace com.thecodeway
 			IntPtr headPtr = Marshal.AllocHGlobal(headSize);
 			Marshal.StructureToPtr(head, headPtr, false);
 			Marshal.Copy(headPtr, buf, 0, headSize);
-			nameBytes.CopyTo(buf, headSize);
-			buf[headSize + nameBytes.Length] = 0; //add '\0'
-			valueBytes.CopyTo(buf, headSize + head.name_len);
+			Buffer.BlockCopy(nameBytes, 0, buf, headSize, name_length-1);
+			buf[headSize + name_length - 1] = 0; //add '\0'
+			Buffer.BlockCopy(valueBytes, 0, buf, headSize + name_length, value_length);
+
 			Marshal.FreeHGlobal(headPtr);
 
 			_sendDataToServer(ctx, buf, final_length);
@@ -344,71 +347,55 @@ namespace com.thecodeway
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
 
-			_value(ctx, name,
-				AXV_INT16,
-				BitConverter.GetBytes(value));
+			_value(ctx, name, AXV_INT16, BitConverter.GetBytes(value));
 		}
 		static public void Value(string name, ushort value)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
 
-			_value(ctx, name,
-				AXV_UINT16,
-				BitConverter.GetBytes(value));
+			_value(ctx, name, AXV_UINT16,BitConverter.GetBytes(value));
 		}
 		static public void Value(string name, int value)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
 
-			_value(ctx, name,
-				AXV_INT32,
-				BitConverter.GetBytes(value));
+			_value(ctx, name, AXV_INT32, BitConverter.GetBytes(value));
 		}
 		static public void Value(string name, uint value)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
-			_value(ctx, name,
-				AXV_UINT32,
-				BitConverter.GetBytes(value));
+			_value(ctx, name, AXV_UINT32, BitConverter.GetBytes(value));
 		}
 		static public void Value(string name, long value)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
 
-			_value(ctx, name,
-				AXV_INT64,
-				BitConverter.GetBytes(value));
+			_value(ctx, name, AXV_INT64, BitConverter.GetBytes(value));
 		}
 		static public void Value(string name, ulong value)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
 
-			_value(ctx, name,
-				AXV_UINT64,
-				BitConverter.GetBytes(value));
+			_value(ctx, name, AXV_UINT64, BitConverter.GetBytes(value));
 		}
 		static public void Value(string name, float value)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
 
-			_value(ctx, name,
-				AXV_FLOAT32,
-				BitConverter.GetBytes(value));
+			_value(ctx, name, AXV_FLOAT32, BitConverter.GetBytes(value));
 		}
 		static public void Value(string name, double value)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
 
-			_value(ctx, name,
-				AXV_FLOAT64,
-				BitConverter.GetBytes(value));
+			_value(ctx, name, AXV_FLOAT64, BitConverter.GetBytes(value));
 		}
 		static public void Value(string name, string value)
 		{
@@ -419,12 +406,10 @@ namespace com.thecodeway
 			byte[] withNull = new byte[stringBytes.Length + 1];
 			stringBytes.CopyTo(withNull, 0);
 			withNull[stringBytes.Length] = 0;
-			_value(ctx, name,
-				AXV_STR_UTF8,
-				withNull);
+			_value(ctx, name, AXV_STR_UTF8, withNull);
 		}
 
-		static public void Scene2DBegin(string sceneName, double xMin, double yMin, double xMax, double yMax, string sceneDefine)
+		static public void Scene2DBegin(string sceneName, double xMin, double yMin, double xMax, double yMax, string? sceneDefine)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
@@ -433,12 +418,12 @@ namespace com.thecodeway
 			byte[] buf = new byte[headSize + AXTRACE_MAX_SCENE_NAME_LENGTH + AXTRACE_MAX_SCENE_DEFINE_LENGTH];
 
 			byte[] sceneNameBytes = System.Text.Encoding.UTF8.GetBytes(sceneName);
-			int sceneNameLength = sceneNameBytes.Length + 1;
+            int sceneNameLength = Math.Min(sceneNameBytes.Length + 1, AXTRACE_MAX_SCENE_NAME_LENGTH); // add '\0'
 
-			byte[] sceneDefineBytes = System.Text.Encoding.UTF8.GetBytes(sceneDefine);
-			int sceneDefineLength = sceneDefineBytes.Length + 1;
+            byte[]? sceneDefineBytes = (sceneDefine!=null && sceneDefine.Length>0) ? System.Text.Encoding.UTF8.GetBytes(sceneDefine) : null;
+            int sceneDefineLength = sceneDefineBytes!=null ? Math.Min(sceneDefineBytes.Length + 1, AXTRACE_MAX_SCENE_DEFINE_LENGTH) : 0; // add '\0'
 
-			int final_length = headSize + sceneNameLength + sceneDefineLength;
+            int final_length = headSize + sceneNameLength + sceneDefineLength;
 
 			axtrace_2d_begin_scene_s head = new axtrace_2d_begin_scene_s();
 			head.head.length = (ushort)(final_length);
@@ -456,19 +441,20 @@ namespace com.thecodeway
 			Marshal.StructureToPtr(head, headPtr, false);
 			Marshal.Copy(headPtr, buf, 0, headSize);
 
-			sceneNameBytes.CopyTo(buf, headSize);
-			buf[headSize + sceneNameBytes.Length] = 0; //add '\0'
+            Buffer.BlockCopy(sceneNameBytes, 0, buf, headSize, sceneNameLength - 1);
 
-			if (sceneDefine.Length > 0)
+			buf[headSize + sceneNameLength - 1] = 0;
+
+            if (sceneDefineBytes!=null && sceneDefineLength > 0)
 			{
-				sceneDefineBytes.CopyTo(buf, headSize + sceneNameLength);
-				buf[headSize + sceneNameBytes.Length + sceneDefineBytes.Length + 1] = 0; //add '\0'
-			}
+				Buffer.BlockCopy(sceneDefineBytes, 0, buf, headSize + sceneNameLength, sceneDefineLength - 1);
+				buf[headSize + sceneNameLength + sceneDefineLength - 1] = 0; //add '\0'
+            }
 			Marshal.FreeHGlobal(headPtr);
 
 			_sendDataToServer(ctx, buf, final_length);
 		}
-		static public void Scene2DActor(string sceneName, Int64 actorId, double x, double y, double dir, uint actorStyle, string actorInfo)
+		static public void Scene2DActor(string sceneName, Int64 actorId, double x, double y, double dir, uint actorStyle, string? actorInfo)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
@@ -477,10 +463,10 @@ namespace com.thecodeway
 			byte[] buf = new byte[headSize + AXTRACE_MAX_SCENE_NAME_LENGTH + AXTRACE_MAX_ACTOR_INFO_LENGTH];
 
 			byte[] sceneNameBytes = System.Text.Encoding.UTF8.GetBytes(sceneName);
-			int sceneNameLength = sceneNameBytes.Length + 1;
+            int sceneNameLength = Math.Min(sceneNameBytes.Length + 1, AXTRACE_MAX_SCENE_NAME_LENGTH); // add '\0'
 
-			byte[]? actorInfoBytes = actorInfo!=null ? System.Text.Encoding.UTF8.GetBytes(actorInfo) : null;
-			int actorInfoLength = actorInfoBytes != null ? actorInfoBytes.Length + 1 : 0;
+            byte[]? actorInfoBytes = (actorInfo!=null && actorInfo.Length>0) ? System.Text.Encoding.UTF8.GetBytes(actorInfo) : null;
+			int actorInfoLength = actorInfoBytes != null ? Math.Min(actorInfoBytes.Length + 1, AXTRACE_MAX_ACTOR_INFO_LENGTH) : 0;
 
 			int final_length = headSize + sceneNameLength + actorInfoLength;
 
@@ -501,14 +487,14 @@ namespace com.thecodeway
 			Marshal.StructureToPtr(head, headPtr, false);
 			Marshal.Copy(headPtr, buf, 0, headSize);
 
-			sceneNameBytes.CopyTo(buf, headSize);
-			buf[headSize + sceneNameBytes.Length] = 0; //add '\0'
+            Buffer.BlockCopy(sceneNameBytes, 0, buf, headSize, sceneNameLength - 1);
+            buf[headSize + sceneNameLength - 1] = 0; //add '\0'
 
-			if (actorInfoBytes != null && actorInfoBytes.Length > 0)
+            if (actorInfoBytes != null && actorInfoLength > 0)
 			{
-				actorInfoBytes.CopyTo(buf, headSize + sceneNameLength);
-				buf[headSize + sceneNameBytes.Length + actorInfoBytes.Length + 1] = 0; //add '\0'
-			}
+				Buffer.BlockCopy(actorInfoBytes, 0, buf, headSize + sceneNameLength, actorInfoLength - 1);
+                buf[headSize + sceneNameLength + actorInfoLength - 1] = 0; //add '\0'
+            }
 			Marshal.FreeHGlobal(headPtr);
 
 			_sendDataToServer(ctx, buf, final_length);
@@ -523,9 +509,9 @@ namespace com.thecodeway
 			byte[] buf = new byte[headSize + AXTRACE_MAX_SCENE_NAME_LENGTH];
 
 			byte[] sceneNameBytes = System.Text.Encoding.UTF8.GetBytes(sceneName);
-			int sceneNameLength = sceneNameBytes.Length + 1;
+            int sceneNameLength = Math.Min(sceneNameBytes.Length + 1, AXTRACE_MAX_SCENE_NAME_LENGTH); // add '\0'
 
-			int final_length = headSize + sceneNameLength;
+            int final_length = headSize + sceneNameLength;
 
 			axtrace_2d_end_scene_s head = new axtrace_2d_end_scene_s();
 			head.head.length = (ushort)(final_length);
@@ -538,9 +524,10 @@ namespace com.thecodeway
 			Marshal.StructureToPtr(head, headPtr, false);
 			Marshal.Copy(headPtr, buf, 0, headSize);
 
-			sceneNameBytes.CopyTo(buf, headSize);
-			buf[headSize + sceneNameBytes.Length] = 0; //add '\0'
-			Marshal.FreeHGlobal(headPtr);
+            Buffer.BlockCopy(sceneNameBytes, 0, buf, headSize, sceneNameLength - 1);
+            buf[headSize + sceneNameLength - 1] = 0; //add '\0'
+
+            Marshal.FreeHGlobal(headPtr);
 
 			_sendDataToServer(ctx, buf, final_length);
 		}
@@ -554,12 +541,12 @@ namespace com.thecodeway
 			byte[] buf = new byte[headSize + AXTRACE_MAX_SCENE_NAME_LENGTH + AXTRACE_MAX_ACTOR_INFO_LENGTH];
 
 			byte[] sceneNameBytes = System.Text.Encoding.UTF8.GetBytes(sceneName);
-			int sceneNameLength = sceneNameBytes.Length + 1;
+            int sceneNameLength = Math.Min(sceneNameBytes.Length + 1, AXTRACE_MAX_SCENE_NAME_LENGTH); // add '\0'
 
-			byte[] actorLogBytes = System.Text.Encoding.UTF8.GetBytes(actorLog);
-			int actorLogLength = actorLogBytes.Length + 1;
+            byte[] actorLogBytes = System.Text.Encoding.UTF8.GetBytes(actorLog);
+			int actorLogLength = Math.Min(actorLogBytes.Length + 1, AXTRACE_MAX_ACTOR_INFO_LENGTH);
 
-			int final_length = headSize + sceneNameLength + actorLogLength;
+            int final_length = headSize + sceneNameLength + actorLogLength;
 
 			axtrace_2d_actor_log_s head = new axtrace_2d_actor_log_s();
 			head.head.length = (ushort)(final_length);
@@ -574,13 +561,13 @@ namespace com.thecodeway
 			Marshal.StructureToPtr(head, headPtr, false);
 			Marshal.Copy(headPtr, buf, 0, headSize);
 
-			sceneNameBytes.CopyTo(buf, headSize);
-			buf[headSize + sceneNameBytes.Length] = 0; //add '\0'
+            Buffer.BlockCopy(sceneNameBytes, 0, buf, headSize, sceneNameLength - 1);
+            buf[headSize + sceneNameLength - 1] = 0;
 
-			actorLogBytes.CopyTo(buf, headSize + sceneNameLength);
-			buf[headSize + sceneNameBytes.Length + actorLogBytes.Length + 1] = 0; //add '\0'
+			Buffer.BlockCopy(actorLogBytes, 0, buf, headSize + sceneNameLength, actorLogLength - 1);
+			buf[headSize + sceneNameLength + actorLogLength - 1] = 0;
 
-			Marshal.FreeHGlobal(headPtr);
+            Marshal.FreeHGlobal(headPtr);
 
 			_sendDataToServer(ctx, buf, final_length);
 		}
