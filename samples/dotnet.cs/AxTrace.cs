@@ -260,15 +260,13 @@ namespace com.thecodeway
 
 			_sendDataToServer(ctx, buf, final_length);
 		}
-		static public void Log(uint style, string format, params object[] args)
+		static public void Log(uint style, string content)
 		{
 			axtrace_context_s? ctx = _getContext();
 			if (ctx == null || !ctx.init_success) return;
 
 			int headSize = Marshal.SizeOf(typeof(axtrace_log_s));
 			byte[] buf = new byte[headSize + AXTRACE_MAX_TRACE_STRING_LENGTH];
-
-			string content = System.String.Format(format, args);
 			byte[] contentBytes = System.Text.Encoding.UTF8.GetBytes(content);
 
 			//add '\0'

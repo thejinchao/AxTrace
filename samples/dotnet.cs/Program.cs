@@ -91,7 +91,7 @@ namespace AxTraceSample
 			{
 				AxTrace.Log(AxTrace.AXT_TRACE, "-=-=-=-=-=-= Hello,World -=-=-=-=-=-=-=-=-=-");
 				AxTrace.Log(AxTrace.AXT_TRACE, "中文字符+Ascii");
-				AxTrace.Log(AxTrace.AXT_TRACE, "MultiLineTest\nLine{0}:第一行\nLine2:{1}\nLine3:第三行pi={2}", 1, "第二行", 3.14f);
+				AxTrace.Log(AxTrace.AXT_TRACE, string.Format("MultiLineTest\nLine{0}:第一行\nLine2:{1}\nLine3:第三行pi={2}", 1, "第二行", 3.14f));
 
 				AxTrace.Log(AxTrace.AXT_DEBUG, "DEBUG: This is a debug message");
 				AxTrace.Log(AxTrace.AXT_INFO, "INFO: This is a info message");
